@@ -1,0 +1,8 @@
+binaries:
+  - name:         go-makefile-maker
+    from_package: .
+    install_to:   bin/
+
+verbatim: |
+  run: build/go-makefile-maker
+    ./build/go-makefile-maker
