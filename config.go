@@ -23,7 +23,7 @@ type Configuration struct {
 	Verbatim       string                `yaml:"verbatim"`
 	VariableValues map[string]string     `yaml:"variables"`
 	Binaries       []BinaryConfiguration `yaml:"binaries"`
-	Coverage       CoverageConfiguration `yaml:"coverage_test"`
+	Coverage       CoverageConfiguration `yaml:"coverageTest"`
 }
 
 //Variable returns the value of this variable if it's overridden in the config,
@@ -39,8 +39,8 @@ func (c Configuration) Variable(name string, defaultValue string) string {
 //BinaryConfiguration appears in type Configuration.
 type BinaryConfiguration struct {
 	Name        string `yaml:"name"`
-	FromPackage string `yaml:"from_package"`
-	InstallTo   string `yaml:"install_to"`
+	FromPackage string `yaml:"fromPackage"`
+	InstallTo   string `yaml:"installTo"`
 }
 
 //CoverageConfiguration appears in type Configuration.

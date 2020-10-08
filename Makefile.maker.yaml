@@ -1,7 +1,7 @@
 binaries:
-  - name:         go-makefile-maker
-    from_package: .
-    install_to:   bin/
+  - name:        go-makefile-maker
+    fromPackage: .
+    installTo:   bin/
 
 verbatim: |
   run: build/go-makefile-maker
