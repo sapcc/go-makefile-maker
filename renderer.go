@@ -142,7 +142,11 @@ func (r *Renderer) addInstallTargetIfDesired(cfg Configuration) {
 	}
 
 	r.addDefinition("DESTDIR =")
-	r.addDefinition("PREFIX = /usr")
+	r.addDefinition("ifeq ($(shell uname -s),Darwin)")
+	r.addDefinition("  PREFIX = /usr/local")
+	r.addDefinition("else")
+	r.addDefinition("  PREFIX = /usr")
+	r.addDefinition("endif")
 	r.addRule("install: FORCE%s", installTargetDeps)
 
 	for _, bin := range cfg.Binaries {
