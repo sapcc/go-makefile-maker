@@ -88,6 +88,7 @@ func (r *Renderer) Render(cfg Configuration) {
 
 	//add main testing target
 	r.addRule("check: build-all static-check build/cover.html FORCE")
+	r.addRecipe(`@printf "\e[1;32m>> All checks successful.\e[0m\n"`)
 
 	//add target for static code checks
 	r.addRule("static-check: FORCE")
