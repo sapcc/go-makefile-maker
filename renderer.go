@@ -120,6 +120,10 @@ func (r *Renderer) Render(cfg Configuration) {
 		r.addRecipe("go mod verify")
 	}
 
+	//add cleaning target
+	r.addRule("clean: FORCE")
+	r.addRecipe("git clean -dxf build")
+
 	r.addRule(".PHONY: FORCE")
 }
 
