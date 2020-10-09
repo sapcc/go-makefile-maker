@@ -50,7 +50,11 @@ func (r *Renderer) Render(cfg Configuration) {
 	r.addBuildAllTarget(cfg)
 
 	//add definitions for common variables
-	r.addDefinition("GO_BUILDFLAGS = %s", cfg.Variable("GO_BUILDFLAGS", "-mod vendor"))
+	defaultBuildFlags := ""
+	if cfg.Vendoring.Enabled {
+		defaultBuildFlags = "-mod vendor"
+	}
+	r.addDefinition("GO_BUILDFLAGS = %s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
 	r.addDefinition("GO_LDFLAGS = %s", cfg.Variable("GO_LDFLAGS", ""))
 	r.addDefinition("GO_TESTENV = %s", cfg.Variable("GO_TESTENV", ""))
 
@@ -103,11 +107,17 @@ func (r *Renderer) Render(cfg Configuration) {
 	r.addRecipe(`@printf "\e[1;36m>> go tool cover > build/cover.html\e[0m\n"`)
 	r.addRecipe(`@go tool cover -html $< -o $@`)
 
-	//add vendoring target
-	r.addRule("vendor: FORCE")
-	r.addRecipe("go mod tidy")
-	r.addRecipe("go mod vendor")
-	r.addRecipe("go mod verify")
+	//add tidy-deps or vendor target
+	if cfg.Vendoring.Enabled {
+		r.addRule("vendor: FORCE")
+		r.addRecipe("go mod tidy")
+		r.addRecipe("go mod vendor")
+		r.addRecipe("go mod verify")
+	} else {
+		r.addRule("tidy-deps: FORCE")
+		r.addRecipe("go mod tidy")
+		r.addRecipe("go mod verify")
+	}
 
 	r.addRule(".PHONY: FORCE")
 }
