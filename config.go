@@ -20,11 +20,12 @@ package main
 
 //Configuration is the data structure that we read from the input file.
 type Configuration struct {
-	Verbatim       string                 `yaml:"verbatim"`
-	VariableValues map[string]string      `yaml:"variables"`
-	Binaries       []BinaryConfiguration  `yaml:"binaries"`
-	Coverage       CoverageConfiguration  `yaml:"coverageTest"`
-	Vendoring      VendoringConfiguration `yaml:"vendoring"`
+	Verbatim       string                   `yaml:"verbatim"`
+	VariableValues map[string]string        `yaml:"variables"`
+	Binaries       []BinaryConfiguration    `yaml:"binaries"`
+	Coverage       CoverageConfiguration    `yaml:"coverageTest"`
+	Vendoring      VendoringConfiguration   `yaml:"vendoring"`
+	StaticCheck    StaticCheckConfiguration `yaml:"staticCheck"`
 }
 
 //Variable returns the value of this variable if it's overridden in the config,
@@ -53,4 +54,9 @@ type CoverageConfiguration struct {
 //VendoringConfiguration appears in type Configuration.
 type VendoringConfiguration struct {
 	Enabled bool `yaml:"enabled"`
+}
+
+//StaticCheckConfiguration appears in type Configuration.
+type StaticCheckConfiguration struct {
+	GolangciLint bool `yaml:"golangciLint"`
 }
