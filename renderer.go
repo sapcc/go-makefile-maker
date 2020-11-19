@@ -67,10 +67,12 @@ func (r *Renderer) Render(cfg Configuration) {
 	r.addInstallTargetIfDesired(cfg)
 
 	//add definitions for testing targets
-	r.addDefinition(`# which packages to test with static checkers`)
-	r.addDefinition(`GO_ALLPKGS := $(shell go list ./...)`)
-	r.addDefinition(`# which files to test with static checkers (this contains a list of globs)`)
-	r.addDefinition(`GO_ALLFILES := $(addsuffix /*.go,$(patsubst $(shell go list .),.,$(shell go list ./...)))`)
+	if !cfg.StaticCheck.GolangciLint {
+		r.addDefinition(`# which packages to test with static checkers`)
+		r.addDefinition(`GO_ALLPKGS := $(shell go list ./...)`)
+		r.addDefinition(`# which files to test with static checkers (this contains a list of globs)`)
+		r.addDefinition(`GO_ALLFILES := $(addsuffix /*.go,$(patsubst $(shell go list .),.,$(shell go list ./...)))`)
+	}
 	r.addDefinition(`# which packages to test with "go test"`)
 	r.addDefinition(`GO_TESTPKGS := $(shell go list -f '{{if .TestGoFiles}}{{.ImportPath}}{{end}}' ./...)`)
 	r.addDefinition(`# which packages to measure coverage for`)
@@ -92,13 +94,19 @@ func (r *Renderer) Render(cfg Configuration) {
 
 	//add target for static code checks
 	r.addRule("static-check: FORCE")
-	r.addRecipe(`@if ! hash golint 2>/dev/null; then printf "\e[1;36m>> Installing golint...\e[0m\n"; GO111MODULE=off go get -u golang.org/x/lint/golint; fi`)
-	r.addRecipe(`@printf "\e[1;36m>> gofmt\e[0m\n"`)
-	r.addRecipe(`@if s="$$(gofmt -s -d $(GO_ALLFILES) 2>/dev/null)" && test -n "$$s"; then echo "$$s"; false; fi`)
-	r.addRecipe(`@printf "\e[1;36m>> golint\e[0m\n"`)
-	r.addRecipe(`@if s="$$(golint $(GO_ALLPKGS) 2>/dev/null)" && test -n "$$s"; then echo "$$s"; false; fi`)
-	r.addRecipe(`@printf "\e[1;36m>> go vet\e[0m\n"`)
-	r.addRecipe(`@go vet $(GO_BUILDFLAGS) $(GO_ALLPKGS)`)
+	if cfg.StaticCheck.GolangciLint {
+		r.addRecipe(`@command -v golangci-lint >/dev/null 2>&1 || { echo >&2 "Error: golangci-lint is not installed. See: https://golangci-lint.run/usage/install/"; exit 1; }`)
+		r.addRecipe(`@printf "\e[1;36m>> golangci-lint\e[0m\n"`)
+		r.addRecipe(`@golangci-lint run`)
+	} else {
+		r.addRecipe(`@if ! hash golint 2>/dev/null; then printf "\e[1;36m>> Installing golint...\e[0m\n"; GO111MODULE=off go get -u golang.org/x/lint/golint; fi`)
+		r.addRecipe(`@printf "\e[1;36m>> gofmt\e[0m\n"`)
+		r.addRecipe(`@if s="$$(gofmt -s -d $(GO_ALLFILES) 2>/dev/null)" && test -n "$$s"; then echo "$$s"; false; fi`)
+		r.addRecipe(`@printf "\e[1;36m>> golint\e[0m\n"`)
+		r.addRecipe(`@if s="$$(golint $(GO_ALLPKGS) 2>/dev/null)" && test -n "$$s"; then echo "$$s"; false; fi`)
+		r.addRecipe(`@printf "\e[1;36m>> go vet\e[0m\n"`)
+		r.addRecipe(`@go vet $(GO_BUILDFLAGS) $(GO_ALLPKGS)`)
+	}
 
 	//add targets for `go test` incl. coverage report
 	r.addRule(`build/cover.out: FORCE`)

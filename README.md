@@ -88,6 +88,15 @@ Set `vendoring.enabled` to `true` if you vendor all dependencies in your reposit
    mod vendor`.
    This target can be used to get the vendor directory up-to-date before commits.
 
+### `staticCheck`
+
+```yaml
+staticCheck:
+  golangciLint: false
+```
+
+Set `staticCheck.golangciLint` to `true`, if you want to use [`golangci-lint`](https://golangci-lint.run/) for static checking instead of `gofmt`, `golint`, and `go vet`.
+
 ### `verbatim`
 
 ```yaml
