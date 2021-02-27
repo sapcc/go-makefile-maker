@@ -71,7 +71,7 @@ func (r *Renderer) Render(cfg Configuration) {
 		r.addDefinition(`# which packages to test with static checkers`)
 		r.addDefinition(`GO_ALLPKGS := $(shell go list ./...)`)
 		r.addDefinition(`# which files to test with static checkers (this contains a list of globs)`)
-		r.addDefinition(`GO_ALLFILES := $(addsuffix /*.go,$(patsubst $(shell go list .),.,$(shell go list ./...)))`)
+		r.addDefinition(`GO_ALLFILES := $(addsuffix /*.go,$(patsubst $(shell go list .)%,.%,$(shell go list ./...)))`)
 	}
 	r.addDefinition(`# which packages to test with "go test"`)
 	r.addDefinition(`GO_TESTPKGS := $(shell go list -f '{{if .TestGoFiles}}{{.ImportPath}}{{end}}' ./...)`)
