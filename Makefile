@@ -10,7 +10,7 @@ run: build/go-makefile-maker
 
 build-all: build/go-makefile-maker
 
-GO_BUILDFLAGS = -mod vendor
+GO_BUILDFLAGS = 
 GO_LDFLAGS = 
 GO_TESTENV = 
 
@@ -18,7 +18,11 @@ build/go-makefile-maker: FORCE
 	go build $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -o build/go-makefile-maker .
 
 DESTDIR =
-PREFIX = /usr
+ifeq ($(shell uname -s),Darwin)
+  PREFIX = /usr/local
+else
+  PREFIX = /usr
+endif
 
 install: FORCE build/go-makefile-maker
 	install -D -m 0755 build/go-makefile-maker "$(DESTDIR)$(PREFIX)/bin/go-makefile-maker"
@@ -26,7 +30,7 @@ install: FORCE build/go-makefile-maker
 # which packages to test with static checkers
 GO_ALLPKGS := $(shell go list ./...)
 # which files to test with static checkers (this contains a list of globs)
-GO_ALLFILES := $(addsuffix /*.go,$(patsubst $(shell go list .),.,$(shell go list ./...)))
+GO_ALLFILES := $(addsuffix /*.go,$(patsubst $(shell go list .)%,.%,$(shell go list ./...)))
 # which packages to test with "go test"
 GO_TESTPKGS := $(shell go list -f '{{if .TestGoFiles}}{{.ImportPath}}{{end}}' ./...)
 # which packages to measure coverage for
@@ -36,6 +40,7 @@ space := $(null) $(null)
 comma := ,
 
 check: build-all static-check build/cover.html FORCE
+	@printf "\e[1;32m>> All checks successful.\e[0m\n"
 
 static-check: FORCE
 	@if ! hash golint 2>/dev/null; then printf "\e[1;36m>> Installing golint...\e[0m\n"; GO111MODULE=off go get -u golang.org/x/lint/golint; fi
@@ -54,9 +59,11 @@ build/cover.html: build/cover.out
 	@printf "\e[1;36m>> go tool cover > build/cover.html\e[0m\n"
 	@go tool cover -html $< -o $@
 
-vendor: FORCE
+tidy-deps: FORCE
 	go mod tidy
-	go mod vendor
 	go mod verify
+
+clean: FORCE
+	git clean -dxf build
 
 .PHONY: FORCE
