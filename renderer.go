@@ -109,12 +109,16 @@ func (r *Renderer) Render(cfg Configuration) {
 	}
 
 	//add targets for `go test` incl. coverage report
-	r.addRule(`build/cover.out: FORCE`)
+	r.addRule(`build/cover.out: build FORCE`)
 	r.addRecipe(`@printf "\e[1;36m>> go test\e[0m\n"`)
 	r.addRecipe(`@env $(GO_TESTENV) go test $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`)
 	r.addRule(`build/cover.html: build/cover.out`)
 	r.addRecipe(`@printf "\e[1;36m>> go tool cover > build/cover.html\e[0m\n"`)
 	r.addRecipe(`@go tool cover -html $< -o $@`)
+
+	//ensure that build directory exists
+	r.addRule(`build:`)
+	r.addRecipe(`@mkdir $@`)
 
 	//add tidy-deps or vendor target
 	if cfg.Vendoring.Enabled {
