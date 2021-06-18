@@ -6,6 +6,21 @@ binaries:
 vendoring:
   enabled: true
 
+githubWorkflows:
+  global:
+    ignorePaths:
+      - "README.md"
+  ci:
+    enabled: true
+  license:
+    enabled: true
+    patterns:
+      - "*.go"
+      - "internal/"
+  spellCheck:
+    enabled: true
+    ignorePaths: [] # don't ignore README.md
+
 verbatim: |
   run: build/go-makefile-maker
     ./build/go-makefile-maker

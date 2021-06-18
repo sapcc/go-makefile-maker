@@ -13,7 +13,19 @@ You usually want something like `make && sudo make install PREFIX=/usr/local`.
 
 Put a `Makefile.maker.yaml` in your Git repository's root directory, then run `go-makefile-maker` to render the Makefile from it.
 Commit both the `Makefile.maker.yaml` and the Makefile, so that your users don't need to have `go-makefile-maker` installed.
-The `Makefile.maker.yaml` is a YAML file with the following sections.
+The `Makefile.maker.yaml` is a YAML file with the following sections:
+
+* [binaries](#binaries)
+* [coverageTest](#coveragetest)
+* [variables](#variables)
+* [vendoring](#vendoring)
+* [staticCheck](#staticcheck)
+* [verbatim](#verbatim)
+* [githubWorkflows](#githubworkflows)
+  * [githubWorkflows\.global](#githubworkflowsglobal)
+  * [githubWorkflows\.ci](#githubworkflowsci)
+  * [githubWorkflows\.license](#githubworkflowslicense)
+  * [githubWorkflows\.spellCheck](#githubworkflowsspellcheck)
 
 ### `binaries`
 
@@ -109,3 +121,82 @@ This field can be used to add your own definitions and rules to the Makefile.
 The text in this field is copied into the Makefile mostly verbatim, with one exception:
 Since YAML does not like tabs for indentation, we allow rule recipes to be indented with spaces.
 This indentation will be replaced with tabs before writing it into the actual Makefile.
+
+### `githubWorkflows`
+
+`go-makefile-maker` can also generate different [GitHub
+workflows](https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions)
+for your Go project. This is how a minimal and complete workflow configuration
+would look like:
+
+```yaml
+githubWorkflows:
+  global:
+    ignorePaths:
+      - "**.md" # all Markdown files
+  ci:
+    enabled: true
+    coveralls: true
+  license:
+    enabled: true
+    patterns: [ "**.go" ] # all Go files
+  spellCheck:
+    enabled: true
+    ignorePaths: [] # override global setting so that nothing is ignored
+```
+
+You can skip a workflow run for a specific commit by including `[ci skip]` in the commit message.
+
+#### `githubWorkflows.global`
+
+This section defines global settings that apply to all workflows. If the same
+setting is also defined for a specific workflow then that will override the
+global value.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `githubWorkflows.global.defaultBranch` | string | Value of `git symbolic-ref refs/remotes/origin/HEAD \| sed 's@^refs/remotes/origin/@@'` | Git branch on which `push` actions will trigger the workflows. Pull requests will automatically trigger all workflows. |
+| `githubWorkflows.global.ignorePaths` | list | *(optional)* | A list of filename patterns. Workflows will not trigger if a path name matches pattern in this list. [More info][ref-onpushpull] and [filter pattern cheat sheet][ref-pattern-cheat-sheet]. |
+
+[ref-onpushpull]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths
+[ref-pattern-cheat-sheet]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
+
+#### `githubWorkflows.ci`
+
+This workflow:
+
+* checks your code using `gofmt`, `golint`, and `go vet` (or `golangci-lint` if `staticCheck.golangciLint` is `true`)
+* ensures that your code compiles successfully
+* runs tests and generates test coverage report
+* uploads the test coverage report to [Coveralls](https://coveralls.io) (you will need to enable Coveralls for your repo).
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `githubWorkflows.ci.enabled` | `false` | Enables generation of this workflow. |
+| `githubWorkflows.ci.goVersion` | Go version in `go.mod` file | Specify the Go version to use for CI jobs (`lint`, `build`, `test`). |
+| `githubWorkflows.ci.runOn` | `ubuntu-latest` | The type of machine(s) to run the `build` and `test` job on ([more info][ref-runs-on]). Use this to ensure that your build compilation and tests are successful on multiple operating systems. |
+| `githubWorkflows.ci.coveralls` | `false` | Enables sending the test coverage report to Coveralls. |
+| `githubWorkflows.ci.ignorePaths` | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
+
+[ref-runs-on]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
+#### `githubWorkflows.license`
+
+This workflow ensures that all your source code files have a license header. It
+uses [`addlicense`](https://github.com/google/addlicense) for this.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `githubWorkflows.license.enabled` | boolean | `false` | Enables generation of this workflow. |
+| `githubWorkflows.license.patterns` | list | *(required)* | A list of filename patterns to check. Directory patterns are scanned recursively. |
+| `githubWorkflows.license.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
+
+#### `githubWorkflows.spellCheck`
+
+This workflow checks for spelling (American english) errors. It uses
+[`misspell`](https://github.com/client9/misspell) for this.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `githubWorkflows.spellCheck.enabled` | boolean | `false` | Enables generation of this workflow. |
+| `githubWorkflows.spellCheck.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |

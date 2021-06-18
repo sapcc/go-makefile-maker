@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
 	"gopkg.in/yaml.v2"
 )
 
@@ -42,6 +43,13 @@ func main() {
 	r := Renderer{out: file}
 	r.Render(cfg)
 	must(file.Close())
+
+	if cfg.GitHubWorkflows != nil {
+		cfg.GitHubWorkflows.Vendoring = cfg.Vendoring.Enabled
+		cfg.GitHubWorkflows.GolangciLint = cfg.StaticCheck.GolangciLint
+		err := ghworkflow.Render(cfg.GitHubWorkflows)
+		must(err)
+	}
 }
 
 func must(err error) {
