@@ -10,7 +10,7 @@ run: build/go-makefile-maker
 
 build-all: build/go-makefile-maker
 
-GO_BUILDFLAGS = 
+GO_BUILDFLAGS = -mod vendor
 GO_LDFLAGS = 
 GO_TESTENV = 
 
@@ -59,8 +59,9 @@ build/cover.html: build/cover.out
 	@printf "\e[1;36m>> go tool cover > build/cover.html\e[0m\n"
 	@go tool cover -html $< -o $@
 
-tidy-deps: FORCE
+vendor: FORCE
 	go mod tidy
+	go mod vendor
 	go mod verify
 
 clean: FORCE

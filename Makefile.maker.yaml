@@ -3,6 +3,9 @@ binaries:
     fromPackage: .
     installTo:   bin/
 
+vendoring:
+  enabled: true
+
 verbatim: |
   run: build/go-makefile-maker
     ./build/go-makefile-maker
