@@ -55,7 +55,6 @@ func baseJob(name string) job {
 	return job{
 		Name:   name,
 		RunsOn: defaultRunnerOS,
-		If:     skipIfCommitMsg,
 		Steps: []jobStep{{
 			Name: "Check out code",
 			Uses: "actions/checkout@v2"}},
