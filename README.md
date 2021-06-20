@@ -1,6 +1,14 @@
 # go-makefile-maker
 
-Makes a Makefile for your Go application that follows established Unix conventions for installing and packaging, and includes targets for vendoring, running tests and checking code quality.
+[![CI](https://github.com/sapcc/go-makefile-maker/actions/workflows/ci.yaml/badge.svg)](https://github.com/sapcc/go-makefile-maker/actions/workflows/ci.yaml)
+
+Generates a Makefile and GitHub workflows for your Go application:
+
+* Makefile follows established Unix conventions for installing and packaging,
+  and includes targets for vendoring, running tests and checking code quality.
+* GitHub Workflows use [GitHub Actions](https://github.com/features/actions) to
+  lint, build, and test your code. Additionally, they can also check your
+  codebase for spelling errors and missing license headers.
 
 ## Installation
 
@@ -11,8 +19,9 @@ You usually want something like `make && sudo make install PREFIX=/usr/local`.
 
 ## Usage
 
-Put a `Makefile.maker.yaml` in your Git repository's root directory, then run `go-makefile-maker` to render the Makefile from it.
+Put a `Makefile.maker.yaml` in your Git repository's root directory, then run `go-makefile-maker` to render the Makefile and GitHub workflows from it.
 Commit both the `Makefile.maker.yaml` and the Makefile, so that your users don't need to have `go-makefile-maker` installed.
+
 The `Makefile.maker.yaml` is a YAML file with the following sections:
 
 * [binaries](#binaries)
@@ -124,10 +133,7 @@ This indentation will be replaced with tabs before writing it into the actual Ma
 
 ### `githubWorkflows`
 
-`go-makefile-maker` can also generate different [GitHub
-workflows](https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions)
-for your Go project. This is how a minimal and complete workflow configuration
-would look like:
+This is how a minimal and complete workflow configuration would look like:
 
 ```yaml
 githubWorkflows:
@@ -144,8 +150,6 @@ githubWorkflows:
     enabled: true
     ignorePaths: [] # override global setting so that nothing is ignored
 ```
-
-You can skip a workflow run for a specific commit by including `[ci skip]` in the commit message.
 
 #### `githubWorkflows.global`
 
@@ -177,6 +181,9 @@ This workflow:
 | `githubWorkflows.ci.runOn` | `ubuntu-latest` | The type of machine(s) to run the `build` and `test` job on ([more info][ref-runs-on]). Use this to ensure that your build compilation and tests are successful on multiple operating systems. |
 | `githubWorkflows.ci.coveralls` | `false` | Enables sending the test coverage report to Coveralls. |
 | `githubWorkflows.ci.ignorePaths` | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
+
+You can disable this workflow for a specific commit by including `[ci skip]` in
+the commit message.
 
 [ref-runs-on]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
