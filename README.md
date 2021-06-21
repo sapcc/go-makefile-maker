@@ -176,11 +176,11 @@ This workflow:
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `githubWorkflows.ci.enabled` | `false` | Enables generation of this workflow. |
-| `githubWorkflows.ci.goVersion` | Go version in `go.mod` file | Specify the Go version to use for CI jobs (`lint`, `build`, `test`). |
-| `githubWorkflows.ci.runOn` | `ubuntu-latest` | The type of machine(s) to run the `build` and `test` job on ([more info][ref-runs-on]). Use this to ensure that your build compilation and tests are successful on multiple operating systems. |
-| `githubWorkflows.ci.coveralls` | `false` | Enables sending the test coverage report to Coveralls. |
-| `githubWorkflows.ci.ignorePaths` | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
+| `githubWorkflows.ci.enabled` | boolean | `false` | Enables generation of this workflow. |
+| `githubWorkflows.ci.goVersion` | string | Go version in `go.mod` file | Specify the Go version to use for CI jobs (`lint`, `build`, `test`). |
+| `githubWorkflows.ci.runOn` | list | `ubuntu-latest` | The type of machine(s) to run the `build` and `test` job on ([more info][ref-runs-on]). Use this to ensure that your build compilation and tests are successful on multiple operating systems. |
+| `githubWorkflows.ci.coveralls` | boolean | `false` | Enables sending the test coverage report to Coveralls. |
+| `githubWorkflows.ci.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
 
 You can disable this workflow for a specific commit by including `[ci skip]` in
 the commit message.
