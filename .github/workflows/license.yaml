@@ -29,5 +29,5 @@ jobs:
     - name: Check if source code files have license header
       run: |
         GO111MODULE=off go get -u github.com/google/addlicense
-        addlicense --check -- *.go internal/
+        find * \( -name vendor -type d -prune \) -o \( -name \*.go -exec addlicense --check -- {} + \)
 

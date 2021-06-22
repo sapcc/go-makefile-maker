@@ -76,9 +76,6 @@ func (c *Configuration) Validate() {
 	if !(c.CI.Enabled || c.License.Enabled || c.SpellCheck.Enabled) {
 		printErrAndExit("no GitHub workflow enabled. See README for workflow configuration")
 	}
-	if c.License.Enabled && c.License.Patterns == nil {
-		printErrAndExit("githubWorkflows.license.patterns not defined")
-	}
 
 	if c.Global.DefaultBranch == "" {
 		found := false

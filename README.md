@@ -145,7 +145,6 @@ githubWorkflows:
     coveralls: true
   license:
     enabled: true
-    patterns: [ "**.go" ] # all Go files
   spellCheck:
     enabled: true
     ignorePaths: [] # override global setting so that nothing is ignored
@@ -195,7 +194,7 @@ uses [`addlicense`](https://github.com/google/addlicense) for this.
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
 | `githubWorkflows.license.enabled` | boolean | `false` | Enables generation of this workflow. |
-| `githubWorkflows.license.patterns` | list | *(required)* | A list of filename patterns to check. Directory patterns are scanned recursively. |
+| `githubWorkflows.license.patterns` | list | All Go files excluding `vendor/` | A list of filename patterns to check. Directory patterns are scanned recursively. |
 | `githubWorkflows.license.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
 
 #### `githubWorkflows.spellCheck`

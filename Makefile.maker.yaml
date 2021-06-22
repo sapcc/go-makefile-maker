@@ -14,9 +14,6 @@ githubWorkflows:
     enabled: true
   license:
     enabled: true
-    patterns:
-      - "*.go"
-      - "internal/"
   spellCheck:
     enabled: true
     ignorePaths: [] # don't ignore README.md
