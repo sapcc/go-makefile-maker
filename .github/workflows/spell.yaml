@@ -21,7 +21,7 @@ jobs:
     - name: Check for spelling errors
       uses: reviewdog/action-misspell@v1
       with:
-        exclude: vendor/**
+        exclude: vendor/*
         fail_on_error: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
         locale: US
