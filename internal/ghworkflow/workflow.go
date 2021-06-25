@@ -17,7 +17,7 @@ package ghworkflow
 type workflow struct {
 	Name string                  `yaml:"name"`
 	On   map[string]eventTrigger `yaml:"on"`
-	// A map of <job_id> and their configuration(s).
+	// A map of <job_id> to their configuration(s).
 	Jobs map[string]job `yaml:"jobs"`
 }
 
@@ -59,6 +59,26 @@ type job struct {
 			OS []string `yaml:"os"`
 		} `yaml:"matrix"`
 	} `yaml:"strategy,omitempty"`
+
+	// A map of <service_id> to their configuration(s).
+	Services map[string]jobService `yaml:"services,omitempty"`
+}
+
+// jobService is used to host service containers for a job in a workflow. The
+// runner automatically creates a Docker network and manages the life cycle of
+// the service containers.
+type jobService struct {
+	// The Docker image to use as the service container to run the action. The
+	// value can be the Docker Hub image name or a registry name.
+	Image string `yaml:"image"`
+	// Sets a map of environment variables in the service container.
+	Env map[string]string `yaml:"env,omitempty"`
+	// Sets an array of ports to expose on the service container.
+	Ports []string `yaml:"ports,omitempty"`
+	// Additional Docker container resource options.
+	// For a list of options, see:
+	//   https://docs.docker.com/engine/reference/commandline/create/#options
+	Options string `yaml:"options,omitempty"`
 }
 
 func (j *job) addStep(s jobStep) {

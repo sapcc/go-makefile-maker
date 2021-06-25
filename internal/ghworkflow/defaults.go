@@ -27,9 +27,10 @@ var autogenHeader = strings.TrimSpace(`
 `)
 
 const (
-	workflowDir      = ".github/workflows"
-	defaultGoVersion = "1.16"
-	defaultRunnerOS  = "ubuntu-latest"
+	workflowDir            = ".github/workflows"
+	defaultGoVersion       = "1.16"
+	defaultPostgresVersion = "12"
+	defaultRunnerOS        = "ubuntu-latest"
 )
 
 // Use this in <job_id>.if.

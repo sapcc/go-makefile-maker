@@ -177,14 +177,18 @@ This workflow:
 | --- | --- | --- | --- |
 | `githubWorkflows.ci.enabled` | boolean | `false` | Enables generation of this workflow. |
 | `githubWorkflows.ci.goVersion` | string | Go version in `go.mod` file | Specify the Go version to use for CI jobs (`lint`, `build`, `test`). |
-| `githubWorkflows.ci.runOn` | list | `ubuntu-latest` | The type of machine(s) to run the `build` and `test` job on ([more info][ref-runs-on]). Use this to ensure that your build compilation and tests are successful on multiple operating systems. |
+| `githubWorkflows.ci.runOn` | list | `ubuntu-latest` | The type of machine(s) to run the `build` and `test` job on ([more info][ref-runs-on]). Use this to ensure that your build compilation and tests are successful on multiple operating systems. If `githubWorkflows.ci.postgres.enabled` is `true` then `runOn` must have a single Ubuntu based runner. |
 | `githubWorkflows.ci.coveralls` | boolean | `false` | Enables sending the test coverage report to Coveralls. |
+| `githubWorkflows.ci.postgres.enabled` | boolean | `false` | Adds PostgreSQL service container for the `test` job. You can connect to the PostgreSQL service at `localhost:54321` and `postgres` user with password: `postgres` ([More info][postgres-service-container]). |
+| `githubWorkflows.ci.postgres.version` | string | `12` | Docker Hub tag for [`postgres` image][docker-hub-postgres]. |
 | `githubWorkflows.ci.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
 
 You can disable this workflow for a specific commit by including `[ci skip]` in
 the commit message.
 
 [ref-runs-on]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+[postgres-service-container]: https://docs.github.com/en/actions/guides/creating-postgresql-service-containers#testing-the-postgresql-service-container
+[docker-hub-postgres]: https://hub.docker.com/_/postgres/
 
 #### `githubWorkflows.license`
 

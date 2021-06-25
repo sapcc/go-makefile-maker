@@ -17,6 +17,7 @@ package ghworkflow
 import (
 	"errors"
 	"io/ioutil"
+	"strings"
 
 	"golang.org/x/mod/modfile"
 )
@@ -98,6 +99,24 @@ func ciWorkflow(cfg *Configuration) error {
 	buildTestOpts.name = "Test"
 	testJob := buildOrTestBaseJob(buildTestOpts)
 	testJob.Needs = []string{"build"} // this is the <job_id> for the build job
+	if cfg.CI.Postgres.Enabled {
+		version := defaultPostgresVersion
+		if cfg.CI.Postgres.Version != "" {
+			version = cfg.CI.Postgres.Version
+		}
+		testJob.Services = map[string]jobService{"postgres": {
+			Image: "postgres:" + version,
+			Env:   map[string]string{"POSTGRES_PASSWORD": "postgres"},
+			Ports: []string{"54321:5432"},
+			Options: strings.Join([]string{
+				// Set health checks to wait until postgres has started
+				"--health-cmd pg_isready",
+				"--health-interval 10s",
+				"--health-timeout 5s",
+				"--health-retries 5",
+			}, " "),
+		}}
+	}
 	testJob.addStep(jobStep{
 		Name: "Run tests and generate coverage report",
 		Run:  stringsJoinAndTrimSpace([]string{makeOpts, "make", "build/cover.out"}),

@@ -48,6 +48,10 @@ type CIConfig struct {
 	GoVersion    string   `yaml:"goVersion"`
 	RunnerOSList []string `yaml:"runOn"`
 	Coveralls    bool     `yaml:"coveralls"`
+	Postgres     struct {
+		Enabled bool   `yaml:"enabled"`
+		Version string `yaml:"version"`
+	} `yaml:"postgres"`
 }
 
 // LicenseConfig appears in type Configuration.
@@ -75,6 +79,11 @@ type CommonConfig struct {
 func (c *Configuration) Validate() {
 	if !(c.CI.Enabled || c.License.Enabled || c.SpellCheck.Enabled) {
 		printErrAndExit("no GitHub workflow enabled. See README for workflow configuration")
+	}
+	if c.CI.Postgres.Enabled && len(c.CI.RunnerOSList) >= 1 {
+		if len(c.CI.RunnerOSList) > 1 || !strings.HasPrefix(c.CI.RunnerOSList[0], "ubuntu") {
+			printErrAndExit("githubWorkflows.ci.runOn must have a single Ubuntu based runner")
+		}
 	}
 
 	if c.Global.DefaultBranch == "" {
