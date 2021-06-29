@@ -132,6 +132,10 @@ func (r *Renderer) Render(cfg Configuration) {
 		r.addRecipe("go mod verify")
 	}
 
+	r.addRule(`license-headers: FORCE`)
+	r.addRecipe(`@if ! hash addlicense 2>/dev/null; then printf "\e[1;36m>> Installing addlicense...\e[0m\n"; GO111MODULE=off go get -u github.com/google/addlicense; fi`)
+	r.addRecipe(`find * \( -name vendor -type d -prune \) -o \( -name \*.go -exec addlicense -c "SAP SE" -- {} + \)`)
+
 	//add cleaning target
 	r.addRule("clean: FORCE")
 	r.addRecipe("git clean -dxf build")

@@ -201,6 +201,8 @@ uses [`addlicense`](https://github.com/google/addlicense) for this.
 | `githubWorkflows.license.patterns` | list | All Go files excluding `vendor/` | A list of filename patterns to check. Directory patterns are scanned recursively. |
 | `githubWorkflows.license.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
 
+You can add license headers to Go files by running `make license-headers`.
+
 #### `githubWorkflows.spellCheck`
 
 This workflow checks for spelling (American english) errors. It uses

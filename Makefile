@@ -67,6 +67,10 @@ vendor: FORCE
 	go mod vendor
 	go mod verify
 
+license-headers: FORCE
+	@if ! hash addlicense 2>/dev/null; then printf "\e[1;36m>> Installing addlicense...\e[0m\n"; GO111MODULE=off go get -u github.com/google/addlicense; fi
+	find * \( -name vendor -type d -prune \) -o \( -name \*.go -exec addlicense -c "SAP SE" -- {} + \)
+
 clean: FORCE
 	git clean -dxf build
 
