@@ -10,7 +10,7 @@ run: build/go-makefile-maker
 
 build-all: build/go-makefile-maker
 
-GO_BUILDFLAGS = 
+GO_BUILDFLAGS = -mod vendor
 GO_LDFLAGS = 
 GO_TESTENV = 
 
@@ -51,7 +51,7 @@ static-check: FORCE
 	@printf "\e[1;36m>> go vet\e[0m\n"
 	@go vet $(GO_BUILDFLAGS) $(GO_ALLPKGS)
 
-build/cover.out: FORCE
+build/cover.out: build FORCE
 	@printf "\e[1;36m>> go test\e[0m\n"
 	@env $(GO_TESTENV) go test $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)
 
@@ -59,8 +59,12 @@ build/cover.html: build/cover.out
 	@printf "\e[1;36m>> go tool cover > build/cover.html\e[0m\n"
 	@go tool cover -html $< -o $@
 
-tidy-deps: FORCE
+build:
+	@mkdir $@
+
+vendor: FORCE
 	go mod tidy
+	go mod vendor
 	go mod verify
 
 clean: FORCE

@@ -3,6 +3,21 @@ binaries:
     fromPackage: .
     installTo:   bin/
 
+vendoring:
+  enabled: true
+
+githubWorkflows:
+  global:
+    ignorePaths:
+      - "README.md"
+  ci:
+    enabled: true
+  license:
+    enabled: true
+  spellCheck:
+    enabled: true
+    ignorePaths: [] # don't ignore README.md
+
 verbatim: |
   run: build/go-makefile-maker
     ./build/go-makefile-maker

@@ -18,14 +18,17 @@
 
 package main
 
+import "github.com/sapcc/go-makefile-maker/internal/ghworkflow"
+
 //Configuration is the data structure that we read from the input file.
 type Configuration struct {
-	Verbatim       string                   `yaml:"verbatim"`
-	VariableValues map[string]string        `yaml:"variables"`
-	Binaries       []BinaryConfiguration    `yaml:"binaries"`
-	Coverage       CoverageConfiguration    `yaml:"coverageTest"`
-	Vendoring      VendoringConfiguration   `yaml:"vendoring"`
-	StaticCheck    StaticCheckConfiguration `yaml:"staticCheck"`
+	Verbatim        string                    `yaml:"verbatim"`
+	VariableValues  map[string]string         `yaml:"variables"`
+	Binaries        []BinaryConfiguration     `yaml:"binaries"`
+	Coverage        CoverageConfiguration     `yaml:"coverageTest"`
+	Vendoring       VendoringConfiguration    `yaml:"vendoring"`
+	StaticCheck     StaticCheckConfiguration  `yaml:"staticCheck"`
+	GitHubWorkflows *ghworkflow.Configuration `yaml:"githubWorkflows"`
 }
 
 //Variable returns the value of this variable if it's overridden in the config,
