@@ -205,7 +205,7 @@ You can add license headers to Go files by running `make license-headers`.
 
 #### `githubWorkflows.spellCheck`
 
-This workflow checks for spelling (American english) errors. It uses
+This workflow checks for spelling errors. It uses
 [`misspell`](https://github.com/client9/misspell) for this.
 
 | Field | Type | Default | Description |

@@ -29,7 +29,6 @@ func spellCheckWorkflow(cfg *Configuration) error {
 		Name: "Check for spelling errors",
 		Uses: "reviewdog/action-misspell@v1",
 		With: map[string]interface{}{
-			"locale":        "US",
 			"exclude":       "./vendor/*",
 			"reporter":      "github-check",
 			"fail_on_error": true,
