@@ -30,7 +30,7 @@ func spellCheckWorkflow(cfg *Configuration) error {
 		Uses: "reviewdog/action-misspell@v1",
 		With: map[string]interface{}{
 			"locale":        "US",
-			"exclude":       "vendor/*",
+			"exclude":       "./vendor/*",
 			"reporter":      "github-check",
 			"fail_on_error": true,
 			"github_token":  "${{ secrets.GITHUB_TOKEN }}",
