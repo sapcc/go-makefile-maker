@@ -33,9 +33,6 @@ const (
 	defaultRunnerOS        = "ubuntu-latest"
 )
 
-// Use this in <job_id>.if.
-const skipIfCommitMsg = `!contains(github.event.head_commit.message, '[ci skip]')`
-
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions
 

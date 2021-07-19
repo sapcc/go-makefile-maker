@@ -57,7 +57,6 @@ func ciWorkflow(cfg *Configuration) error {
 
 	// 01. Lint codebase.
 	lintJob := baseJobWithGo("Lint", goVersion)
-	lintJob.If = `!contains(github.event.head_commit.message, '[ci skip]')`
 	if cfg.GolangciLint {
 		// Don't need actions/cache here; golangci-lint has built-in caching.
 		lintJob.addStep(jobStep{

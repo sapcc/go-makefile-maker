@@ -150,6 +150,9 @@ githubWorkflows:
     ignorePaths: [] # override global setting so that nothing is ignored
 ```
 
+You can prevent the workflows from running by including `[ci skip]` in your commit message
+([more info](https://github.blog/changelog/2021-02-08-github-actions-skip-pull-request-and-push-workflows-with-skip-ci/)).
+
 #### `githubWorkflows.global`
 
 This section defines global settings that apply to all workflows. If the same
@@ -182,9 +185,6 @@ This workflow:
 | `githubWorkflows.ci.postgres.enabled` | boolean | `false` | Adds PostgreSQL service container for the `test` job. You can connect to the PostgreSQL service at `localhost:54321` and `postgres` user with password: `postgres` ([More info][postgres-service-container]). |
 | `githubWorkflows.ci.postgres.version` | string | `12` | Docker Hub tag for [`postgres` image][docker-hub-postgres]. |
 | `githubWorkflows.ci.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
-
-You can disable this workflow for a specific commit by including `[ci skip]` in
-the commit message.
 
 [ref-runs-on]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 [postgres-service-container]: https://docs.github.com/en/actions/guides/creating-postgresql-service-containers#testing-the-postgresql-service-container
