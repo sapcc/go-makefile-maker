@@ -211,4 +211,5 @@ This workflow checks for spelling errors. It uses
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
 | `githubWorkflows.spellCheck.enabled` | boolean | `false` | Enables generation of this workflow. |
+| `githubWorkflows.spellCheck.ignoreWords` | list | *(optional)* | A list of words to ignore from spell check. |
 | `githubWorkflows.spellCheck.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |

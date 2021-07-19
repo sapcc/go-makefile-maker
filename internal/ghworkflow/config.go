@@ -66,7 +66,8 @@ type LicenseConfig struct {
 type SpellCheckConfig struct {
 	CommonConfig `yaml:",inline"`
 
-	Enabled bool `yaml:"enabled"`
+	Enabled     bool     `yaml:"enabled"`
+	IgnoreWords []string `yaml:"ignoreWords"`
 }
 
 // CommonConfig holds common configuration options that are applicable for all

@@ -14,10 +14,22 @@
 
 package ghworkflow
 
+import "strings"
+
 func spellCheckWorkflow(cfg *Configuration) error {
 	ignorePaths := cfg.Global.IgnorePaths
 	if cfg.SpellCheck.IgnorePaths != nil {
 		ignorePaths = cfg.SpellCheck.IgnorePaths
+	}
+
+	with := map[string]interface{}{
+		"exclude":       "./vendor/*",
+		"reporter":      "github-check",
+		"fail_on_error": true,
+		"github_token":  "${{ secrets.GITHUB_TOKEN }}",
+	}
+	if len(cfg.SpellCheck.IgnoreWords) > 0 {
+		with["ignore"] = strings.Join(cfg.SpellCheck.IgnoreWords, ",")
 	}
 
 	w := &workflow{
@@ -28,12 +40,7 @@ func spellCheckWorkflow(cfg *Configuration) error {
 	j.Steps = append(j.Steps, jobStep{
 		Name: "Check for spelling errors",
 		Uses: "reviewdog/action-misspell@v1",
-		With: map[string]interface{}{
-			"exclude":       "./vendor/*",
-			"reporter":      "github-check",
-			"fail_on_error": true,
-			"github_token":  "${{ secrets.GITHUB_TOKEN }}",
-		},
+		With: with,
 	})
 	w.Jobs = map[string]job{"misspell": j}
 
