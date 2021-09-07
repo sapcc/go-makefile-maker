@@ -3,6 +3,9 @@
 # Edit Makefile.maker.yaml instead.                                            #
 ################################################################################
 
+MAKEFLAGS=--warn-undefined-variables
+SHELL := /bin/bash
+
 default: build-all
 
 run: build/go-makefile-maker

@@ -37,6 +37,9 @@ func (r *Renderer) Render(cfg Configuration) {
 	fmt.Fprintln(r.out, "# Edit Makefile.maker.yaml instead.                                            #")
 	fmt.Fprintln(r.out, "################################################################################")
 
+	r.addDefinition("MAKEFLAGS=--warn-undefined-variables")
+	r.addDefinition("SHELL := /bin/bash")
+
 	r.currentBlock = "definition"
 	r.addRule("default: build-all")
 
