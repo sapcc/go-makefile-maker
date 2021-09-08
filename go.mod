@@ -1,6 +1,6 @@
 module github.com/sapcc/go-makefile-maker
 
-go 1.15
+go 1.16
 
 require (
 	golang.org/x/mod v0.4.2
