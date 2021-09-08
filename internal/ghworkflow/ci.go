@@ -126,7 +126,7 @@ func ciWorkflow(cfg *Configuration) error {
 			"GIT_BRANCH":      "${{ github.head_ref }}",
 			"COVERALLS_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
 		}
-		getCmd := "GO111MODULE=off go get -u github.com/mattn/goveralls"
+		getCmd := "go install github.com/mattn/goveralls@latest"
 		cmd := "goveralls -service=github -coverprofile=build/cover.out"
 		if multipleOS {
 			cmd += ` -parallel -flagname="Unit-${{ matrix.os }}`

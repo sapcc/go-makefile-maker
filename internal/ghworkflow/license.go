@@ -36,7 +36,7 @@ func licenseWorkflow(cfg *Configuration) error {
 	j.Steps = append(j.Steps, jobStep{
 		Name: "Check if source code files have license header",
 		Run: makeMultilineYAMLString([]string{
-			"GO111MODULE=off go get -u github.com/google/addlicense",
+			"go install github.com/google/addlicense@latest",
 			cmd,
 		})},
 	)

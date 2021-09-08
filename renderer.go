@@ -102,7 +102,7 @@ func (r *Renderer) Render(cfg Configuration) {
 		r.addRecipe(`@printf "\e[1;36m>> golangci-lint\e[0m\n"`)
 		r.addRecipe(`@golangci-lint run`)
 	} else {
-		r.addRecipe(`@if ! hash golint 2>/dev/null; then printf "\e[1;36m>> Installing golint...\e[0m\n"; GO111MODULE=off go get -u golang.org/x/lint/golint; fi`)
+		r.addRecipe(`@if ! hash golint 2>/dev/null; then printf "\e[1;36m>> Installing golint...\e[0m\n"; go install golang.org/x/lint/golint@latest; fi`)
 		r.addRecipe(`@printf "\e[1;36m>> gofmt\e[0m\n"`)
 		r.addRecipe(`@if s="$$(gofmt -s -d $(GO_ALLFILES) 2>/dev/null)" && test -n "$$s"; then echo "$$s"; false; fi`)
 		r.addRecipe(`@printf "\e[1;36m>> golint\e[0m\n"`)
@@ -136,7 +136,7 @@ func (r *Renderer) Render(cfg Configuration) {
 	}
 
 	r.addRule(`license-headers: FORCE`)
-	r.addRecipe(`@if ! hash addlicense 2>/dev/null; then printf "\e[1;36m>> Installing addlicense...\e[0m\n"; GO111MODULE=off go get -u github.com/google/addlicense; fi`)
+	r.addRecipe(`@if ! hash addlicense 2>/dev/null; then printf "\e[1;36m>> Installing addlicense...\e[0m\n"; go install github.com/google/addlicense@latest; fi`)
 	r.addRecipe(`find * \( -name vendor -type d -prune \) -o \( -name \*.go -exec addlicense -c "SAP SE" -- {} + \)`)
 
 	//add cleaning target
