@@ -38,7 +38,11 @@ func (r *Renderer) Render(cfg Configuration) {
 	fmt.Fprintln(r.out, "################################################################################")
 
 	r.addDefinition("MAKEFLAGS=--warn-undefined-variables")
+	r.addDefinition("# /bin/sh is dash on Debian which does not support all features of ash/bash")
+	r.addDefinition("# to fix that we use /bin/bash only on Debian to not break Alpine")
+	r.addDefinition("ifneq ($(shell grep -c debian /etc/os-release),0)")
 	r.addDefinition("SHELL := /bin/bash")
+	r.addDefinition("endif")
 
 	r.currentBlock = "definition"
 	r.addRule("default: build-all")
