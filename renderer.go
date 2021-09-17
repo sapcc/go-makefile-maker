@@ -81,7 +81,7 @@ func (r *Renderer) Render(cfg Configuration) {
 		r.addDefinition(`GO_ALLFILES := $(addsuffix /*.go,$(patsubst $(shell go list .)%,.%,$(shell go list ./...)))`)
 	}
 	r.addDefinition(`# which packages to test with "go test"`)
-	r.addDefinition(`GO_TESTPKGS := $(shell go list -f '{{if .TestGoFiles}}{{.ImportPath}}{{end}}' ./...)`)
+	r.addDefinition(`GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./...)`)
 	r.addDefinition(`# which packages to measure coverage for`)
 	coverPkgGreps := ""
 	if cfg.Coverage.Only != "" {
