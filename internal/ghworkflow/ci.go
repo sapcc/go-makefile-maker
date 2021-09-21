@@ -72,7 +72,7 @@ func ciWorkflow(cfg *Configuration) error {
 			lintJob.addStep(cacheGoModules(true, lintJob.RunsOn))
 		}
 		lintJob.addStep(jobStep{
-			Name: "Run gofmt, golint, go vet",
+			Name: "Run gofmt, go vet, staticcheck",
 			Run:  stringsJoinAndTrimSpace([]string{makeOpts, "make", "static-check"}),
 		})
 	}
