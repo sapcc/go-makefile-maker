@@ -28,7 +28,7 @@ var autogenHeader = strings.TrimSpace(`
 
 const (
 	workflowDir            = ".github/workflows"
-	defaultGoVersion       = "1.16"
+	defaultGoVersion       = "1.17"
 	defaultPostgresVersion = "12"
 	defaultRunnerOS        = "ubuntu-latest"
 )
@@ -55,7 +55,8 @@ func baseJob(name string) job {
 		RunsOn: defaultRunnerOS,
 		Steps: []jobStep{{
 			Name: "Check out code",
-			Uses: "actions/checkout@v2"}},
+			Uses: "actions/checkout@v2",
+		}},
 	}
 }
 
