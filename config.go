@@ -18,7 +18,9 @@
 
 package main
 
-import "github.com/sapcc/go-makefile-maker/internal/ghworkflow"
+import (
+	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
+)
 
 //Configuration is the data structure that we read from the input file.
 type Configuration struct {
