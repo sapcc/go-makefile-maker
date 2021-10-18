@@ -39,8 +39,7 @@ func licenseWorkflow(cfg *Configuration) error {
 			"go install github.com/google/addlicense@latest",
 			cmd,
 		}),
-	},
-	)
+	})
 	w.Jobs = map[string]job{"addlicense": j}
 
 	return writeWorkflowToFile(w)
