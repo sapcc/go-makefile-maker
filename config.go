@@ -18,7 +18,9 @@
 
 package main
 
-import "github.com/sapcc/go-makefile-maker/internal/ghworkflow"
+import (
+	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
+)
 
 //Configuration is the data structure that we read from the input file.
 type Configuration struct {
@@ -33,12 +35,15 @@ type Configuration struct {
 
 //Variable returns the value of this variable if it's overridden in the config,
 //or the default value otherwise.
-func (c Configuration) Variable(name string, defaultValue string) string {
+func (c Configuration) Variable(name, defaultValue string) string {
 	value, exists := c.VariableValues[name]
 	if exists {
-		return value
+		return " " + value
 	}
-	return defaultValue
+	if defaultValue == "" {
+		return ""
+	}
+	return " " + defaultValue
 }
 
 //BinaryConfiguration appears in type Configuration.

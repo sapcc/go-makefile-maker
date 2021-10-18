@@ -35,6 +35,7 @@ func main() {
 	must(file.Close())
 
 	if len(cfg.Binaries) == 0 {
+		//lint:ignore ST1005 file is called like this
 		must(fmt.Errorf("Makefile.maker.yaml does not reference any binaries"))
 	}
 

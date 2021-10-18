@@ -61,9 +61,9 @@ func (r *Renderer) Render(cfg Configuration) {
 	if cfg.Vendoring.Enabled {
 		defaultBuildFlags = "-mod vendor"
 	}
-	r.addDefinition("GO_BUILDFLAGS = %s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
-	r.addDefinition("GO_LDFLAGS = %s", cfg.Variable("GO_LDFLAGS", ""))
-	r.addDefinition("GO_TESTENV = %s", cfg.Variable("GO_TESTENV", ""))
+	r.addDefinition("GO_BUILDFLAGS =%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
+	r.addDefinition("GO_LDFLAGS =%s", cfg.Variable("GO_LDFLAGS", ""))
+	r.addDefinition("GO_TESTENV =%s", cfg.Variable("GO_TESTENV", ""))
 
 	//add build targets for each binary
 	for _, bin := range cfg.Binaries {
@@ -85,10 +85,10 @@ func (r *Renderer) Render(cfg Configuration) {
 	r.addDefinition(`# which packages to measure coverage for`)
 	coverPkgGreps := ""
 	if cfg.Coverage.Only != "" {
-		coverPkgGreps += fmt.Sprintf(" | grep -E '%s'", cfg.Coverage.Only)
+		coverPkgGreps += fmt.Sprintf(" | command grep -E '%s'", cfg.Coverage.Only)
 	}
 	if cfg.Coverage.Except != "" {
-		coverPkgGreps += fmt.Sprintf(" | grep -Ev '%s'", cfg.Coverage.Except)
+		coverPkgGreps += fmt.Sprintf(" | command grep -Ev '%s'", cfg.Coverage.Except)
 	}
 	r.addDefinition(`GO_COVERPKGS := $(shell go list ./...%s)`, coverPkgGreps)
 	r.addDefinition(`# to get around weird Makefile syntax restrictions, we need variables containing a space and comma`)
