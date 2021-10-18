@@ -61,9 +61,9 @@ func (r *Renderer) Render(cfg Configuration) {
 	if cfg.Vendoring.Enabled {
 		defaultBuildFlags = "-mod vendor"
 	}
-	r.addDefinition("GO_BUILDFLAGS = %s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
-	r.addDefinition("GO_LDFLAGS = %s", cfg.Variable("GO_LDFLAGS", ""))
-	r.addDefinition("GO_TESTENV = %s", cfg.Variable("GO_TESTENV", ""))
+	r.addDefinition("GO_BUILDFLAGS =%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
+	r.addDefinition("GO_LDFLAGS =%s", cfg.Variable("GO_LDFLAGS", ""))
+	r.addDefinition("GO_TESTENV =%s", cfg.Variable("GO_TESTENV", ""))
 
 	//add build targets for each binary
 	for _, bin := range cfg.Binaries {

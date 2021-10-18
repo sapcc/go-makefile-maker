@@ -38,9 +38,12 @@ type Configuration struct {
 func (c Configuration) Variable(name string, defaultValue string) string {
 	value, exists := c.VariableValues[name]
 	if exists {
-		return value
+		return " " + value
 	}
-	return defaultValue
+	if defaultValue == "" {
+		return ""
+	}
+	return " " + defaultValue
 }
 
 //BinaryConfiguration appears in type Configuration.
