@@ -35,7 +35,7 @@ type Configuration struct {
 
 //Variable returns the value of this variable if it's overridden in the config,
 //or the default value otherwise.
-func (c Configuration) Variable(name string, defaultValue string) string {
+func (c Configuration) Variable(name, defaultValue string) string {
 	value, exists := c.VariableValues[name]
 	if exists {
 		return " " + value

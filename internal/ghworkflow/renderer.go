@@ -29,7 +29,7 @@ func Render(cfg *Configuration) error {
 	cfg.Validate()
 
 	// Render workflows
-	err := os.MkdirAll(workflowDir, 0755)
+	err := os.MkdirAll(workflowDir, 0o755)
 	if err == nil && cfg.CI.Enabled {
 		err = ciWorkflow(cfg)
 	}
