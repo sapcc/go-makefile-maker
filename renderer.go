@@ -85,10 +85,10 @@ func (r *Renderer) Render(cfg Configuration) {
 	r.addDefinition(`# which packages to measure coverage for`)
 	coverPkgGreps := ""
 	if cfg.Coverage.Only != "" {
-		coverPkgGreps += fmt.Sprintf(" | grep -E '%s'", cfg.Coverage.Only)
+		coverPkgGreps += fmt.Sprintf(" | command grep -E '%s'", cfg.Coverage.Only)
 	}
 	if cfg.Coverage.Except != "" {
-		coverPkgGreps += fmt.Sprintf(" | grep -Ev '%s'", cfg.Coverage.Except)
+		coverPkgGreps += fmt.Sprintf(" | command grep -Ev '%s'", cfg.Coverage.Except)
 	}
 	r.addDefinition(`GO_COVERPKGS := $(shell go list ./...%s)`, coverPkgGreps)
 	r.addDefinition(`# to get around weird Makefile syntax restrictions, we need variables containing a space and comma`)
