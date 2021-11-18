@@ -108,6 +108,7 @@ func (r *Renderer) Render(cfg Configuration) {
 	} else {
 		r.addRecipe(`@if ! hash staticcheck 2>/dev/null; then printf "\e[1;36m>> Installing staticcheck...\e[0m\n"; go install honnef.co/go/tools/cmd/staticcheck@latest; fi`)
 		r.addRecipe(`@if ! hash exportloopref 2>/dev/null; then printf "\e[1;36m>> Installing exportloopref...\e[0m\n"; go install github.com/kyoh86/exportloopref/cmd/exportloopref@latest; fi`)
+		r.addRecipe(`@if ! hash rowserrcheck 2>/dev/null; then printf "\e[1;36m>> Installing exportloopref...\e[0m\n"; go install github.com/jingyugao/rowserrcheck@latest; fi`)
 		r.addRecipe(`@if ! hash unconvert 2>/dev/null; then printf "\e[1;36m>> Installing unparam...\e[0m\n"; go install github.com/mdempsky/unconvert@latest; fi`)
 		r.addRecipe(`@if ! hash unparam 2>/dev/null; then printf "\e[1;36m>> Installing unparam...\e[0m\n"; go install mvdan.cc/unparam@latest; fi`)
 		r.addRecipe(`@printf "\e[1;36m>> gofmt\e[0m\n"`)
@@ -116,6 +117,8 @@ func (r *Renderer) Render(cfg Configuration) {
 		r.addRecipe(`@staticcheck -checks 'inherit,-ST1015' $(GO_ALLPKGS)`)
 		r.addRecipe(`@printf "\e[1;36m>> exportloopref\e[0m\n"`)
 		r.addRecipe(`@exportloopref $(GO_ALLPKGS)`)
+		r.addRecipe(`@printf "\e[1;36m>> rowserrcheck\e[0m\n"`)
+		r.addRecipe(`@rowserrcheck $(GO_ALLPKGS)`)
 		r.addRecipe(`@printf "\e[1;36m>> unconvert\e[0m\n"`)
 		r.addRecipe(`@unconvert $(GO_ALLPKGS)`)
 		r.addRecipe(`@printf "\e[1;36m>> unparam\e[0m\n"`)
