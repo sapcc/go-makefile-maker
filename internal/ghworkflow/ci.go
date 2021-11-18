@@ -15,30 +15,11 @@
 package ghworkflow
 
 import (
-	"errors"
-	"io/ioutil"
 	"strings"
-
-	"golang.org/x/mod/modfile"
 )
 
 func ciWorkflow(cfg *Configuration) error {
-	goVersion := cfg.CI.GoVersion
-	if goVersion == "" {
-		filename := "go.mod"
-		data, err := ioutil.ReadFile(filename)
-		if err != nil {
-			return err
-		}
-		f, err := modfile.Parse(filename, data, nil)
-		if err != nil {
-			return err
-		}
-		goVersion = f.Go.Version
-		if goVersion == "" {
-			return errors.New("could not find Go version from go.mod file, consider defining manually by setting githubWorkflows.ci.goVersion")
-		}
-	}
+	goVersion := cfg.Global.GoVersion
 	ignorePaths := cfg.Global.IgnorePaths
 	if cfg.CI.IgnorePaths != nil {
 		ignorePaths = cfg.CI.IgnorePaths

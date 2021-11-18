@@ -32,7 +32,7 @@ func licenseWorkflow(cfg *Configuration) error {
 		Name: "License",
 		On:   eventTriggers(cfg.Global.DefaultBranch, ignorePaths),
 	}
-	j := baseJobWithGo("Check", defaultGoVersion)
+	j := baseJobWithGo("Check", cfg.Global.GoVersion)
 	j.Steps = append(j.Steps, jobStep{
 		Name: "Check if source code files have license header",
 		Run: makeMultilineYAMLString([]string{

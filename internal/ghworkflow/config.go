@@ -16,9 +16,12 @@ package ghworkflow
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
+
+	"golang.org/x/mod/modfile"
 )
 
 // Configuration appears in type main.Configuration.
@@ -29,6 +32,7 @@ type Configuration struct {
 		CommonConfig `yaml:",inline"`
 
 		DefaultBranch string `yaml:"defaultBranch"`
+		GoVersion     string `yaml:"goVersion"`
 	} `yaml:"global"`
 
 	CI         CIConfig         `yaml:"ci"`
@@ -45,7 +49,6 @@ type CIConfig struct {
 	CommonConfig `yaml:",inline"`
 
 	Enabled      bool     `yaml:"enabled"`
-	GoVersion    string   `yaml:"goVersion"`
 	RunnerOSList []string `yaml:"runOn"`
 	Coveralls    bool     `yaml:"coveralls"`
 	Postgres     struct {
@@ -102,6 +105,22 @@ func (c *Configuration) Validate() {
 		}
 		if err != nil {
 			printErrAndExit(err.Error())
+		}
+	}
+
+	if c.Global.GoVersion == "" {
+		filename := "go.mod"
+		data, err := ioutil.ReadFile(filename)
+		if err != nil {
+			printErrAndExit(err.Error())
+		}
+		f, err := modfile.Parse(filename, data, nil)
+		if err != nil {
+			printErrAndExit(err.Error())
+		}
+		c.Global.GoVersion = f.Go.Version
+		if c.Global.GoVersion == "" {
+			printErrAndExit("could not find Go version from go.mod file, consider defining manually by setting githubWorkflows.global.goVersion")
 		}
 	}
 }

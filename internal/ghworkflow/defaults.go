@@ -28,7 +28,6 @@ var autogenHeader = strings.TrimSpace(`
 
 const (
 	workflowDir            = ".github/workflows"
-	defaultGoVersion       = "1.17"
 	defaultPostgresVersion = "12"
 	defaultRunnerOS        = "ubuntu-latest"
 )

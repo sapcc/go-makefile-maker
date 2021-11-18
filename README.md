@@ -162,6 +162,7 @@ global value.
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
 | `githubWorkflows.global.defaultBranch` | string | Value of `git symbolic-ref refs/remotes/origin/HEAD \| sed 's@^refs/remotes/origin/@@'` | Git branch on which `push` actions will trigger the workflows. Pull requests will automatically trigger all workflows. |
+| `githubWorkflows.global.goVersion` | string | Go version in `go.mod` file | Specify the Go version to use for jobs that require Go. |
 | `githubWorkflows.global.ignorePaths` | list | *(optional)* | A list of filename patterns. Workflows will not trigger if a path name matches pattern in this list. [More info][ref-onpushpull] and [filter pattern cheat sheet][ref-pattern-cheat-sheet]. |
 
 [ref-onpushpull]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths
@@ -179,7 +180,6 @@ This workflow:
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
 | `githubWorkflows.ci.enabled` | boolean | `false` | Enables generation of this workflow. |
-| `githubWorkflows.ci.goVersion` | string | Go version in `go.mod` file | Specify the Go version to use for CI jobs (`lint`, `build`, `test`). |
 | `githubWorkflows.ci.runOn` | list | `ubuntu-latest` | The type of machine(s) to run the `build` and `test` job on ([more info][ref-runs-on]). Use this to ensure that your build compilation and tests are successful on multiple operating systems. If `githubWorkflows.ci.postgres.enabled` is `true` then `runOn` must have a single Ubuntu based runner. |
 | `githubWorkflows.ci.coveralls` | boolean | `false` | Enables sending the test coverage report to Coveralls. |
 | `githubWorkflows.ci.postgres.enabled` | boolean | `false` | Adds PostgreSQL service container for the `test` job. You can connect to the PostgreSQL service at `localhost:54321` and `postgres` user with password: `postgres` ([More info][postgres-service-container]). |
