@@ -52,6 +52,7 @@ check: build-all static-check build/cover.html FORCE
 static-check: FORCE
 	@if ! hash staticcheck 2>/dev/null; then printf "\e[1;36m>> Installing staticcheck...\e[0m\n"; go install honnef.co/go/tools/cmd/staticcheck@latest; fi
 	@if ! hash exportloopref 2>/dev/null; then printf "\e[1;36m>> Installing exportloopref...\e[0m\n"; go install github.com/kyoh86/exportloopref/cmd/exportloopref@latest; fi
+	@if ! hash unconvert 2>/dev/null; then printf "\e[1;36m>> Installing unparam...\e[0m\n"; go install github.com/mdempsky/unconvert@latest; fi
 	@if ! hash unparam 2>/dev/null; then printf "\e[1;36m>> Installing unparam...\e[0m\n"; go install mvdan.cc/unparam@latest; fi
 	@printf "\e[1;36m>> gofmt\e[0m\n"
 	@if s="$$(gofmt -s -d $(GO_ALLFILES) 2>/dev/null)" && test -n "$$s"; then echo "$$s"; false; fi
@@ -59,6 +60,8 @@ static-check: FORCE
 	@staticcheck -checks 'inherit,-ST1015' $(GO_ALLPKGS)
 	@printf "\e[1;36m>> exportloopref\e[0m\n"
 	@exportloopref $(GO_ALLPKGS)
+	@printf "\e[1;36m>> unconvert\e[0m\n"
+	@unconvert $(GO_ALLPKGS)
 	@printf "\e[1;36m>> unparam\e[0m\n"
 	@unparam $(GO_ALLPKGS)
 	@printf "\e[1;36m>> go vet\e[0m\n"
