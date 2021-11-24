@@ -16,7 +16,6 @@ package ghworkflow
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -110,7 +109,7 @@ func (c *Configuration) Validate() {
 
 	if c.Global.GoVersion == "" {
 		filename := "go.mod"
-		data, err := ioutil.ReadFile(filename)
+		data, err := os.ReadFile(filename)
 		if err != nil {
 			printErrAndExit(err.Error())
 		}
