@@ -145,6 +145,10 @@ func (r *Renderer) Render(cfg Configuration) {
 		r.addRecipe("go mod tidy")
 		r.addRecipe("go mod vendor")
 		r.addRecipe("go mod verify")
+		r.addRule("vendor-compat: FORCE")
+		r.addRecipe(`go mod tidy -compat=$(shell awk '$$1 == "go" { print $$2 }' < go.mod)`)
+		r.addRecipe("go mod vendor")
+		r.addRecipe("go mod verify")
 	} else {
 		r.addRule("tidy-deps: FORCE")
 		r.addRecipe("go mod tidy")
