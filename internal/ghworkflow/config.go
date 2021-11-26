@@ -19,8 +19,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"golang.org/x/mod/modfile"
 )
 
 // Configuration appears in type main.Configuration.
@@ -38,9 +36,8 @@ type Configuration struct {
 	License    LicenseConfig    `yaml:"license"`
 	SpellCheck SpellCheckConfig `yaml:"spellCheck"`
 
-	// These settings are inherited from main.Configuration.
-	Vendoring    bool
-	GolangciLint bool
+	// This setting is inherited from main.Configuration.
+	Vendoring bool
 }
 
 // CIConfig appears in type Configuration.
@@ -104,22 +101,6 @@ func (c *Configuration) Validate() {
 		}
 		if err != nil {
 			printErrAndExit(err.Error())
-		}
-	}
-
-	if c.Global.GoVersion == "" {
-		filename := "go.mod"
-		data, err := os.ReadFile(filename)
-		if err != nil {
-			printErrAndExit(err.Error())
-		}
-		f, err := modfile.Parse(filename, data, nil)
-		if err != nil {
-			printErrAndExit(err.Error())
-		}
-		c.Global.GoVersion = f.Go.Version
-		if c.Global.GoVersion == "" {
-			printErrAndExit("could not find Go version from go.mod file, consider defining manually by setting githubWorkflows.global.goVersion")
 		}
 	}
 }

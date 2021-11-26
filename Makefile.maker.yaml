@@ -6,6 +6,9 @@ binaries:
 vendoring:
   enabled: true
 
+golangciLint:
+  createConfig: true
+
 githubWorkflows:
   global:
     ignorePaths:

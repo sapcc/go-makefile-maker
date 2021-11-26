@@ -109,14 +109,18 @@ Set `vendoring.enabled` to `true` if you vendor all dependencies in your reposit
    mod vendor`.
    This target can be used to get the vendor directory up-to-date before commits.
 
-### `staticCheck`
+### `golangciLint`
 
 ```yaml
-staticCheck:
-  golangciLint: false
+golangciLint:
+  createConfig: false
 ```
 
-Set `staticCheck.golangciLint` to `true`, if you want to use [`golangci-lint`](https://golangci-lint.run/) for static checking instead of `gofmt`, `go vet` and `staticcheck`.
+[`golangci-lint`](https://golangci-lint.run) is used to lint your code.
+
+Additionally, we provide a config file for `golangci-lint` that enables additional linters
+apart from the default ones. To create the config file and keep it up-to-date with new
+changes, you need to set `golangciLint.createConfig` to `true`.
 
 ### `verbatim`
 
@@ -172,7 +176,7 @@ global value.
 
 This workflow:
 
-* checks your code using `gofmt`, `go vet` and `staticcheck` (or `golangci-lint` if `staticCheck.golangciLint` is `true`)
+* checks your code using `golangci-lint`
 * ensures that your code compiles successfully
 * runs tests and generates test coverage report
 * uploads the test coverage report to [Coveralls](https://coveralls.io) (you will need to enable Coveralls for your repo).
