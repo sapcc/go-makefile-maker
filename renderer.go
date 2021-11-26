@@ -57,9 +57,9 @@ func (r *Renderer) Render(cfg Configuration) {
 	r.addRule("default: build-all")
 
 	if cfg.Verbatim != "" {
-		r.out.Write([]byte("\n"))
+		fmt.Fprintln(r.out)
 		r.currentBlock = "none"
-		r.out.Write([]byte(FixRuleIndentation(cfg.Verbatim)))
+		fmt.Fprintf(r.out, "%s", FixRuleIndentation(cfg.Verbatim))
 		r.currentBlock = "rule"
 	}
 
@@ -190,7 +190,7 @@ func (r *Renderer) addDefinition(def string, args ...interface{}) {
 	}
 	if r.currentBlock != "definition" {
 		//put an empty line between rules
-		r.out.Write([]byte("\n"))
+		fmt.Fprintln(r.out)
 	}
 	fmt.Fprintf(r.out, "%s\n", def)
 	r.currentBlock = "definition"
@@ -202,7 +202,7 @@ func (r *Renderer) addRule(rule string, args ...interface{}) {
 	}
 	if r.currentBlock != "none" {
 		//put an empty line between rules
-		r.out.Write([]byte("\n"))
+		fmt.Fprintln(r.out)
 	}
 	fmt.Fprintf(r.out, "%s\n", rule)
 	r.currentBlock = "rule"

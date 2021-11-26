@@ -23,9 +23,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
 	"golang.org/x/mod/modfile"
 	"gopkg.in/yaml.v2"
+
+	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
 )
 
 func main() {
@@ -37,8 +38,7 @@ func main() {
 	must(file.Close())
 
 	if len(cfg.Binaries) == 0 {
-		//lint:ignore ST1005 file is called like this
-		must(fmt.Errorf("Makefile.maker.yaml does not reference any binaries"))
+		must(fmt.Errorf("the Makefile.maker.yaml file does not reference any binaries"))
 	}
 
 	file, err = os.Create("Makefile")
