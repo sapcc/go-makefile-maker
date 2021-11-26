@@ -26,9 +26,9 @@ build/go-makefile-maker: FORCE
 
 DESTDIR =
 ifeq ($(shell uname -s),Darwin)
-  PREFIX = /usr/local
+	PREFIX = /usr/local
 else
-  PREFIX = /usr
+	PREFIX = /usr
 endif
 
 install: FORCE build/go-makefile-maker
@@ -83,6 +83,11 @@ build:
 
 vendor: FORCE
 	go mod tidy
+	go mod vendor
+	go mod verify
+
+vendor-compat: FORCE
+	go mod tidy -compat=$(shell awk '$$1 == "go" { print $$2 }' < go.mod)
 	go mod vendor
 	go mod verify
 
