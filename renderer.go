@@ -38,10 +38,14 @@ func (r *Renderer) Render(cfg Configuration) {
 	fmt.Fprintln(r.out, "################################################################################")
 
 	r.addDefinition("MAKEFLAGS=--warn-undefined-variables")
+	fmt.Fprintln(r.out)
+
 	r.addDefinition("# /bin/sh is dash on Debian which does not support all features of ash/bash")
 	r.addDefinition("# to fix that we use /bin/bash only on Debian to not break Alpine")
-	r.addDefinition("ifneq ($(shell grep -c debian /etc/os-release),0)")
-	r.addDefinition("SHELL := /bin/bash")
+	r.addDefinition("ifneq (,$(wildcard /etc/os-release)) # check file existence")
+	r.addDefinition("\tifneq ($(shell grep -c debian /etc/os-release),0)")
+	r.addDefinition("\t\tSHELL := /bin/bash")
+	r.addDefinition("\tendif")
 	r.addDefinition("endif")
 
 	r.currentBlock = "definition"
@@ -187,9 +191,9 @@ func (r *Renderer) addInstallTargetIfDesired(cfg Configuration) {
 
 	r.addDefinition("DESTDIR =")
 	r.addDefinition("ifeq ($(shell uname -s),Darwin)")
-	r.addDefinition("  PREFIX = /usr/local")
+	r.addDefinition("\tPREFIX = /usr/local")
 	r.addDefinition("else")
-	r.addDefinition("  PREFIX = /usr")
+	r.addDefinition("\tPREFIX = /usr")
 	r.addDefinition("endif")
 	r.addRule("install: FORCE%s", installTargetDeps)
 
