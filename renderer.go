@@ -103,18 +103,24 @@ func (r *Renderer) Render(cfg Configuration) {
 	r.addRule("check: build-all static-check build/cover.html FORCE")
 	r.addRecipe(`@printf "\e[1;32m>> All checks successful.\e[0m\n"`)
 
-	//add target for static code checks
-	r.addRule("static-check: FORCE")
+	//add target for installing dependencies for `make check`
+	r.addRule("prepare-static-check: FORCE")
 	if cfg.StaticCheck.GolangciLint {
 		r.addRecipe(`@command -v golangci-lint >/dev/null 2>&1 || { echo >&2 "Error: golangci-lint is not installed. See: https://golangci-lint.run/usage/install/"; exit 1; }`)
-		r.addRecipe(`@printf "\e[1;36m>> golangci-lint\e[0m\n"`)
-		r.addRecipe(`@golangci-lint run`)
 	} else {
 		r.addRecipe(`@if ! hash staticcheck 2>/dev/null; then printf "\e[1;36m>> Installing staticcheck...\e[0m\n"; go install honnef.co/go/tools/cmd/staticcheck@latest; fi`)
 		r.addRecipe(`@if ! hash exportloopref 2>/dev/null; then printf "\e[1;36m>> Installing exportloopref...\e[0m\n"; go install github.com/kyoh86/exportloopref/cmd/exportloopref@latest; fi`)
 		r.addRecipe(`@if ! hash rowserrcheck 2>/dev/null; then printf "\e[1;36m>> Installing rowserrcheck...\e[0m\n"; go install github.com/jingyugao/rowserrcheck@latest; fi`)
 		r.addRecipe(`@if ! hash unconvert 2>/dev/null; then printf "\e[1;36m>> Installing unconvert...\e[0m\n"; go install github.com/mdempsky/unconvert@latest; fi`)
 		r.addRecipe(`@if ! hash unparam 2>/dev/null; then printf "\e[1;36m>> Installing unparam...\e[0m\n"; go install mvdan.cc/unparam@latest; fi`)
+	}
+
+	//add target for static code checks
+	r.addRule("static-check: prepare-static-check FORCE")
+	if cfg.StaticCheck.GolangciLint {
+		r.addRecipe(`@printf "\e[1;36m>> golangci-lint\e[0m\n"`)
+		r.addRecipe(`@golangci-lint run`)
+	} else {
 		r.addRecipe(`@printf "\e[1;36m>> gofmt\e[0m\n"`)
 		r.addRecipe(`@if s="$$(gofmt -s -d $(GO_ALLFILES) 2>/dev/null)" && test -n "$$s"; then echo "$$s"; false; fi`)
 		r.addRecipe(`@printf "\e[1;36m>> staticcheck\e[0m\n"`)
