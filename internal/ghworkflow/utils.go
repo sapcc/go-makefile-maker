@@ -32,11 +32,6 @@ func makeMultilineYAMLString(in []string) string {
 	return out
 }
 
-// stringsJoinAndTrimSpace uses a single space as separator.
-func stringsJoinAndTrimSpace(in []string) string {
-	return strings.TrimSpace(strings.Join(in, " "))
-}
-
 // quotedString is used to force single quotes around a string during Marshal.
 type quotedString string
 

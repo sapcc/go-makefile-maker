@@ -31,11 +31,6 @@ func ciWorkflow(cfg *Configuration) error {
 		Jobs: make(map[string]job),
 	}
 
-	makeOpts := ""
-	if cfg.Vendoring {
-		makeOpts = "GO_BUILDFLAGS='-mod vendor'"
-	}
-
 	// 01. Lint codebase.
 	lintJob := baseJobWithGo("Lint", goVersion)
 	// Don't need actions/cache here; golangci-lint has built-in caching.
@@ -61,7 +56,7 @@ func ciWorkflow(cfg *Configuration) error {
 	buildJob.Needs = []string{"lint"} // this is the <job_id> for the lint job
 	buildJob.addStep(jobStep{
 		Name: "Make build",
-		Run:  strings.Join([]string{makeOpts, "make", "build-all"}, " "),
+		Run:  "make build-all",
 	})
 	w.Jobs["build"] = buildJob
 
@@ -89,7 +84,7 @@ func ciWorkflow(cfg *Configuration) error {
 	}
 	testJob.addStep(jobStep{
 		Name: "Run tests and generate coverage report",
-		Run:  stringsJoinAndTrimSpace([]string{makeOpts, "make", "build/cover.out"}),
+		Run:  "make build/cover.out",
 	})
 	if cfg.CI.Coveralls {
 		multipleOS := len(cfg.CI.RunnerOSList) > 1
