@@ -20,7 +20,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 // Render renders GitHub workflows.
@@ -39,6 +39,9 @@ func Render(cfg *Configuration) error {
 	if err == nil && cfg.SpellCheck.Enabled {
 		err = spellCheckWorkflow(cfg)
 	}
+	if err == nil && cfg.CodeQL.Enabled {
+		err = codeQLWorkflow(cfg)
+	}
 	if err != nil {
 		return err
 	}
@@ -47,11 +50,6 @@ func Render(cfg *Configuration) error {
 }
 
 func writeWorkflowToFile(w *workflow) error {
-	b, err := yaml.Marshal(w)
-	if err != nil {
-		return err
-	}
-
 	path := filepath.Join(workflowDir, strings.ToLower(w.Name)+".yaml")
 	f, err := os.Create(path)
 	if err != nil {
@@ -59,9 +57,16 @@ func writeWorkflowToFile(w *workflow) error {
 	}
 	defer f.Close()
 
+	encoder := yaml.NewEncoder(f)
+	defer encoder.Close()
+	encoder.SetIndent(2)
+
 	fmt.Fprintln(f, autogenHeader)
 	fmt.Fprintln(f, "")
-	fmt.Fprintln(f, string(b))
+	err = encoder.Encode(w)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

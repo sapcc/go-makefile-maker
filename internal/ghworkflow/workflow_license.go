@@ -30,7 +30,7 @@ func licenseWorkflow(cfg *Configuration) error {
 
 	w := &workflow{
 		Name: "License",
-		On:   eventTriggers(cfg.Global.DefaultBranch, ignorePaths),
+		On:   pushAndPRTriggers(cfg.Global.DefaultBranch, ignorePaths),
 	}
 	j := baseJobWithGo("Check", cfg.Global.GoVersion)
 	j.Steps = append(j.Steps, jobStep{

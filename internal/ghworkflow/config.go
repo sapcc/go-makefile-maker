@@ -35,6 +35,7 @@ type Configuration struct {
 	CI         CIConfig         `yaml:"ci"`
 	License    LicenseConfig    `yaml:"license"`
 	SpellCheck SpellCheckConfig `yaml:"spellCheck"`
+	CodeQL     CodeQLConfig     `yaml:"codeQL"`
 
 	// This setting is inherited from main.Configuration.
 	Vendoring bool
@@ -67,6 +68,13 @@ type SpellCheckConfig struct {
 
 	Enabled     bool     `yaml:"enabled"`
 	IgnoreWords []string `yaml:"ignoreWords"`
+}
+
+// CodeQLConfig appears in type Configuration.
+type CodeQLConfig struct {
+	CommonConfig `yaml:",inline"`
+
+	Enabled bool `yaml:"enabled"`
 }
 
 // CommonConfig holds common configuration options that are applicable for all

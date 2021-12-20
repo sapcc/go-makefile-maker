@@ -34,7 +34,7 @@ func spellCheckWorkflow(cfg *Configuration) error {
 
 	w := &workflow{
 		Name: "Spell",
-		On:   eventTriggers(cfg.Global.DefaultBranch, ignorePaths),
+		On:   pushAndPRTriggers(cfg.Global.DefaultBranch, ignorePaths),
 	}
 	j := baseJob("Check")
 	j.Steps = append(j.Steps, jobStep{

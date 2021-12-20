@@ -142,11 +142,12 @@ This is how a minimal and complete workflow configuration would look like:
 ```yaml
 githubWorkflows:
   global:
-    ignorePaths:
-      - "**.md" # all Markdown files
+    ignorePaths: [ "**.md" ] # all Markdown files
   ci:
     enabled: true
     coveralls: true
+  codeQL:
+    enabled: true
   license:
     enabled: true
   spellCheck:
@@ -193,6 +194,19 @@ This workflow:
 [ref-runs-on]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 [postgres-service-container]: https://docs.github.com/en/actions/guides/creating-postgresql-service-containers#testing-the-postgresql-service-container
 [docker-hub-postgres]: https://hub.docker.com/_/postgres/
+
+#### `githubWorkflows.codeQL`
+
+This workflow will run CodeQL, GitHub's industry-leading semantic code analysis engine, on your source code to find security vulnerabilities.
+
+In addition to running the workflow when new code is pushed, this workflow will also run
+on a weekly basis (every Monday at 07:00 AM) so that existing code can be checked for new
+vulnerabilities.
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `githubWorkflows.codeQL.enabled` | boolean | `false` | Enables generation of this workflow. |
+| `githubWorkflows.codeQL.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
 
 #### `githubWorkflows.license`
 

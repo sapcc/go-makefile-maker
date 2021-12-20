@@ -14,7 +14,11 @@
 
 package ghworkflow
 
-import "strings"
+import (
+	"strings"
+
+	"gopkg.in/yaml.v3"
+)
 
 // makeMultilineYAMLString adds \n to the strings and joins them.
 // yaml.Marshal() takes care of the rest.
@@ -31,4 +35,16 @@ func makeMultilineYAMLString(in []string) string {
 // stringsJoinAndTrimSpace uses a single space as separator.
 func stringsJoinAndTrimSpace(in []string) string {
 	return strings.TrimSpace(strings.Join(in, " "))
+}
+
+// quotedString is used to force single quotes around a string during Marshal.
+type quotedString string
+
+// MarshalYAML implements the yaml.Marshaler interface.
+func (qs quotedString) MarshalYAML() (interface{}, error) {
+	return yaml.Node{
+		Kind:  yaml.ScalarNode,
+		Style: yaml.SingleQuotedStyle,
+		Value: string(qs),
+	}, nil
 }

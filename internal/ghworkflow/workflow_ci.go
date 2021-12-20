@@ -27,7 +27,7 @@ func ciWorkflow(cfg *Configuration) error {
 
 	w := &workflow{
 		Name: "CI",
-		On:   eventTriggers(cfg.Global.DefaultBranch, ignorePaths),
+		On:   pushAndPRTriggers(cfg.Global.DefaultBranch, ignorePaths),
 		Jobs: make(map[string]job),
 	}
 
@@ -61,7 +61,7 @@ func ciWorkflow(cfg *Configuration) error {
 	buildJob.Needs = []string{"lint"} // this is the <job_id> for the lint job
 	buildJob.addStep(jobStep{
 		Name: "Make build",
-		Run:  stringsJoinAndTrimSpace([]string{makeOpts, "make", "build-all"}),
+		Run:  strings.Join([]string{makeOpts, "make", "build-all"}, " "),
 	})
 	w.Jobs["build"] = buildJob
 

@@ -24,7 +24,7 @@ import (
 	"os"
 
 	"golang.org/x/mod/modfile"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
 )
