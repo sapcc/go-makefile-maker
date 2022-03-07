@@ -54,7 +54,7 @@ func baseJob(name string) job {
 		RunsOn: defaultRunnerOS,
 		Steps: []jobStep{{
 			Name: "Check out code",
-			Uses: "actions/checkout@v2",
+			Uses: "actions/checkout@v3",
 		}},
 	}
 }
