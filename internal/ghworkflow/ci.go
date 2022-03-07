@@ -38,25 +38,15 @@ func ciWorkflow(cfg *Configuration) error {
 
 	// 01. Lint codebase.
 	lintJob := baseJobWithGo("Lint", goVersion)
-	if cfg.GolangciLint {
-		// Don't need actions/cache here; golangci-lint has built-in caching.
-		lintJob.addStep(jobStep{
-			Name: "Run golangci-lint",
-			Uses: "golangci/golangci-lint-action@v2",
-			With: map[string]interface{}{
-				"version":              "latest",
-				"skip-go-installation": true,
-			},
-		})
-	} else {
-		if !cfg.Vendoring {
-			lintJob.addStep(cacheGoModules(true, lintJob.RunsOn))
-		}
-		lintJob.addStep(jobStep{
-			Name: "Run gofmt, go vet, staticcheck",
-			Run:  stringsJoinAndTrimSpace([]string{makeOpts, "make", "static-check"}),
-		})
-	}
+	// Don't need actions/cache here; golangci-lint has built-in caching.
+	lintJob.addStep(jobStep{
+		Name: "Run golangci-lint",
+		Uses: "golangci/golangci-lint-action@v2",
+		With: map[string]interface{}{
+			"version":              "latest",
+			"skip-go-installation": true,
+		},
+	})
 	w.Jobs["lint"] = lintJob
 
 	buildTestOpts := buildTestJobOpts{

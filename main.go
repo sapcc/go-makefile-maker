@@ -19,11 +19,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
-	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
+	"golang.org/x/mod/modfile"
 	"gopkg.in/yaml.v2"
+
+	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
 )
 
 func main() {
@@ -35,8 +38,7 @@ func main() {
 	must(file.Close())
 
 	if len(cfg.Binaries) == 0 {
-		//lint:ignore ST1005 file is called like this
-		must(fmt.Errorf("Makefile.maker.yaml does not reference any binaries"))
+		must(fmt.Errorf("the Makefile.maker.yaml file does not reference any binaries"))
 	}
 
 	file, err = os.Create("Makefile")
@@ -45,9 +47,26 @@ func main() {
 	r.Render(cfg)
 	must(file.Close())
 
+	// Get module path and Go version from go.mod file.
+	modFilename := "go.mod"
+	modFileBytes, err := os.ReadFile(modFilename)
+	must(err)
+	modFile, err := modfile.Parse(modFilename, modFileBytes, nil)
+	must(err)
+	if modFile.Go.Version == "" {
+		must(errors.New("could not find Go version from go.mod file, consider defining manually by setting githubWorkflows.global.goVersion"))
+	}
+	if modFile.Module.Mod.Path == "" {
+		must(errors.New("could not find module path from go.mod file"))
+	}
+
+	must(renderGolangciLintConfig(cfg.GolangciLint, cfg.Vendoring.Enabled, modFile.Module.Mod.Path))
+
 	if cfg.GitHubWorkflows != nil {
+		if cfg.GitHubWorkflows.Global.GoVersion == "" {
+			cfg.GitHubWorkflows.Global.GoVersion = modFile.Go.Version
+		}
 		cfg.GitHubWorkflows.Vendoring = cfg.Vendoring.Enabled
-		cfg.GitHubWorkflows.GolangciLint = cfg.StaticCheck.GolangciLint
 		err := ghworkflow.Render(cfg.GitHubWorkflows)
 		must(err)
 	}

@@ -29,7 +29,7 @@ type Configuration struct {
 	Binaries        []BinaryConfiguration     `yaml:"binaries"`
 	Coverage        CoverageConfiguration     `yaml:"coverageTest"`
 	Vendoring       VendoringConfiguration    `yaml:"vendoring"`
-	StaticCheck     StaticCheckConfiguration  `yaml:"staticCheck"`
+	GolangciLint    GolangciLintConfiguration `yaml:"golangciLint"`
 	GitHubWorkflows *ghworkflow.Configuration `yaml:"githubWorkflows"`
 }
 
@@ -64,7 +64,7 @@ type VendoringConfiguration struct {
 	Enabled bool `yaml:"enabled"`
 }
 
-//StaticCheckConfiguration appears in type Configuration.
-type StaticCheckConfiguration struct {
-	GolangciLint bool `yaml:"golangciLint"`
+//GolangciLintConfiguration appears in type Configuration.
+type GolangciLintConfiguration struct {
+	CreateConfig bool `yaml:"createConfig"`
 }
