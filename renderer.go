@@ -104,7 +104,7 @@ func (r *Renderer) Render(cfg Configuration) {
 
 	//add target for installing dependencies for `make check`
 	r.addRule("prepare-static-check: FORCE")
-	r.addRecipe(`@if ! hash golangci-lint 2>/dev/null; then printf "\e[1;36m>> Installing golangci-lint...\e[0m\n"; curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin; fi`)
+	r.addRecipe(`@if ! hash golangci-lint 2>/dev/null; then printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n"; go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi`)
 
 	//add target for static code checks
 	r.addRule("static-check: prepare-static-check FORCE")
