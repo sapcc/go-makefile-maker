@@ -49,7 +49,7 @@ check: build-all static-check build/cover.html FORCE
 	@printf "\e[1;32m>> All checks successful.\e[0m\n"
 
 prepare-static-check: FORCE
-	@if ! hash golangci-lint 2>/dev/null; then printf "\e[1;36m>> Installing golangci-lint...\e[0m\n"; curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin; fi
+	@if ! hash golangci-lint 2>/dev/null; then printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n"; go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi
 
 static-check: prepare-static-check FORCE
 	@printf "\e[1;36m>> golangci-lint\e[0m\n"
