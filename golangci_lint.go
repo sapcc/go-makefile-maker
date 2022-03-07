@@ -44,6 +44,10 @@ linters-settings:
 		check-blank: true
 		# Report about not checking of errors in type assertions.
 		check-type-assertions: true
+	forbidigo:
+		forbid:
+			# ioutil package has been deprecated: https://github.com/golang/go/issues/42026
+			- ^ioutil\..*$
 	goimports:
 		# Put local imports after 3rd-party packages.
 		local-prefixes: {{ .ModulePath }}
@@ -63,6 +67,7 @@ linters:
 		- dupl
 		- errcheck
 		- exportloopref
+		- forbidigo
 		- gofmt
 		- goimports
 		- gosimple
