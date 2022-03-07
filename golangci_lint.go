@@ -35,55 +35,50 @@ issues:
 	max-issues-per-linter: 0
 	max-same-issues: 0
 
+linters-settings:
+	dupl:
+		# Tokens count to trigger issue, 150 by default.
+		threshold: 100
+	errcheck:
+		# Report about assignment of errors to blank identifier.
+		check-blank: true
+		# Report about not checking of errors in type assertions.
+		check-type-assertions: true
+	goimports:
+		# Put local imports after 3rd-party packages.
+		local-prefixes: {{ .ModulePath }}
+	govet:
+		# Report about shadowed variables.
+		check-shadowing: true
+	whitespace:
+		# Enforce newlines (or comments) after multi-line function signatures.
+		multi-func: true
+
 linters:
 	# We use 'disable-all' and enable linters explicitly so that a newer version
 	# does not introduce new linters unexpectedly.
 	disable-all: true
 	enable:
-	- deadcode
-	- dupl
-	- errcheck
-	- exportloopref
-	- gofmt
-	- goimports
-	- gosimple
-	- govet
-	- ineffassign
-	- misspell
-	- rowserrcheck
-	- staticcheck
-	- structcheck
-	- stylecheck
-	- typecheck
-	- unconvert
-	- unparam
-	- unused
-	- varcheck
-	- whitespace
-
-linters-settings:
-	dupl:
-		# Tokens count to trigger issue, 150 by default.
-		threshold: 100
-
-	errcheck:
-		# Report about assignment of errors to blank identifier.
-		check-blank: true
-
-		# Report about not checking of errors in type assertions.
-		check-type-assertions: true
-
-	goimports:
-		# Put local imports after 3rd-party packages.
-		local-prefixes: {{ .ModulePath }}
-
-	govet:
-		# Report about shadowed variables.
-		check-shadowing: true
-
-	whitespace:
-		# Enforce newlines (or comments) after multi-line function signatures.
-		multi-func: true
+		- deadcode
+		- dupl
+		- errcheck
+		- exportloopref
+		- gofmt
+		- goimports
+		- gosimple
+		- govet
+		- ineffassign
+		- misspell
+		- rowserrcheck
+		- staticcheck
+		- structcheck
+		- stylecheck
+		- typecheck
+		- unconvert
+		- unparam
+		- unused
+		- varcheck
+		- whitespace
 `, "\t", "  "))))
 
 type configTmplData struct {
