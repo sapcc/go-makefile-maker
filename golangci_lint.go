@@ -58,6 +58,13 @@ linters-settings:
 	govet:
 		# Report about shadowed variables.
 		check-shadowing: true
+	{{- if .MisspellIgnoreWords }}
+	misspell:
+		ignore-words:
+			{{- range .MisspellIgnoreWords }}
+			- {{ . }}
+			{{- end }}
+	{{- end }}
 	whitespace:
 		# Enforce newlines (or comments) after multi-line function signatures.
 		multi-func: true
@@ -91,11 +98,12 @@ linters:
 `, "\t", "  "))))
 
 type configTmplData struct {
-	ModulePath      string
-	ModDownloadMode string
+	ModulePath          string
+	ModDownloadMode     string
+	MisspellIgnoreWords []string
 }
 
-func renderGolangciLintConfig(cfg GolangciLintConfiguration, vendoring bool, modulePath string) error {
+func renderGolangciLintConfig(cfg GolangciLintConfiguration, vendoring bool, modulePath string, misspellIgnoreWords []string) error {
 	if !cfg.CreateConfig {
 		return nil
 	}
@@ -111,8 +119,9 @@ func renderGolangciLintConfig(cfg GolangciLintConfiguration, vendoring bool, mod
 		mode = "vendor"
 	}
 	err = configTmpl.Execute(f, configTmplData{
-		ModulePath:      modulePath,
-		ModDownloadMode: mode,
+		ModulePath:          modulePath,
+		ModDownloadMode:     mode,
+		MisspellIgnoreWords: misspellIgnoreWords,
 	})
 	if err != nil {
 		return err

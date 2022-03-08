@@ -60,7 +60,11 @@ func main() {
 		must(errors.New("could not find module path from go.mod file"))
 	}
 
-	must(renderGolangciLintConfig(cfg.GolangciLint, cfg.Vendoring.Enabled, modFile.Module.Mod.Path))
+	var misspellIgnoreWords []string
+	if cfg.GitHubWorkflows != nil {
+		misspellIgnoreWords = cfg.GitHubWorkflows.SpellCheck.IgnoreWords
+	}
+	must(renderGolangciLintConfig(cfg.GolangciLint, cfg.Vendoring.Enabled, modFile.Module.Mod.Path, misspellIgnoreWords))
 
 	if cfg.GitHubWorkflows != nil {
 		if cfg.GitHubWorkflows.Global.GoVersion == "" {
