@@ -28,7 +28,7 @@ The `Makefile.maker.yaml` is a YAML file with the following sections:
 * [coverageTest](#coveragetest)
 * [variables](#variables)
 * [vendoring](#vendoring)
-* [staticCheck](#staticcheck)
+* [golangciLint](#golangcilint)
 * [verbatim](#verbatim)
 * [githubWorkflows](#githubworkflows)
   * [githubWorkflows\.global](#githubworkflowsglobal)
@@ -121,6 +121,11 @@ golangciLint:
 Additionally, we provide a config file for `golangci-lint` that enables additional linters
 apart from the default ones. To create the config file and keep it up-to-date with new
 changes, you need to set `golangciLint.createConfig` to `true`.
+
+If you have enabled the spell check workflow (`githubWorkflows.spellCheck`) and have
+defined a list of words to be ignored in the `githubWorkflows.spellCheck.ignoreWords`
+field then these words will also be added to the `golangci-lint` config so that `misspell`
+linter doesn't complain when you run `golangci-lint` locally.
 
 ### `verbatim`
 
@@ -215,5 +220,5 @@ This workflow checks for spelling errors. It uses
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
 | `githubWorkflows.spellCheck.enabled` | boolean | `false` | Enables generation of this workflow. |
-| `githubWorkflows.spellCheck.ignoreWords` | list | *(optional)* | A list of words to ignore from spell check. |
+| `githubWorkflows.spellCheck.ignoreWords` | list | *(optional)* | A list of words to ignore from spell check.<br>If `golangciLint.createConfig` is set to `true` then these words will also be added to `misspell` linter's `ignore-words` field in the `golangci-lint` config. |
 | `githubWorkflows.spellCheck.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
