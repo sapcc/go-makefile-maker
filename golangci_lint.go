@@ -19,6 +19,8 @@ import (
 	"os"
 	"strings"
 	"text/template"
+
+	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
 var configTmpl = template.Must(template.New("golangci").Parse(strings.TrimSpace(strings.ReplaceAll(`
@@ -103,7 +105,7 @@ type configTmplData struct {
 	MisspellIgnoreWords []string
 }
 
-func renderGolangciLintConfig(cfg GolangciLintConfiguration, vendoring bool, modulePath string, misspellIgnoreWords []string) error {
+func renderGolangciLintConfig(cfg core.GolangciLintConfiguration, vendoring bool, modulePath string, misspellIgnoreWords []string) error {
 	if !cfg.CreateConfig {
 		return nil
 	}

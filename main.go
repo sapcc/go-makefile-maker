@@ -26,6 +26,7 @@ import (
 	"golang.org/x/mod/modfile"
 	"gopkg.in/yaml.v3"
 
+	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
 )
 
@@ -33,7 +34,7 @@ func main() {
 	file, err := os.Open("Makefile.maker.yaml")
 	must(err)
 
-	var cfg Configuration
+	var cfg core.Configuration
 	must(yaml.NewDecoder(file).Decode(&cfg))
 	must(file.Close())
 

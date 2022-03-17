@@ -16,7 +16,7 @@
 *
 ******************************************************************************/
 
-package main
+package core
 
 import (
 	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"

@@ -23,6 +23,8 @@ import (
 	"io"
 	"path/filepath"
 	"strings"
+
+	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
 var autogenHeader = strings.TrimSpace(`
@@ -39,7 +41,7 @@ type Renderer struct {
 }
 
 //Render renders the Makefile (except for the part in `cfg.Verbatim`).
-func (r *Renderer) Render(cfg Configuration) {
+func (r *Renderer) Render(cfg core.Configuration) {
 	fmt.Fprintln(r.out, autogenHeader)
 
 	r.addDefinition("MAKEFLAGS=--warn-undefined-variables")
@@ -150,7 +152,7 @@ func (r *Renderer) Render(cfg Configuration) {
 	r.addRule(".PHONY: FORCE")
 }
 
-func (r *Renderer) addBuildAllTarget(cfg Configuration) {
+func (r *Renderer) addBuildAllTarget(cfg core.Configuration) {
 	rule := "build-all:"
 	for _, bin := range cfg.Binaries {
 		rule += fmt.Sprintf(" build/%s", bin.Name)
@@ -158,7 +160,7 @@ func (r *Renderer) addBuildAllTarget(cfg Configuration) {
 	r.addRule(rule)
 }
 
-func (r *Renderer) addInstallTargetIfDesired(cfg Configuration) {
+func (r *Renderer) addInstallTargetIfDesired(cfg core.Configuration) {
 	installTargetDeps := ""
 	for _, bin := range cfg.Binaries {
 		if bin.InstallTo != "" {
