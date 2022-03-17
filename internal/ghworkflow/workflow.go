@@ -15,8 +15,8 @@
 package ghworkflow
 
 type workflow struct {
-	Name string                  `yaml:"name"`
-	On   map[string]eventTrigger `yaml:"on"`
+	Name string       `yaml:"name"`
+	On   eventTrigger `yaml:"on"`
 	// A map of <job_id> to their configuration(s).
 	Jobs map[string]job `yaml:"jobs"`
 }
@@ -25,6 +25,18 @@ type workflow struct {
 // workflow.
 // Ref: https://docs.github.com/en/actions/reference/events-that-trigger-workflows
 type eventTrigger struct {
+	Push        pushAndPRTriggerOpts `yaml:"push,omitempty"`
+	PullRequest pushAndPRTriggerOpts `yaml:"pull_request,omitempty"`
+	Schedule    []cronExpr           `yaml:"schedule,omitempty"`
+}
+
+type cronExpr struct {
+	// We use quotedString type here because '*' is a special character in YAML so we have
+	// to quote the string.
+	Cron quotedString `yaml:"cron"`
+}
+
+type pushAndPRTriggerOpts struct {
 	Branches    []string `yaml:"branches"`
 	PathsIgnore []string `yaml:"paths-ignore,omitempty"`
 }

@@ -16,31 +16,33 @@ package ghworkflow
 
 import "strings"
 
-func licenseWorkflow(cfg *Configuration) error {
+func spellCheckWorkflow(cfg *Configuration) error {
 	ignorePaths := cfg.Global.IgnorePaths
-	if cfg.License.IgnorePaths != nil {
-		ignorePaths = cfg.License.IgnorePaths
+	if cfg.SpellCheck.IgnorePaths != nil {
+		ignorePaths = cfg.SpellCheck.IgnorePaths
 	}
 
-	cmd := "addlicense --check -- " + strings.Join(cfg.License.Patterns, " ")
-	if len(cfg.License.Patterns) == 0 {
-		// Check all .go files excluding the vendor directory.
-		cmd = `find * \( -name vendor -type d -prune \) -o \( -name \*.go -exec addlicense --check -- {} + \)`
+	with := map[string]interface{}{
+		"exclude":       "./vendor/*",
+		"reporter":      "github-check",
+		"fail_on_error": true,
+		"github_token":  "${{ secrets.GITHUB_TOKEN }}",
+	}
+	if len(cfg.SpellCheck.IgnoreWords) > 0 {
+		with["ignore"] = strings.Join(cfg.SpellCheck.IgnoreWords, ",")
 	}
 
 	w := &workflow{
-		Name: "License",
-		On:   eventTriggers(cfg.Global.DefaultBranch, ignorePaths),
+		Name: "Spell",
+		On:   pushAndPRTriggers(cfg.Global.DefaultBranch, ignorePaths),
 	}
-	j := baseJobWithGo("Check", cfg.Global.GoVersion)
+	j := baseJob("Check")
 	j.Steps = append(j.Steps, jobStep{
-		Name: "Check if source code files have license header",
-		Run: makeMultilineYAMLString([]string{
-			"go install github.com/google/addlicense@latest",
-			cmd,
-		}),
+		Name: "Check for spelling errors",
+		Uses: "reviewdog/action-misspell@v1",
+		With: with,
 	})
-	w.Jobs = map[string]job{"addlicense": j}
+	w.Jobs = map[string]job{"misspell": j}
 
 	return writeWorkflowToFile(w)
 }

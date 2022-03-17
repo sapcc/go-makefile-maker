@@ -35,13 +35,13 @@ const (
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions
 
-func eventTriggers(defaultBranch string, ignorePaths []string) map[string]eventTrigger {
-	return map[string]eventTrigger{
-		"push": {
+func pushAndPRTriggers(defaultBranch string, ignorePaths []string) eventTrigger {
+	return eventTrigger{
+		Push: pushAndPRTriggerOpts{
 			Branches:    []string{defaultBranch},
 			PathsIgnore: ignorePaths,
 		},
-		"pull_request": {
+		PullRequest: pushAndPRTriggerOpts{
 			Branches:    []string{"*"},
 			PathsIgnore: ignorePaths,
 		},
@@ -54,7 +54,7 @@ func baseJob(name string) job {
 		RunsOn: defaultRunnerOS,
 		Steps: []jobStep{{
 			Name: "Check out code",
-			Uses: "actions/checkout@v2",
+			Uses: "actions/checkout@v3",
 		}},
 	}
 }

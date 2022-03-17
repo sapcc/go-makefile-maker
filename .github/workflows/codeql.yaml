@@ -3,25 +3,31 @@
 # Edit Makefile.maker.yaml instead.                                            #
 ################################################################################
 
-name: Spell
+name: CodeQL
 "on":
   push:
     branches:
       - main
+    paths-ignore:
+      - README.md
   pull_request:
     branches:
-      - '*'
+      - main
+    paths-ignore:
+      - README.md
+  schedule:
+    - cron: '00 07 * * 1'
 jobs:
-  misspell:
-    name: Check
+  analyze:
+    name: Analyze
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v3
-      - name: Check for spelling errors
-        uses: reviewdog/action-misspell@v1
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
         with:
-          exclude: ./vendor/*
-          fail_on_error: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-check
+          languages: go
+          queries: security-and-quality
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
