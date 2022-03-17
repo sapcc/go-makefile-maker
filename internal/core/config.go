@@ -153,6 +153,11 @@ type commonWorkflowConfigOpts struct {
 // Helper functions
 
 func (c *Configuration) Validate() error {
+	// Validate BinaryConfiguration.
+	if len(c.Binaries) == 0 {
+		return errors.New("the Makefile.maker.yaml file does not reference any binaries")
+	}
+
 	// Validate GithubWorkflowConfiguration.
 	ghwCfg := c.GitHubWorkflow
 	if ghwCfg != nil {

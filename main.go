@@ -29,6 +29,7 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
 	"github.com/sapcc/go-makefile-maker/internal/golangcilint"
+	"github.com/sapcc/go-makefile-maker/internal/makefile"
 )
 
 func main() {
@@ -38,15 +39,14 @@ func main() {
 	var cfg core.Configuration
 	must(yaml.NewDecoder(file).Decode(&cfg))
 	must(file.Close())
+	must(cfg.Validate())
 
-	if len(cfg.Binaries) == 0 {
-		must(fmt.Errorf("the Makefile.maker.yaml file does not reference any binaries"))
-	}
-
+	// Render Makefile.
 	file, err = os.Create("Makefile")
 	must(err)
-	r := Renderer{out: file}
-	r.Render(cfg)
+	r, err := makefile.New(file)
+	must(err)
+	r.Render(&cfg)
 	must(file.Close())
 
 	// Read go.mod file for module path and Go version.
