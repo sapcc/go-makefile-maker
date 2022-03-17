@@ -28,6 +28,7 @@ import (
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
+	"github.com/sapcc/go-makefile-maker/internal/golangcilint"
 )
 
 func main() {
@@ -48,32 +49,30 @@ func main() {
 	r.Render(cfg)
 	must(file.Close())
 
-	// Get module path and Go version from go.mod file.
+	// Read go.mod file for module path and Go version.
 	modFilename := "go.mod"
 	modFileBytes, err := os.ReadFile(modFilename)
 	must(err)
 	modFile, err := modfile.Parse(modFilename, modFileBytes, nil)
 	must(err)
-	if modFile.Go.Version == "" {
-		must(errors.New("could not find Go version from go.mod file, consider defining manually by setting githubWorkflows.global.goVersion"))
-	}
-	if modFile.Module.Mod.Path == "" {
-		must(errors.New("could not find module path from go.mod file"))
+
+	// Render golangci-lint config file.
+	if cfg.GolangciLint.CreateConfig {
+		if modFile.Module.Mod.Path == "" {
+			must(errors.New("could not find module path from go.mod file, make sure it is defined"))
+		}
+		must(golangcilint.RenderConfig(cfg.GolangciLint, cfg.Vendoring.Enabled, modFile.Module.Mod.Path, cfg.SpellCheck.IgnoreWords))
 	}
 
-	var misspellIgnoreWords []string
-	if cfg.GitHubWorkflow != nil {
-		misspellIgnoreWords = cfg.GitHubWorkflow.SpellCheck.IgnoreWords
-	}
-	must(renderGolangciLintConfig(cfg.GolangciLint, cfg.Vendoring.Enabled, modFile.Module.Mod.Path, misspellIgnoreWords))
-
+	// Render GitHub workflows.
 	if cfg.GitHubWorkflow != nil {
 		if cfg.GitHubWorkflow.Global.GoVersion == "" {
+			if modFile.Go.Version == "" {
+				must(errors.New("could not find Go version from go.mod file, consider defining manually by setting 'githubWorkflow.global.goVersion' in config"))
+			}
 			cfg.GitHubWorkflow.Global.GoVersion = modFile.Go.Version
 		}
-		cfg.GitHubWorkflow.Vendoring = cfg.Vendoring.Enabled
-		err := ghworkflow.Render(cfg.GitHubWorkflow)
-		must(err)
+		must(ghworkflow.Render(&cfg))
 	}
 }
 
