@@ -13,7 +13,9 @@
 
 package ghworkflow
 
-func codeQLWorkflow(cfg *Configuration) error {
+import "github.com/sapcc/go-makefile-maker/internal/core"
+
+func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 	ignorePaths := cfg.Global.IgnorePaths
 	if cfg.CodeQL.IgnorePaths != nil {
 		ignorePaths = cfg.CodeQL.IgnorePaths

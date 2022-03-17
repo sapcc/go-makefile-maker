@@ -62,17 +62,17 @@ func main() {
 	}
 
 	var misspellIgnoreWords []string
-	if cfg.GitHubWorkflows != nil {
-		misspellIgnoreWords = cfg.GitHubWorkflows.SpellCheck.IgnoreWords
+	if cfg.GitHubWorkflow != nil {
+		misspellIgnoreWords = cfg.GitHubWorkflow.SpellCheck.IgnoreWords
 	}
 	must(renderGolangciLintConfig(cfg.GolangciLint, cfg.Vendoring.Enabled, modFile.Module.Mod.Path, misspellIgnoreWords))
 
-	if cfg.GitHubWorkflows != nil {
-		if cfg.GitHubWorkflows.Global.GoVersion == "" {
-			cfg.GitHubWorkflows.Global.GoVersion = modFile.Go.Version
+	if cfg.GitHubWorkflow != nil {
+		if cfg.GitHubWorkflow.Global.GoVersion == "" {
+			cfg.GitHubWorkflow.Global.GoVersion = modFile.Go.Version
 		}
-		cfg.GitHubWorkflows.Vendoring = cfg.Vendoring.Enabled
-		err := ghworkflow.Render(cfg.GitHubWorkflows)
+		cfg.GitHubWorkflow.Vendoring = cfg.Vendoring.Enabled
+		err := ghworkflow.Render(cfg.GitHubWorkflow)
 		must(err)
 	}
 }

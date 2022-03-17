@@ -14,9 +14,13 @@
 
 package ghworkflow
 
-import "strings"
+import (
+	"strings"
 
-func licenseWorkflow(cfg *Configuration) error {
+	"github.com/sapcc/go-makefile-maker/internal/core"
+)
+
+func licenseWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 	ignorePaths := cfg.Global.IgnorePaths
 	if cfg.License.IgnorePaths != nil {
 		ignorePaths = cfg.License.IgnorePaths

@@ -16,9 +16,11 @@ package ghworkflow
 
 import (
 	"strings"
+
+	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func ciWorkflow(cfg *Configuration) error {
+func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring bool) error {
 	goVersion := cfg.Global.GoVersion
 	ignorePaths := cfg.Global.IgnorePaths
 	if cfg.CI.IgnorePaths != nil {
@@ -46,7 +48,7 @@ func ciWorkflow(cfg *Configuration) error {
 
 	buildTestOpts := buildTestJobOpts{
 		goVersion:    goVersion,
-		vendoring:    cfg.Vendoring,
+		vendoring:    vendoring,
 		runnerOSList: cfg.CI.RunnerOSList,
 	}
 
