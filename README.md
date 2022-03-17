@@ -7,43 +7,52 @@ Generates a Makefile and GitHub workflows for your Go application:
 * Makefile follows established Unix conventions for installing and packaging,
   and includes targets for vendoring, running tests and checking code quality.
 * GitHub Workflows use [GitHub Actions](https://github.com/features/actions) to
-  lint, build, and test your code. Additionally, they can also check your
-  codebase for spelling errors and missing license headers.
+  lint, build, and test your code. Additionally, you can enable workflows for checking your codebase for security issue ([CodeQL] code scanning), spelling errors, and missing license headers.
 
 ## Installation
 
-The easiest way is `go get github.com/sapcc/go-makefile-maker`.
+The easiest way to get `go-makefile-maker` is: `go install github.com/sapcc/go-makefile-maker@latest`.
 
-We also support the usual Makefile invocations: `make`, `make check` and `make install`. The latter understands the conventional environment variables for choosing install locations, `DESTDIR` and `PREFIX`.
+We also support the usual Makefile invocations: `make`, `make check`, and `make install`. The latter understands the conventional environment variables for choosing install locations: `DESTDIR` and `PREFIX`.
+
 You usually want something like `make && sudo make install PREFIX=/usr/local`.
 
 ## Usage
 
-Put a `Makefile.maker.yaml` in your Git repository's root directory, then run `go-makefile-maker` to render the Makefile and GitHub workflows from it.
-Commit both the `Makefile.maker.yaml` and the Makefile, so that your users don't need to have `go-makefile-maker` installed.
+Put a `Makefile.maker.yaml` file in your Git repository's root directory, then run `go-makefile-maker` to render the Makefile and GitHub workflows from it.
 
-The `Makefile.maker.yaml` is a YAML file with the following sections:
+In addition to the `Makefile`, you should also commit the `Makefile.maker.yaml` file so that your users don't need to have `go-makefile-maker` installed.
+
+## Configuration
+
+`go-makefile-maker` requires a config file (`Makefile.maker.yaml`) in the [YAML format][yaml].
+
+Take a look at `go-makefile-maker`'s [own config file](./Makefile.maker.yaml) for an example of what a bare minimum config could like.
+
+The config file has the following sections:
 
 * [binaries](#binaries)
 * [coverageTest](#coveragetest)
 * [variables](#variables)
 * [vendoring](#vendoring)
 * [golangciLint](#golangcilint)
+* [spellCheck](#spellcheck)
 * [verbatim](#verbatim)
-* [githubWorkflows](#githubworkflows)
-  * [githubWorkflows\.global](#githubworkflowsglobal)
-  * [githubWorkflows\.ci](#githubworkflowsci)
-  * [githubWorkflows\.license](#githubworkflowslicense)
-  * [githubWorkflows\.spellCheck](#githubworkflowsspellcheck)
+* [githubWorkflow](#githubworkflow)
+  * [githubWorkflow\.global](#githubworkflowglobal)
+  * [githubWorkflow\.ci](#githubworkflowci)
+  * [githubWorkflow\.codeQL](#githubworkflowcodeql)
+  * [githubWorkflow\.license](#githubworkflowlicense)
+  * [githubWorkflow\.spellCheck](#githubworkflowspellcheck)
 
 ### `binaries`
 
 ```yaml
 binaries:
-  - name:        example
+  - name: example
     fromPackage: ./cmd/example
-    installTo:   bin/
-  - name:        test-helper
+    installTo: bin/
+  - name: test-helper
     fromPackage: ./cmd/test-helper
 ```
 
@@ -116,16 +125,24 @@ golangciLint:
   createConfig: false
 ```
 
-[`golangci-lint`](https://golangci-lint.run) is used to lint your code.
+The `make check` and `make static-check` targets use [`golangci-lint`](https://golangci-lint.run) to lint your code.
 
-Additionally, we provide a config file for `golangci-lint` that enables additional linters
-apart from the default ones. To create the config file and keep it up-to-date with new
-changes, you need to set `golangciLint.createConfig` to `true`.
+If `golangciLint.createConfig` is set to `true` then `go-makefile-maker` will create (and update) a config file (`.golangci.yaml`) for `golangci-lint`. This config file enables extra linters in addition to the default ones and configures various settings that can improve code quality.
 
-If you have enabled the spell check workflow (`githubWorkflows.spellCheck`) and have
-defined a list of words to be ignored in the `githubWorkflows.spellCheck.ignoreWords`
-field then these words will also be added to the `golangci-lint` config so that `misspell`
-linter doesn't complain when you run `golangci-lint` locally.
+Take a look at `go-makefile-maker`'s own [`golangci-lint` config file](./.golangci.yaml) for an up-to-date example of what the generated config would look like.
+
+### `spellCheck`
+
+```yaml
+spellCheck:
+  ignoreWords:
+    - example
+    - exampleTwo
+```
+
+`golangci-lint` (if `golangciLint.createConfig` is `true`) and the spell check GitHub workflow (`githubWorkflow.spellCheck`) use [`misspell`][misspell] to check for spelling errors.
+
+If `spellCheck.ignoreWords` is defined then both `golangci-lint` and spell check workflow will give this word list to `misspell` so that they can be ignored during its checks.
 
 ### `verbatim`
 
@@ -140,99 +157,141 @@ The text in this field is copied into the Makefile mostly verbatim, with one exc
 Since YAML does not like tabs for indentation, we allow rule recipes to be indented with spaces.
 This indentation will be replaced with tabs before writing it into the actual Makefile.
 
-### `githubWorkflows`
+### `githubWorkflow`
 
-This is how a minimal and complete workflow configuration would look like:
+The `githubWorkflow` section holds configuration options that define the behavior of various GitHub workflows.
 
-```yaml
-githubWorkflows:
-  global:
-    ignorePaths: [ "**.md" ] # all Markdown files
-  ci:
-    enabled: true
-    coveralls: true
-  codeQL:
-    enabled: true
-  license:
-    enabled: true
-  spellCheck:
-    enabled: true
-    ignorePaths: [] # override global setting so that nothing is ignored
-```
-
-You can prevent the workflows from running by including `[ci skip]` in your commit message
+**Hint**: You can prevent the workflows from running by including `[ci skip]` in your commit message
 ([more info](https://github.blog/changelog/2021-02-08-github-actions-skip-pull-request-and-push-workflows-with-skip-ci/)).
 
-#### `githubWorkflows.global`
+#### `githubWorkflow.global`
 
-This section defines global settings that apply to all workflows. If the same
-setting is also defined for a specific workflow then that will override the
-global value.
+This section defines global settings that apply to all workflows. If the same setting is
+supported by a specific workflow and is defined then that will take override its global
+value.
 
-| Field | Type | Default | Description |
-| --- | --- | --- | --- |
-| `githubWorkflows.global.defaultBranch` | string | Value of `git symbolic-ref refs/remotes/origin/HEAD \| sed 's@^refs/remotes/origin/@@'` | Git branch on which `push` actions will trigger the workflows. Pull requests will automatically trigger all workflows. |
-| `githubWorkflows.global.goVersion` | string | Go version in `go.mod` file | Specify the Go version to use for jobs that require Go. |
-| `githubWorkflows.global.ignorePaths` | list | *(optional)* | A list of filename patterns. Workflows will not trigger if a path name matches pattern in this list. [More info][ref-onpushpull] and [filter pattern cheat sheet][ref-pattern-cheat-sheet]. |
+```yaml
+global:
+  defaultBranch: dev
+  goVersion: 1.17
+  ignorePaths:
+    - "README.md"
+    - "docs/**"
+```
 
-[ref-onpushpull]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths
-[ref-pattern-cheat-sheet]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
+`defaultBranch` specifies the Git branch on which `push` actions will trigger the
+workflows. This does not affect pull requests, they will automatically trigger all
+workflows regardless of which branch they are working against. `go-makefile-maker` will
+automatically run `git symbolic-ref refs/remotes/origin/HEAD | sed
+'s@^refs/remotes/origin/@@'` and use its value by default.
 
-#### `githubWorkflows.ci`
+`goVersion` specifies the Go version that is used for jobs that require Go.
+`go-makefile-maker` will automatically retrieve the Go version from `go.mod` file and use
+that by default.
+
+`ignorePaths` specifies a list of filename patterns. Workflows will not trigger if a path
+name matches a pattern in this list. [More info][ref-onpushpull] and [filter pattern cheat
+sheet][ref-pattern-cheat-sheet]. This option is not defined by default.
+
+#### `githubWorkflow.ci`
 
 This workflow:
 
 * checks your code using `golangci-lint`
 * ensures that your code compiles successfully
 * runs tests and generates test coverage report
-* uploads the test coverage report to [Coveralls](https://coveralls.io) (you will need to enable Coveralls for your repo).
+* uploads the test coverage report to [Coveralls]
 
-| Field | Type | Default | Description |
-| --- | --- | --- | --- |
-| `githubWorkflows.ci.enabled` | boolean | `false` | Enables generation of this workflow. |
-| `githubWorkflows.ci.runOn` | list | `ubuntu-latest` | The type of machine(s) to run the `build` and `test` job on ([more info][ref-runs-on]). Use this to ensure that your build compilation and tests are successful on multiple operating systems. If `githubWorkflows.ci.postgres.enabled` is `true` then `runOn` must have a single Ubuntu based runner. |
-| `githubWorkflows.ci.coveralls` | boolean | `false` | Enables sending the test coverage report to Coveralls. |
-| `githubWorkflows.ci.postgres.enabled` | boolean | `false` | Adds PostgreSQL service container for the `test` job. You can connect to the PostgreSQL service at `localhost:54321` and `postgres` user with password: `postgres` ([More info][postgres-service-container]). |
-| `githubWorkflows.ci.postgres.version` | string | `12` | Docker Hub tag for [`postgres` image][docker-hub-postgres]. |
-| `githubWorkflows.ci.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
+```yaml
+ci:
+  enabled: true
+  runOn:
+    - macos-latest
+    - ubuntu-latest
+    - windows-latest
+  coveralls: true
+  postgres:
+    enabled: true
+    version: 12
+  ignorePaths: []
+```
 
-[ref-runs-on]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
-[postgres-service-container]: https://docs.github.com/en/actions/guides/creating-postgresql-service-containers#testing-the-postgresql-service-container
-[docker-hub-postgres]: https://hub.docker.com/_/postgres/
+`runOn` specifies a list of machine(s) to run the `build` and `test` jobs on ([more
+info][ref-runs-on]). You can use this to ensure that your build compilation and tests are
+successful on multiple operating systems. Default value for this is `ubuntu-latest`.
 
-#### `githubWorkflows.codeQL`
+If `coveralls` is `true` then your test coverage report will be uploaded to [Coveralls]. Make sure that you have enabled Coveralls for your GitHub repo beforehand.
 
-This workflow will run CodeQL, GitHub's industry-leading semantic code analysis engine, on your source code to find security vulnerabilities.
+If `postgres.enabled` is `true` then a PostgreSQL service container will be added for the
+`test` job. You can connect to this PostgreSQL service at `localhost:54321` with
+`postgres` as username and password ([More info][postgres-service-container]).
+`postgres.version` specifies the Docker Hub image tag for the [`postgres`
+image][docker-hub-postgres] that is used for this container. By default `12` is used as
+image tag.
+
+`ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this particular workflow.
+
+#### `githubWorkflow.codeQL`
+
+This workflow will run [CodeQL], GitHub's industry-leading semantic code analysis engine,
+on your source code to find security vulnerabilities. You can see the security report
+generated by CodeQL under your repo's Security tab.
 
 In addition to running the workflow when new code is pushed, this workflow will also run
 on a weekly basis (every Monday at 07:00 AM) so that existing code can be checked for new
 vulnerabilities.
 
-| Field | Type | Default | Description |
-| --- | --- | --- | --- |
-| `githubWorkflows.codeQL.enabled` | boolean | `false` | Enables generation of this workflow. |
-| `githubWorkflows.codeQL.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
+```yaml
+codeQL:
+  enabled: true
+  ignorePaths: []
+```
 
-#### `githubWorkflows.license`
+`ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this particular workflow.
+
+#### `githubWorkflow.license`
 
 This workflow ensures that all your source code files have a license header. It
-uses [`addlicense`](https://github.com/google/addlicense) for this.
+uses [`addlicense`][addlicense] for this.
 
-| Field | Type | Default | Description |
-| --- | --- | --- | --- |
-| `githubWorkflows.license.enabled` | boolean | `false` | Enables generation of this workflow. |
-| `githubWorkflows.license.patterns` | list | All Go files excluding `vendor/` | A list of filename patterns to check. Directory patterns are scanned recursively. |
-| `githubWorkflows.license.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
+```yaml
+license:
+  enabled: true
+  patterns:
+    - "*.go"
+    - "internal/"
+  ignorePaths: []
+```
 
-You can add license headers to Go files by running `make license-headers`.
+`patterns` specifies a list of filename patterns to check. Directory patterns are scanned recursively. See `addlicense`'s [README][addlicense] for more info.
 
-#### `githubWorkflows.spellCheck`
+`ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this particular workflow.
 
-This workflow checks for spelling errors. It uses
-[`misspell`](https://github.com/client9/misspell) for this.
+**Hint**: you can also `addlicense` to add license headers to Go files by running `make
+license-headers`.
 
-| Field | Type | Default | Description |
-| --- | --- | --- | --- |
-| `githubWorkflows.spellCheck.enabled` | boolean | `false` | Enables generation of this workflow. |
-| `githubWorkflows.spellCheck.ignoreWords` | list | *(optional)* | A list of words to ignore from spell check.<br>If `golangciLint.createConfig` is set to `true` then these words will also be added to `misspell` linter's `ignore-words` field in the `golangci-lint` config. |
-| `githubWorkflows.spellCheck.ignorePaths` | list | *(optional)* | Refer to the description for `githubWorkflows.global.ignorePaths`. |
+#### `githubWorkflow.spellCheck`
+
+This workflow uses [`misspell`][misspell] to check your repo for spelling errors. Unlike
+`golangci-lint` that only runs `misspell` on `.go` files, this workflow will run
+`misspell` on your entire repo.
+
+```yaml
+spellCheck:
+  enabled: true
+  ignorePaths: []
+```
+
+`ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this
+particular workflow.
+
+[codeql]: https://codeql.github.com/
+[coveralls]: https://coveralls.io
+[docker-hub-postgres]: https://hub.docker.com/_/postgres/
+[misspell]: https://github.com/client9/misspell
+[postgres-service-container]: https://docs.github.com/en/actions/guides/creating-postgresql-service-containers#testing-the-postgresql-service-container
+[ref-onpushpull]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths
+[ref-pattern-cheat-sheet]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
+[ref-runs-on]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+[yaml]: https://yaml.org/
+[addlicense]: https://github.com/google/addlicense
