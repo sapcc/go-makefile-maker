@@ -16,12 +16,7 @@ package ghworkflow
 import "github.com/sapcc/go-makefile-maker/internal/core"
 
 func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) error {
-	ignorePaths := cfg.Global.IgnorePaths
-	if cfg.CodeQL.IgnorePaths != nil {
-		ignorePaths = cfg.CodeQL.IgnorePaths
-	}
-
-	w := newWorkflow("CodeQL", cfg.Global.DefaultBranch, ignorePaths)
+	w := newWorkflow("CodeQL", cfg.Global.DefaultBranch, nil)
 	w.Permissions.Actions = tokenScopeRead         // for github/codeql-action/init to get workflow details
 	w.Permissions.SecurityEvents = tokenScopeWrite // for github/codeql-action/analyze to upload SARIF results
 

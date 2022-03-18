@@ -8,13 +8,9 @@ name: CodeQL
   push:
     branches:
       - main
-    paths-ignore:
-      - README.md
   pull_request:
     branches:
       - main
-    paths-ignore:
-      - README.md
   schedule:
     - cron: '00 07 * * 1'
 jobs:

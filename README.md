@@ -206,6 +206,10 @@ that by default.
 name matches a pattern in this list. [More info][ref-onpushpull] and [filter pattern cheat
 sheet][ref-pattern-cheat-sheet]. This option is not defined by default.
 
+**Note**: `ignorePaths` does not apply to CodeQL workflow, it is exempt from this global
+setting because a workflow's `paths-ignore` option can prevent Code Scanning annotating
+new alerts in your pull requests.
+
 #### `githubWorkflow.ci`
 
 This workflow:
@@ -257,10 +261,7 @@ vulnerabilities.
 ```yaml
 codeQL:
   enabled: true
-  ignorePaths: []
 ```
-
-`ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this particular workflow.
 
 #### `githubWorkflow.license`
 

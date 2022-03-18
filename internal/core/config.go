@@ -139,8 +139,6 @@ type SpellCheckWorkflowConfig struct {
 
 // CodeQLWorkflowConfig appears in type Configuration.
 type CodeQLWorkflowConfig struct {
-	commonWorkflowConfigOpts `yaml:",inline"`
-
 	Enabled bool `yaml:"enabled"`
 }
 
