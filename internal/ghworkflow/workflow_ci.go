@@ -16,20 +16,19 @@ package ghworkflow
 
 import (
 	"strings"
+
+	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func ciWorkflow(cfg *Configuration) error {
+func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring bool) error {
 	goVersion := cfg.Global.GoVersion
 	ignorePaths := cfg.Global.IgnorePaths
 	if cfg.CI.IgnorePaths != nil {
 		ignorePaths = cfg.CI.IgnorePaths
 	}
 
-	w := &workflow{
-		Name: "CI",
-		On:   pushAndPRTriggers(cfg.Global.DefaultBranch, ignorePaths),
-		Jobs: make(map[string]job),
-	}
+	w := newWorkflow("CI", cfg.Global.DefaultBranch, ignorePaths)
+	w.Jobs = make(map[string]job)
 
 	// 01. Lint codebase.
 	lintJob := baseJobWithGo("Lint", goVersion)
@@ -46,7 +45,7 @@ func ciWorkflow(cfg *Configuration) error {
 
 	buildTestOpts := buildTestJobOpts{
 		goVersion:    goVersion,
-		vendoring:    cfg.Vendoring,
+		vendoring:    vendoring,
 		runnerOSList: cfg.CI.RunnerOSList,
 	}
 
@@ -95,7 +94,7 @@ func ciWorkflow(cfg *Configuration) error {
 		getCmd := "go install github.com/mattn/goveralls@latest"
 		cmd := "goveralls -service=github -coverprofile=build/cover.out"
 		if multipleOS {
-			cmd += ` -parallel -flagname="Unit-${{ matrix.os }}`
+			cmd += ` -parallel -flagname="Unit-${{ matrix.os }}"`
 		}
 		testJob.addStep(jobStep{
 			Name: "Upload coverage report to Coveralls",

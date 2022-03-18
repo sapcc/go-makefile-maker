@@ -15,6 +15,8 @@ name: License
       - '*'
     paths-ignore:
       - README.md
+permissions:
+  contents: read
 jobs:
   addlicense:
     name: Check

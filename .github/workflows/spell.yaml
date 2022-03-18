@@ -11,9 +11,13 @@ name: Spell
   pull_request:
     branches:
       - '*'
+permissions:
+  contents: read
 jobs:
   misspell:
     name: Check
+    permissions:
+      checks: write
     runs-on: ubuntu-latest
     steps:
       - name: Check out code

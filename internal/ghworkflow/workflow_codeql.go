@@ -13,16 +13,13 @@
 
 package ghworkflow
 
-func codeQLWorkflow(cfg *Configuration) error {
-	ignorePaths := cfg.Global.IgnorePaths
-	if cfg.CodeQL.IgnorePaths != nil {
-		ignorePaths = cfg.CodeQL.IgnorePaths
-	}
+import "github.com/sapcc/go-makefile-maker/internal/core"
 
-	w := &workflow{
-		Name: "CodeQL",
-		On:   pushAndPRTriggers(cfg.Global.DefaultBranch, ignorePaths),
-	}
+func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) error {
+	w := newWorkflow("CodeQL", cfg.Global.DefaultBranch, nil)
+	w.Permissions.Actions = tokenScopeRead         // for github/codeql-action/init to get workflow details
+	w.Permissions.SecurityEvents = tokenScopeWrite // for github/codeql-action/analyze to upload SARIF results
+
 	// Overwrite because CodeQL expects the pull_request.branches to be a subset of
 	// push.branches.
 	w.On.PullRequest.Branches = []string{cfg.Global.DefaultBranch}

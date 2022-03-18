@@ -14,9 +14,13 @@
 
 package ghworkflow
 
-import "strings"
+import (
+	"strings"
 
-func licenseWorkflow(cfg *Configuration) error {
+	"github.com/sapcc/go-makefile-maker/internal/core"
+)
+
+func licenseWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 	ignorePaths := cfg.Global.IgnorePaths
 	if cfg.License.IgnorePaths != nil {
 		ignorePaths = cfg.License.IgnorePaths
@@ -28,10 +32,7 @@ func licenseWorkflow(cfg *Configuration) error {
 		cmd = `find * \( -name vendor -type d -prune \) -o \( -name \*.go -exec addlicense --check -- {} + \)`
 	}
 
-	w := &workflow{
-		Name: "License",
-		On:   pushAndPRTriggers(cfg.Global.DefaultBranch, ignorePaths),
-	}
+	w := newWorkflow("License", cfg.Global.DefaultBranch, ignorePaths)
 	j := baseJobWithGo("Check", cfg.Global.GoVersion)
 	j.Steps = append(j.Steps, jobStep{
 		Name: "Check if source code files have license header",

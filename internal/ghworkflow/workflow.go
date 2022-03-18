@@ -14,11 +14,40 @@
 
 package ghworkflow
 
+func newWorkflow(name, defaultBranch string, ignorePaths []string) *workflow {
+	return &workflow{
+		Name: name,
+		On:   pushAndPRTriggers(defaultBranch, ignorePaths),
+		Permissions: permissions{
+			Contents: tokenScopeRead, // for actions/checkout to fetch code
+		},
+	}
+}
+
 type workflow struct {
 	Name string       `yaml:"name"`
 	On   eventTrigger `yaml:"on"`
+	// Permissions modify the default permissions granted to the GITHUB_TOKEN. If you
+	// specify the access for any of the scopes, all of those that are not specified are
+	// set to 'none'.
+	Permissions permissions `yaml:"permissions"`
 	// A map of <job_id> to their configuration(s).
 	Jobs map[string]job `yaml:"jobs"`
+}
+
+type githubTokenScope string
+
+const (
+	tokenScopeNone  = "none" //nolint:deadcode,varcheck // this exists for documentation purposes
+	tokenScopeRead  = "read"
+	tokenScopeWrite = "write"
+)
+
+type permissions struct {
+	Actions        githubTokenScope `yaml:"actions,omitempty"`
+	Checks         githubTokenScope `yaml:"checks,omitempty"`
+	Contents       githubTokenScope `yaml:"contents,omitempty"`
+	SecurityEvents githubTokenScope `yaml:"security-events,omitempty"`
 }
 
 // eventTriggers contains rules about the events that that trigger a specific
@@ -44,6 +73,9 @@ type pushAndPRTriggerOpts struct {
 type job struct {
 	// The name of the job displayed on GitHub.
 	Name string `yaml:"name,omitempty"`
+
+	// This will override the global permissions for this specific job.
+	Permissions permissions `yaml:"permissions,omitempty"`
 
 	// List of <job_id> that must complete successfully before this job will run.
 	Needs []string `yaml:"needs,omitempty"`
