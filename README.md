@@ -123,11 +123,24 @@ Set `vendoring.enabled` to `true` if you vendor all dependencies in your reposit
 ```yaml
 golangciLint:
   createConfig: false
+  errcheckExcludes:
+    - io/ioutil.ReadFile
+    - io.Copy(*bytes.Buffer)
+    - io.Copy(os.Stdout)
+    - (*net/http.Client).Do
 ```
 
 The `make check` and `make static-check` targets use [`golangci-lint`](https://golangci-lint.run) to lint your code.
 
-If `golangciLint.createConfig` is set to `true` then `go-makefile-maker` will create (and update) a config file (`.golangci.yaml`) for `golangci-lint`. This config file enables extra linters in addition to the default ones and configures various settings that can improve code quality.
+If `createConfig` is set to `true` then `go-makefile-maker` will create a
+config file (`.golangci.yaml`) for `golangci-lint` and keep it up-to-date (in case of new
+changes). This config file enables extra linters in addition to the default ones and
+configures various settings that can improve code quality.
+
+Additionally, if `createConfig` is `true`, you can specify a list of functions to be
+excluded from `errcheck` linter in `errcheckExcludes` field. Refer to [`errcheck`'s
+README](https://github.com/kisielk/errcheck#excluding-functions) for info on the format
+for function signatures that `errcheck` accepts.
 
 Take a look at `go-makefile-maker`'s own [`golangci-lint` config file](./.golangci.yaml) for an up-to-date example of what the generated config would look like.
 

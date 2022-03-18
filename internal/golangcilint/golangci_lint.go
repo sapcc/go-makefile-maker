@@ -50,6 +50,12 @@ linters-settings:
 		check-blank: true
 		# Report about not checking of errors in type assertions.
 		check-type-assertions: true
+		{{- if .ErrcheckExcludes }}
+		exclude-functions:
+			{{- range .ErrcheckExcludes }}
+			- {{ . }}
+			{{- end }}
+		{{- end }}
 	forbidigo:
 		forbid:
 			# ioutil package has been deprecated: https://github.com/golang/go/issues/42026
@@ -103,6 +109,7 @@ type configTmplData struct {
 	ModulePath          string
 	ModDownloadMode     string
 	MisspellIgnoreWords []string
+	ErrcheckExcludes    []string
 }
 
 func RenderConfig(cfg core.GolangciLintConfiguration, vendoring bool, modulePath string, misspellIgnoreWords []string) error {
@@ -120,6 +127,7 @@ func RenderConfig(cfg core.GolangciLintConfiguration, vendoring bool, modulePath
 		ModulePath:          modulePath,
 		ModDownloadMode:     mode,
 		MisspellIgnoreWords: misspellIgnoreWords,
+		ErrcheckExcludes:    cfg.ErrcheckExcludes,
 	})
 	if err != nil {
 		return err
