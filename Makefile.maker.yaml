@@ -9,12 +9,12 @@ vendoring:
 golangciLint:
   createConfig: true
 
-githubWorkflows:
+githubWorkflow:
   global:
-    ignorePaths:
-      - "README.md"
+    ignorePaths: ["README.md"]
   ci:
     enabled: true
+    coveralls: true
   codeQL:
     enabled: true
   license:

@@ -13,6 +13,10 @@ name: CodeQL
       - main
   schedule:
     - cron: '00 07 * * 1'
+permissions:
+  actions: read
+  contents: read
+  security-events: write
 jobs:
   analyze:
     name: Analyze
