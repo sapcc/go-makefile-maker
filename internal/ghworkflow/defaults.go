@@ -20,7 +20,6 @@ import "strings"
 // Constants and Variables
 
 const (
-	workflowDir            = ".github/workflows"
 	defaultPostgresVersion = "12"
 	defaultRunnerOS        = "ubuntu-latest"
 )
@@ -76,6 +75,9 @@ func cacheGoModules(enableBuildCache bool, runnerOS string) jobStep {
 	}
 
 	paths := []string{"~/go/pkg/mod"}
+	if strings.HasPrefix(runnerOS, "windows") {
+		paths[0] = `~\go\pkg\mod`
+	}
 	if enableBuildCache {
 		switch {
 		case strings.HasPrefix(runnerOS, "ubuntu"):
@@ -83,7 +85,7 @@ func cacheGoModules(enableBuildCache bool, runnerOS string) jobStep {
 		case strings.HasPrefix(runnerOS, "macos"):
 			paths = append(paths, "~/Library/Caches/go-build")
 		case strings.HasPrefix(runnerOS, "windows"):
-			paths = append(paths, `%LocalAppData%\go-build`)
+			paths = append(paths, `~\AppData\Local\go-build`)
 		}
 	}
 	js.With["path"] = makeMultilineYAMLString(paths)

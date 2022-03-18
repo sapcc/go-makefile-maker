@@ -36,11 +36,9 @@ func spellCheckWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []str
 		with["ignore"] = strings.Join(ignoreWords, ",")
 	}
 
-	w := &workflow{
-		Name: "Spell",
-		On:   pushAndPRTriggers(cfg.Global.DefaultBranch, ignorePaths),
-	}
+	w := newWorkflow("Spell", cfg.Global.DefaultBranch, ignorePaths)
 	j := baseJob("Check")
+	j.Permissions.Checks = tokenScopeWrite // for nicer output in pull request diffs
 	j.Steps = append(j.Steps, jobStep{
 		Name: "Check for spelling errors",
 		Uses: "reviewdog/action-misspell@v1",

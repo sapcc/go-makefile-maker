@@ -21,10 +21,10 @@ func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 		ignorePaths = cfg.CodeQL.IgnorePaths
 	}
 
-	w := &workflow{
-		Name: "CodeQL",
-		On:   pushAndPRTriggers(cfg.Global.DefaultBranch, ignorePaths),
-	}
+	w := newWorkflow("CodeQL", cfg.Global.DefaultBranch, ignorePaths)
+	w.Permissions.Actions = tokenScopeRead         // for github/codeql-action/init to get workflow details
+	w.Permissions.SecurityEvents = tokenScopeWrite // for github/codeql-action/analyze to upload SARIF results
+
 	// Overwrite because CodeQL expects the pull_request.branches to be a subset of
 	// push.branches.
 	w.On.PullRequest.Branches = []string{cfg.Global.DefaultBranch}

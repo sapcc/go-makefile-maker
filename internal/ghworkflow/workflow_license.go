@@ -32,10 +32,7 @@ func licenseWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 		cmd = `find * \( -name vendor -type d -prune \) -o \( -name \*.go -exec addlicense --check -- {} + \)`
 	}
 
-	w := &workflow{
-		Name: "License",
-		On:   pushAndPRTriggers(cfg.Global.DefaultBranch, ignorePaths),
-	}
+	w := newWorkflow("License", cfg.Global.DefaultBranch, ignorePaths)
 	j := baseJobWithGo("Check", cfg.Global.GoVersion)
 	j.Steps = append(j.Steps, jobStep{
 		Name: "Check if source code files have license header",

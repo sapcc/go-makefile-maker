@@ -25,6 +25,8 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
+const workflowDir = ".github/workflows"
+
 // Render renders GitHub workflows.
 func Render(cfg *core.Configuration) error {
 	ghwCfg := cfg.GitHubWorkflow
