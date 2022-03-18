@@ -38,7 +38,7 @@ type workflow struct {
 type githubTokenScope string
 
 const (
-	tokenScopeNone  = "none" //nolint:deadcode // this exists for documentation purposes
+	tokenScopeNone  = "none" //nolint:deadcode,varcheck // this exists for documentation purposes
 	tokenScopeRead  = "read"
 	tokenScopeWrite = "write"
 )
