@@ -42,12 +42,7 @@ func main() {
 	must(cfg.Validate())
 
 	// Render Makefile.
-	file, err = os.Create("Makefile")
-	must(err)
-	r, err := makefile.New(file)
-	must(err)
-	r.Render(&cfg)
-	must(file.Close())
+	must(makefile.Render(&cfg))
 
 	// Read go.mod file for module path and Go version.
 	modFilename := "go.mod"
