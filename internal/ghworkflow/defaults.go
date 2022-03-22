@@ -67,7 +67,7 @@ func baseJobWithGo(name, goVersion string) job {
 func cacheGoModules(enableBuildCache bool, runnerOS string) jobStep {
 	js := jobStep{
 		Name: "Cache Go modules",
-		Uses: "actions/cache@v2",
+		Uses: "actions/cache@v3",
 		With: map[string]interface{}{
 			"key":          `${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}`,
 			"restore-keys": "${{ runner.os }}-go-",
