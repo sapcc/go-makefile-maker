@@ -19,7 +19,17 @@ You usually want something like `make && sudo make install PREFIX=/usr/local`.
 
 ## Usage
 
-Put a `Makefile.maker.yaml` file in your Git repository's root directory, then run `go-makefile-maker` to render the Makefile and GitHub workflows from it.
+Put a `Makefile.maker.yaml` file in your Git repository's root directory, then run the following to generate Makefile and GitHub workflows:
+
+```sh
+$ go-makefile-maker
+```
+
+`go-makefile-maker` also generates a `help` target for usage info:
+
+```
+$ make help
+```
 
 In addition to the `Makefile`, you should also commit the `Makefile.maker.yaml` file so that your users don't need to have `go-makefile-maker` installed.
 
