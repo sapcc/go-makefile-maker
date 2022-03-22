@@ -55,7 +55,7 @@ func baseJobWithGo(name, goVersion string) job {
 	j := baseJob(name)
 	j.addStep(jobStep{
 		Name: "Set up Go",
-		Uses: "actions/setup-go@v2",
+		Uses: "actions/setup-go@v3",
 		With: map[string]interface{}{"go-version": goVersion},
 	})
 	return j
