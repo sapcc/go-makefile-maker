@@ -32,13 +32,12 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring bool) error {
 
 	// 01. Lint codebase.
 	lintJob := baseJobWithGo("Lint", goVersion)
-	// Don't need actions/cache here; golangci-lint has built-in caching.
+	// No need for actions/cache here as golangci-lint has built-in caching.
 	lintJob.addStep(jobStep{
 		Name: "Run golangci-lint",
-		Uses: "golangci/golangci-lint-action@v2",
+		Uses: "golangci/golangci-lint-action@v3",
 		With: map[string]interface{}{
-			"version":              "latest",
-			"skip-go-installation": true,
+			"version": "latest",
 		},
 	})
 	w.Jobs["lint"] = lintJob
