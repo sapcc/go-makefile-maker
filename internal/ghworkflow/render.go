@@ -41,8 +41,11 @@ func Render(cfg *core.Configuration) error {
 	if err == nil && ghwCfg.SpellCheck.Enabled {
 		err = spellCheckWorkflow(ghwCfg, cfg.SpellCheck.IgnoreWords)
 	}
-	if err == nil && ghwCfg.CodeQL.Enabled {
+	if err == nil && ghwCfg.SecurityChecks.Enabled {
 		err = codeQLWorkflow(ghwCfg)
+	}
+	if err == nil && ghwCfg.SecurityChecks.Enabled {
+		err = dependencyReviewWorkflow(ghwCfg)
 	}
 	if err != nil {
 		return err
