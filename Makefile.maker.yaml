@@ -11,7 +11,11 @@ golangciLint:
 
 githubWorkflow:
   global:
+    assignees:
+    - SuperSandro2000
     ignorePaths: ["README.md"]
+  autoRender:
+    enabled: true
   ci:
     enabled: true
     coveralls: true
@@ -24,7 +28,7 @@ githubWorkflow:
     ignorePaths: [] # don't ignore README.md
 
 renovate:
-    enabled: true
+  enabled: true
 
 verbatim: |
   run: build/go-makefile-maker
