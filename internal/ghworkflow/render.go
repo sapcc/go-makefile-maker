@@ -41,8 +41,11 @@ func Render(cfg *core.Configuration) error {
 	if err == nil && ghwCfg.SpellCheck.Enabled {
 		err = spellCheckWorkflow(ghwCfg, cfg.SpellCheck.IgnoreWords)
 	}
-	if err == nil && ghwCfg.CodeQL.Enabled {
+	if err == nil && ghwCfg.SecurityChecks.Enabled {
 		err = codeQLWorkflow(ghwCfg)
+	}
+	if err == nil && ghwCfg.SecurityChecks.Enabled {
+		err = dependencyReviewWorkflow(ghwCfg)
 	}
 	if err != nil {
 		return err
@@ -52,7 +55,8 @@ func Render(cfg *core.Configuration) error {
 }
 
 func writeWorkflowToFile(w *workflow) error {
-	path := filepath.Join(workflowDir, strings.ToLower(w.Name)+".yaml")
+	name := strings.ToLower(strings.ReplaceAll(w.Name, " ", "-"))
+	path := filepath.Join(workflowDir, name+".yaml")
 	f, err := os.Create(path)
 	if err != nil {
 		return err
