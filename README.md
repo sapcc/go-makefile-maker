@@ -53,7 +53,7 @@ The config file has the following sections:
 * [githubWorkflow](#githubworkflow)
   * [githubWorkflow\.global](#githubworkflowglobal)
   * [githubWorkflow\.ci](#githubworkflowci)
-  * [githubWorkflow\.codeQL](#githubworkflowcodeql)
+  * [githubWorkflow\.securityChecks](#githubworkflowsecuritychecks)
   * [githubWorkflow\.license](#githubworkflowlicense)
   * [githubWorkflow\.spellCheck](#githubworkflowspellcheck)
 
