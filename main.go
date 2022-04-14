@@ -37,7 +37,9 @@ func main() {
 	must(err)
 
 	var cfg core.Configuration
-	must(yaml.NewDecoder(file).Decode(&cfg))
+	dec := yaml.NewDecoder(file)
+	dec.KnownFields(true)
+	must(dec.Decode(&cfg))
 	must(file.Close())
 	must(cfg.Validate())
 
