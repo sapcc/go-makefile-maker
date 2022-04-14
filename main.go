@@ -30,6 +30,7 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
 	"github.com/sapcc/go-makefile-maker/internal/golangcilint"
 	"github.com/sapcc/go-makefile-maker/internal/makefile"
+	"github.com/sapcc/go-makefile-maker/internal/renovate"
 )
 
 func main() {
@@ -70,6 +71,17 @@ func main() {
 			cfg.GitHubWorkflow.Global.GoVersion = modFile.Go.Version
 		}
 		must(ghworkflow.Render(&cfg))
+	}
+
+	// Render Renovate config.
+	if cfg.Renovate.Enabled {
+		if cfg.Renovate.GoVersion == "" {
+			if modFile.Go.Version == "" {
+				must(errors.New("could not find Go version from go.mod file, consider defining manually by setting 'renovate.goVersion' in config"))
+			}
+			cfg.Renovate.GoVersion = modFile.Go.Version
+		}
+		must(renovate.RenderConfig(cfg.Renovate.GoVersion))
 	}
 }
 

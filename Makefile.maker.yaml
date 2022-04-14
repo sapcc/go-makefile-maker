@@ -23,6 +23,9 @@ githubWorkflow:
     enabled: true
     ignorePaths: [] # don't ignore README.md
 
+renovate:
+    enabled: true
+
 verbatim: |
   run: build/go-makefile-maker
     ./build/go-makefile-maker
