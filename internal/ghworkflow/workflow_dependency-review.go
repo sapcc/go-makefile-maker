@@ -16,14 +16,14 @@ package ghworkflow
 import "github.com/sapcc/go-makefile-maker/internal/core"
 
 func dependencyReviewWorkflow(cfg *core.GithubWorkflowConfiguration) error {
-	w := newWorkflow("Dependency", cfg.Global.DefaultBranch, nil)
-	w.On.Push.Branches = []string{}
+	w := newWorkflow("Dependency Review", cfg.Global.DefaultBranch, nil)
+	w.On.Push.Branches = []string{} // trigger only on pull requests
 
-	j := baseJob("")
+	j := baseJob("Review")
 	j.addStep(jobStep{
 		Name: "Dependency Review",
 		Uses: "actions/dependency-review-action@v1",
 	})
-	w.Jobs = map[string]job{"Review": j}
+	w.Jobs = map[string]job{"review": j}
 	return writeWorkflowToFile(w)
 }

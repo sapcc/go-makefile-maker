@@ -55,7 +55,8 @@ func Render(cfg *core.Configuration) error {
 }
 
 func writeWorkflowToFile(w *workflow) error {
-	path := filepath.Join(workflowDir, strings.ToLower(w.Name)+".yaml")
+	name := strings.ToLower(strings.ReplaceAll(w.Name, " ", "-"))
+	path := filepath.Join(workflowDir, name+".yaml")
 	f, err := os.Create(path)
 	if err != nil {
 		return err

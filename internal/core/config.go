@@ -106,7 +106,7 @@ type GithubWorkflowConfiguration struct {
 	CI             CIWorkflowConfig             `yaml:"ci"`
 	License        LicenseWorkflowConfig        `yaml:"license"`
 	SpellCheck     SpellCheckWorkflowConfig     `yaml:"spellCheck"`
-	SecurityChecks SecurityChecksWorkflowConfig `yaml:"codeQL"`
+	SecurityChecks SecurityChecksWorkflowConfig `yaml:"securityChecks"`
 }
 
 // CIWorkflowConfig appears in type Configuration.

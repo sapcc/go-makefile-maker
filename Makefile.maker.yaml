@@ -15,7 +15,7 @@ githubWorkflow:
   ci:
     enabled: true
     coveralls: true
-  codeQL:
+  securityChecks:
     enabled: true
   license:
     enabled: true

@@ -3,7 +3,7 @@
 # Edit Makefile.maker.yaml instead.                                            #
 ################################################################################
 
-name: Dependency
+name: Dependency Review
 "on":
   pull_request:
     branches:
@@ -11,7 +11,8 @@ name: Dependency
 permissions:
   contents: read
 jobs:
-  Review:
+  review:
+    name: Review
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
