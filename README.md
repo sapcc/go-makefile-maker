@@ -49,6 +49,7 @@ The config file has the following sections:
 * [vendoring](#vendoring)
 * [golangciLint](#golangcilint)
 * [spellCheck](#spellcheck)
+* [renovate](#renovate)
 * [verbatim](#verbatim)
 * [githubWorkflow](#githubworkflow)
   * [githubWorkflow\.global](#githubworkflowglobal)
@@ -168,6 +169,18 @@ spellCheck:
 `golangci-lint` (if `golangciLint.createConfig` is `true`) and the spell check GitHub workflow (`githubWorkflow.spellCheck`) use [`misspell`][misspell] to check for spelling errors.
 
 If `spellCheck.ignoreWords` is defined then both `golangci-lint` and spell check workflow will give this word list to `misspell` so that they can be ignored during its checks.
+
+### `renovate`
+
+```yaml
+renovate:
+  enabled: true
+  goVersion: 1.17
+```
+
+Generate [RenovateBot](https://renovatebot.com/) config to automatically create pull requests with dependency updates.
+
+Optionally overwrite go version with `goVersion` if go.mod detection fails.
 
 ### `verbatim`
 

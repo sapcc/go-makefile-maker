@@ -45,6 +45,7 @@ type Configuration struct {
 	GolangciLint   GolangciLintConfiguration    `yaml:"golangciLint"`
 	SpellCheck     SpellCheckConfiguration      `yaml:"spellCheck"`
 	GitHubWorkflow *GithubWorkflowConfiguration `yaml:"githubWorkflow"`
+	Renovate       RenovateConfig               `yaml:"renovate"`
 }
 
 //Variable returns the value of this variable if it's overridden in the config,
@@ -146,6 +147,12 @@ type SecurityChecksWorkflowConfig struct {
 // workflows.
 type commonWorkflowConfigOpts struct {
 	IgnorePaths []string `yaml:"ignorePaths"`
+}
+
+// RenovateConfig appears in type Configuration.
+type RenovateConfig struct {
+	Enabled   bool   `yaml:"enabled"`
+	GoVersion string `yaml:"goVersion"`
 }
 
 ///////////////////////////////////////////////////////////////////////////////
