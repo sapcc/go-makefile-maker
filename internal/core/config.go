@@ -100,14 +100,16 @@ type GithubWorkflowConfiguration struct {
 	Global struct {
 		commonWorkflowConfigOpts `yaml:",inline"`
 
-		DefaultBranch string `yaml:"defaultBranch"`
-		GoVersion     string `yaml:"goVersion"`
+		Assignees     []string `yaml:"assignees"`
+		DefaultBranch string   `yaml:"defaultBranch"`
+		GoVersion     string   `yaml:"goVersion"`
 	} `yaml:"global"`
 
 	CI             CIWorkflowConfig             `yaml:"ci"`
 	License        LicenseWorkflowConfig        `yaml:"license"`
 	SpellCheck     SpellCheckWorkflowConfig     `yaml:"spellCheck"`
 	SecurityChecks SecurityChecksWorkflowConfig `yaml:"securityChecks"`
+	AutoRender     AutoRenderWorkflowConfig     `yaml:"autoRender"`
 }
 
 // CIWorkflowConfig appears in type Configuration.
@@ -153,6 +155,11 @@ type commonWorkflowConfigOpts struct {
 type RenovateConfig struct {
 	Enabled   bool   `yaml:"enabled"`
 	GoVersion string `yaml:"goVersion"`
+}
+
+// AutoRenderWorkflowConfig appears in type Configuration.
+type AutoRenderWorkflowConfig struct {
+	Enabled bool `yaml:"enabled"`
 }
 
 ///////////////////////////////////////////////////////////////////////////////

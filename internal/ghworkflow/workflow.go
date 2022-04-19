@@ -54,9 +54,10 @@ type permissions struct {
 // workflow.
 // Ref: https://docs.github.com/en/actions/reference/events-that-trigger-workflows
 type eventTrigger struct {
-	Push        pushAndPRTriggerOpts `yaml:"push,omitempty"`
-	PullRequest pushAndPRTriggerOpts `yaml:"pull_request,omitempty"`
-	Schedule    []cronExpr           `yaml:"schedule,omitempty"`
+	Push             pushAndPRTriggerOpts `yaml:"push,omitempty"`
+	PullRequest      pushAndPRTriggerOpts `yaml:"pull_request,omitempty"`
+	Schedule         []cronExpr           `yaml:"schedule,omitempty"`
+	WorkflowDispatch workflowDispatch     `yaml:"workflow_dispatch,omitempty"`
 }
 
 type cronExpr struct {
@@ -67,7 +68,16 @@ type cronExpr struct {
 
 type pushAndPRTriggerOpts struct {
 	Branches    []string `yaml:"branches"`
+	Paths       []string `yaml:"paths,omitempty"`
 	PathsIgnore []string `yaml:"paths-ignore,omitempty"`
+}
+
+type workflowDispatch struct {
+	manualTrigger bool `yaml:"-"`
+}
+
+func (w workflowDispatch) IsZero() bool {
+	return !w.manualTrigger
 }
 
 type job struct {
