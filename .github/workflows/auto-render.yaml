@@ -25,7 +25,10 @@ jobs:
       - name: Install go-makefile-maker
         run: go install github.com/sapcc/go-makefile-maker@latest
       - name: Run go-makefile-maker
-        run: go-makefile-maker
+        run: |2-
+          export PATH=$PATH:$(go env GOPATH)/bin
+          go-makefile-maker
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:

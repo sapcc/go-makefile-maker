@@ -35,7 +35,9 @@ func autoRenderWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 	})
 	j.addStep(jobStep{
 		Name: "Run go-makefile-maker",
-		Run:  "go-makefile-maker",
+		Run: `
+export PATH=$PATH:$(go env GOPATH)/bin
+go-makefile-maker`,
 	})
 
 	with := map[string]interface{}{
