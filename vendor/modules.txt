@@ -1,3 +1,7 @@
+# github.com/sapcc/go-bits v0.0.0-20220327202728-0bec9049b55c
+## explicit; go 1.17
+github.com/sapcc/go-bits/httpext
+github.com/sapcc/go-bits/logg
 # golang.org/x/mod v0.5.1
 ## explicit; go 1.17
 golang.org/x/mod/internal/lazyregexp
