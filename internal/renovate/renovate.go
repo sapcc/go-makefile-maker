@@ -15,47 +15,56 @@
 package renovate
 
 import (
-	"fmt"
+	"encoding/json"
 	"os"
-	"strings"
-	"text/template"
 )
 
-var configTmpl = template.Must(template.New("renovate").Parse(strings.TrimSpace(strings.ReplaceAll(`
-{
-	"extends": [
-		"config:base",
-		"default:pinDigestsDisabled",
-		"docker:enableMajor",
-		"regexManagers:dockerfileVersions"
-	],
-	"constraints": {
-		"go": "{{ .GoVersion }}"
-	},
-	"postUpdateOptions": [
-		"gomodTidy{{- if eq .GoVersion "1.17" }}1.17{{- end }}",
-		"gomodUpdateImportPaths"
-	],
-	"prHourlyLimit": 0
-}
-`, "\t", "  "))))
-
-type configTmplData struct {
-	GoVersion string
+type renovateConstraints struct {
+	Go string `json:"go"`
 }
 
-func RenderConfig(goVersion string) error {
+type renovateConfig struct {
+	Extends           []string            `json:"extends"`
+	Assignees         []string            `json:"assignees"`
+	Constraints       renovateConstraints `json:"constraints"`
+	PostUpdateOptions []string            `json:"postUpdateOptions"`
+	PrHourlyLimit     int                 `json:"prHourlyLimit"`
+}
+
+func RenderConfig(assignees []string, goVersion string) error {
+	config := renovateConfig{
+		Extends: []string{
+			"config:base",
+			"default:pinDigestsDisabled",
+			"docker:enableMajor",
+			"regexManagers:dockerfileVersions",
+		},
+		Assignees: assignees,
+		Constraints: renovateConstraints{
+			Go: goVersion,
+		},
+		PostUpdateOptions: []string{
+			"gomodUpdateImportPaths",
+		},
+		PrHourlyLimit: 0,
+	}
+	if goVersion == "1.17" {
+		config.PostUpdateOptions = append([]string{"gomodTidy1.17"}, config.PostUpdateOptions...)
+	} else {
+		config.PostUpdateOptions = append([]string{"gomodTidy"}, config.PostUpdateOptions...)
+	}
+
 	f, err := os.Create(".github/renovate.json")
 	if err != nil {
 		return err
 	}
-	err = configTmpl.Execute(f, configTmplData{
-		GoVersion: goVersion,
-	})
+
+	encoder := json.NewEncoder(f)
+	encoder.SetIndent("", "  ")
+	err = encoder.Encode(config)
 	if err != nil {
 		return err
 	}
-	fmt.Fprintln(f) // empty line at end
 
 	return f.Close()
 }

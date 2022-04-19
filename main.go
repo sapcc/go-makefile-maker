@@ -81,7 +81,7 @@ func main() {
 			}
 			cfg.Renovate.GoVersion = modFile.Go.Version
 		}
-		must(renovate.RenderConfig(cfg.Renovate.GoVersion))
+		must(renovate.RenderConfig(cfg.GitHubWorkflow.Global.Assignees, cfg.Renovate.GoVersion))
 	}
 }
 
