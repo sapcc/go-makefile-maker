@@ -44,3 +44,4 @@ jobs:
           committer: GitHub <noreply@github.com>
           delete-branch: true
           title: '[Cron] Run go-makefile-maker'
+          token: ${{ secrets.PAT }}

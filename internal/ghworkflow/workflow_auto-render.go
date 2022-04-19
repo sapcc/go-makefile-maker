@@ -52,6 +52,7 @@ go-makefile-maker`,
 		"committer":      "GitHub <noreply@github.com>",
 		"delete-branch":  true,
 		"title":          "[Cron] Run go-makefile-maker",
+		"token":          "${{ secrets.PAT }}",
 	}
 	if len(cfg.Global.Assignees) > 0 {
 		with["assignees"] = strings.Join(cfg.Global.Assignees, ",")
