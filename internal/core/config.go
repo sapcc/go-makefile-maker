@@ -166,11 +166,6 @@ type AutoRenderWorkflowConfig struct {
 // Helper functions
 
 func (c *Configuration) Validate() error {
-	// Validate BinaryConfiguration.
-	if len(c.Binaries) == 0 {
-		return errors.New("the Makefile.maker.yaml file does not reference any binaries")
-	}
-
 	// Validate GolangciLintConfiguration.
 	if len(c.GolangciLint.ErrcheckExcludes) > 0 && !c.GolangciLint.CreateConfig {
 		return errors.New("golangciLint.createConfig needs to be set to 'true' if golangciLint.errcheckExcludes is defined")
