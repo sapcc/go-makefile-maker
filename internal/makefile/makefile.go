@@ -44,10 +44,18 @@ ifneq (,$(wildcard /etc/os-release)) # check file existence
 endif
 	`))
 
-	general.addRule(rule{
-		target:        "default",
-		prerequisites: []string{"build-all"},
-	})
+	if len(cfg.Binaries) != 0 {
+		general.addRule(rule{
+			target:        "default",
+			prerequisites: []string{"build-all"},
+		})
+	} else {
+		general.addRule(rule{
+			target: "default",
+			phony:  true,
+			recipe: []string{"@echo 'There is nothing to build, use `make check` for running the tests'"},
+		})
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 	// Build
@@ -61,9 +69,11 @@ endif
 	build.addDefinition("GO_LDFLAGS =%s", cfg.Variable("GO_LDFLAGS", ""))
 	build.addDefinition("GO_TESTENV =%s", cfg.Variable("GO_TESTENV", ""))
 
-	build.addRule(buildTargets(cfg.Binaries)...)
-	if r, ok := installTarget(cfg.Binaries); ok {
-		build.addRule(r)
+	if len(cfg.Binaries) != 0 {
+		build.addRule(buildTargets(cfg.Binaries)...)
+		if r, ok := installTarget(cfg.Binaries); ok {
+			build.addRule(r)
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -86,11 +96,17 @@ endif
 	test.addDefinition(`comma := ,`)
 
 	//add main testing target
+	var checkPrerequisites []string
+	if len(cfg.Binaries) != 0 {
+		checkPrerequisites = []string{"build-all", "static-check", "build/cover.html"}
+	} else {
+		checkPrerequisites = []string{"static-check", "build/cover.html"}
+	}
 	test.addRule(rule{
 		description:   "Run the test suite (unit tests and golangci-lint).",
 		phony:         true,
 		target:        "check",
-		prerequisites: []string{"build-all", "static-check", "build/cover.html"},
+		prerequisites: checkPrerequisites,
 		recipe:        []string{`@printf "\e[1;32m>> All checks successful.\e[0m\n"`},
 	})
 
