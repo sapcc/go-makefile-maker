@@ -28,7 +28,7 @@ func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 	j := baseJob("Analyze")
 	j.addStep(jobStep{
 		Name: "Initialize CodeQL",
-		Uses: "github/codeql-action/init@v1",
+		Uses: "github/codeql-action/init@v2",
 		With: map[string]interface{}{
 			"languages": "go",
 			"queries":   "security-and-quality",
@@ -36,7 +36,7 @@ func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 	})
 	j.addStep(jobStep{
 		Name: "Perform CodeQL Analysis",
-		Uses: "github/codeql-action/analyze@v1",
+		Uses: "github/codeql-action/analyze@v2",
 	})
 	w.Jobs = map[string]job{"analyze": j}
 
