@@ -20,7 +20,7 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring bool) error {
+func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bool) error {
 	goVersion := cfg.Global.GoVersion
 	ignorePaths := cfg.Global.IgnorePaths
 	if cfg.CI.IgnorePaths != nil {
@@ -49,14 +49,16 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring bool) error {
 	}
 
 	// 02. Make build.
-	buildTestOpts.name = "Build"
-	buildJob := buildOrTestBaseJob(buildTestOpts)
-	buildJob.Needs = []string{"lint"} // this is the <job_id> for the lint job
-	buildJob.addStep(jobStep{
-		Name: "Make build",
-		Run:  "make build-all",
-	})
-	w.Jobs["build"] = buildJob
+	if hasBinaries {
+		buildTestOpts.name = "Build"
+		buildJob := buildOrTestBaseJob(buildTestOpts)
+		buildJob.Needs = []string{"lint"} // this is the <job_id> for the lint job
+		buildJob.addStep(jobStep{
+			Name: "Make build",
+			Run:  "make build-all",
+		})
+		w.Jobs["build"] = buildJob
+	}
 
 	// 03. Run tests and generate/upload test coverage.
 	buildTestOpts.name = "Test"
