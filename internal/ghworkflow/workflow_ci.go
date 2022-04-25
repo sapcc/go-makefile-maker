@@ -35,7 +35,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring bool) error {
 	// No need for actions/cache here as golangci-lint has built-in caching.
 	lintJob.addStep(jobStep{
 		Name: "Run golangci-lint",
-		Uses: "golangci/golangci-lint-action@v3",
+		Uses: golangciLintAction,
 		With: map[string]interface{}{
 			"version": "latest",
 		},

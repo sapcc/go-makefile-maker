@@ -58,7 +58,7 @@ go-makefile-maker`,
 	}
 	j.addStep(jobStep{
 		Name: "Create Pull Request",
-		Uses: "peter-evans/create-pull-request@v4",
+		Uses: createPullRequestAction,
 		With: with,
 	})
 

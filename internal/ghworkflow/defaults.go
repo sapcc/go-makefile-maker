@@ -17,11 +17,27 @@ package ghworkflow
 import "strings"
 
 ///////////////////////////////////////////////////////////////////////////////
-// Constants and Variables
+// Constants
 
 const (
 	defaultPostgresVersion = "12"
 	defaultRunnerOS        = "ubuntu-latest"
+)
+
+const (
+	cacheAction            = "actions/cache@v3"
+	checkoutAction         = "actions/checkout@v3"
+	setupGoAction          = "actions/setup-go@v3"
+	dependencyReviewAction = "actions/dependency-review-action@v1"
+
+	codeqlInitAction    = "github/codeql-action/init@v2"
+	codeqlAnalyzeAction = "github/codeql-action/analyze@v2"
+
+	createPullRequestAction = "peter-evans/create-pull-request@v4"
+
+	golangciLintAction = "golangci/golangci-lint-action@v3"
+
+	misspellAction = "reviewdog/action-misspell@v1"
 )
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -46,7 +62,7 @@ func baseJob(name string) job {
 		RunsOn: defaultRunnerOS,
 		Steps: []jobStep{{
 			Name: "Check out code",
-			Uses: "actions/checkout@v3",
+			Uses: checkoutAction,
 		}},
 	}
 }
@@ -55,7 +71,7 @@ func baseJobWithGo(name, goVersion string) job {
 	j := baseJob(name)
 	j.addStep(jobStep{
 		Name: "Set up Go",
-		Uses: "actions/setup-go@v3",
+		Uses: setupGoAction,
 		With: map[string]interface{}{"go-version": goVersion},
 	})
 	return j
@@ -67,7 +83,7 @@ func baseJobWithGo(name, goVersion string) job {
 func cacheGoModules(enableBuildCache bool, runnerOS string) jobStep {
 	js := jobStep{
 		Name: "Cache Go modules",
-		Uses: "actions/cache@v3",
+		Uses: cacheAction,
 		With: map[string]interface{}{
 			"key":          `${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}`,
 			"restore-keys": "${{ runner.os }}-go-",
