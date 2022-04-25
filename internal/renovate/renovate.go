@@ -28,10 +28,16 @@ type renovateConfig struct {
 	Assignees         []string            `json:"assignees"`
 	Constraints       renovateConstraints `json:"constraints"`
 	PostUpdateOptions []string            `json:"postUpdateOptions"`
+	PackageRules      []packageRule       `json:"packageRules,omitempty"`
 	PrHourlyLimit     int                 `json:"prHourlyLimit"`
 }
 
-func RenderConfig(assignees []string, goVersion string) error {
+type packageRule struct {
+	EnableRenovate bool     `json:"enabled"`
+	MatchDepTypes  []string `json:"matchDepTypes"`
+}
+
+func RenderConfig(assignees []string, goVersion string, disableForGHActions bool) error {
 	config := renovateConfig{
 		Extends: []string{
 			"config:base",
@@ -52,6 +58,12 @@ func RenderConfig(assignees []string, goVersion string) error {
 		config.PostUpdateOptions = append([]string{"gomodTidy1.17"}, config.PostUpdateOptions...)
 	} else {
 		config.PostUpdateOptions = append([]string{"gomodTidy"}, config.PostUpdateOptions...)
+	}
+	if disableForGHActions {
+		config.PackageRules = append(config.PackageRules, packageRule{
+			EnableRenovate: false,
+			MatchDepTypes:  []string{"action"},
+		})
 	}
 
 	f, err := os.Create(".github/renovate.json")

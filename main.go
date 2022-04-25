@@ -81,7 +81,9 @@ func main() {
 			}
 			cfg.Renovate.GoVersion = modFile.Go.Version
 		}
-		must(renovate.RenderConfig(cfg.GitHubWorkflow.Global.Assignees, cfg.Renovate.GoVersion))
+		// Disable Renovate for GitHub actions except for go-makefile-maker itself.
+		disableForGHActions := !(len(cfg.Binaries) > 0 && cfg.Binaries[0].Name == "go-makefile-maker")
+		must(renovate.RenderConfig(cfg.GitHubWorkflow.Global.Assignees, cfg.Renovate.GoVersion, disableForGHActions))
 	}
 }
 
