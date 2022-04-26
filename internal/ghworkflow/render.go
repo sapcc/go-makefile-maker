@@ -33,7 +33,7 @@ func Render(cfg *core.Configuration) error {
 
 	err := os.MkdirAll(workflowDir, 0o755)
 	if err == nil && ghwCfg.CI.Enabled {
-		err = ciWorkflow(ghwCfg, cfg.Vendoring.Enabled)
+		err = ciWorkflow(ghwCfg, cfg.Vendoring.Enabled, len(cfg.Binaries) > 0)
 	}
 	if err == nil && ghwCfg.License.Enabled {
 		err = licenseWorkflow(ghwCfg)

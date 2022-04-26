@@ -29,6 +29,8 @@ import (
 // newMakefile defines the structure of the Makefile. Order is important as categories,
 // rules, and definitions will appear in the exact order as they are defined.
 func newMakefile(cfg *core.Configuration) *makefile {
+	hasBinaries := len(cfg.Binaries) > 0
+
 	///////////////////////////////////////////////////////////////////////////
 	// General
 	general := category{name: "general"}
@@ -44,7 +46,7 @@ ifneq (,$(wildcard /etc/os-release)) # check file existence
 endif
 	`))
 
-	if len(cfg.Binaries) != 0 {
+	if hasBinaries {
 		general.addRule(rule{
 			target:        "default",
 			prerequisites: []string{"build-all"},
@@ -53,7 +55,7 @@ endif
 		general.addRule(rule{
 			target: "default",
 			phony:  true,
-			recipe: []string{"@echo 'There is nothing to build, use `make check` for running the tests'"},
+			recipe: []string{"@echo 'There is nothing to build, use `make check` for running the test suite or `make help` for a list of available targets.'"},
 		})
 	}
 
@@ -69,7 +71,7 @@ endif
 	build.addDefinition("GO_LDFLAGS =%s", cfg.Variable("GO_LDFLAGS", ""))
 	build.addDefinition("GO_TESTENV =%s", cfg.Variable("GO_TESTENV", ""))
 
-	if len(cfg.Binaries) != 0 {
+	if hasBinaries {
 		build.addRule(buildTargets(cfg.Binaries)...)
 		if r, ok := installTarget(cfg.Binaries); ok {
 			build.addRule(r)
@@ -97,7 +99,7 @@ endif
 
 	//add main testing target
 	var checkPrerequisites []string
-	if len(cfg.Binaries) != 0 {
+	if hasBinaries {
 		checkPrerequisites = []string{"build-all", "static-check", "build/cover.html"}
 	} else {
 		checkPrerequisites = []string{"static-check", "build/cover.html"}
