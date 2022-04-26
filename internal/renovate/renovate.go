@@ -19,18 +19,18 @@ import (
 	"os"
 )
 
-type renovateConstraints struct {
+type constraints struct {
 	Go string `json:"go"`
 }
 
-type renovateConfig struct {
-	Extends           []string            `json:"extends"`
-	GitHubActions     *githubActions      `json:"github-actions,omitempty"`
-	Assignees         []string            `json:"assignees,omitempty"`
-	Constraints       renovateConstraints `json:"constraints"`
-	PostUpdateOptions []string            `json:"postUpdateOptions"`
-	PackageRules      []packageRule       `json:"packageRules,omitempty"`
-	PrHourlyLimit     int                 `json:"prHourlyLimit"`
+type config struct {
+	Extends           []string       `json:"extends"`
+	GitHubActions     *githubActions `json:"github-actions,omitempty"`
+	Assignees         []string       `json:"assignees,omitempty"`
+	Constraints       constraints    `json:"constraints"`
+	PostUpdateOptions []string       `json:"postUpdateOptions"`
+	PackageRules      []packageRule  `json:"packageRules,omitempty"`
+	PrHourlyLimit     int            `json:"prHourlyLimit"`
 }
 
 type githubActions struct {
@@ -44,7 +44,7 @@ type packageRule struct {
 }
 
 func RenderConfig(assignees []string, goVersion string, enableGHActions bool) error {
-	config := renovateConfig{
+	cfg := config{
 		Extends: []string{
 			"config:base",
 			"default:pinDigestsDisabled",
@@ -52,7 +52,7 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 			"regexManagers:dockerfileVersions",
 		},
 		Assignees: assignees,
-		Constraints: renovateConstraints{
+		Constraints: constraints{
 			Go: goVersion,
 		},
 		PostUpdateOptions: []string{
@@ -69,14 +69,14 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 		PrHourlyLimit: 0,
 	}
 	if goVersion == "1.17" {
-		config.PostUpdateOptions = append([]string{"gomodTidy1.17"}, config.PostUpdateOptions...)
+		cfg.PostUpdateOptions = append([]string{"gomodTidy1.17"}, cfg.PostUpdateOptions...)
 	} else {
-		config.PostUpdateOptions = append([]string{"gomodTidy"}, config.PostUpdateOptions...)
+		cfg.PostUpdateOptions = append([]string{"gomodTidy"}, cfg.PostUpdateOptions...)
 	}
 	if !enableGHActions {
 		// By default, Renovate is enabled for GitHub Actions so we need to disable it
 		// here manually in case it is not required.
-		config.GitHubActions = &githubActions{Enabled: enableGHActions}
+		cfg.GitHubActions = &githubActions{Enabled: enableGHActions}
 	}
 
 	f, err := os.Create(".github/renovate.json")
@@ -87,7 +87,7 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 	encoder := json.NewEncoder(f)
 	encoder.SetIndent("", "  ")
 	encoder.SetEscapeHTML(false) // in order to preserve `<` in allowedVersions field
-	err = encoder.Encode(config)
+	err = encoder.Encode(cfg)
 	if err != nil {
 		return err
 	}
