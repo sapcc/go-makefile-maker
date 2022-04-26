@@ -63,7 +63,10 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 	// 03. Run tests and generate/upload test coverage.
 	buildTestOpts.name = "Test"
 	testJob := buildOrTestBaseJob(buildTestOpts)
-	testJob.Needs = []string{"build"} // this is the <job_id> for the build job
+	testJob.Needs = []string{"lint"} // this is the <job_id> for the lint job
+	if hasBinaries {
+		testJob.Needs = []string{"build"} // this is the <job_id> for the build job
+	}
 	if cfg.CI.Postgres.Enabled {
 		version := defaultPostgresVersion
 		if cfg.CI.Postgres.Version != "" {
