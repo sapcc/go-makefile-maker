@@ -41,7 +41,7 @@ func spellCheckWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []str
 	j.Permissions.Checks = tokenScopeWrite // for nicer output in pull request diffs
 	j.Steps = append(j.Steps, jobStep{
 		Name: "Check for spelling errors",
-		Uses: "reviewdog/action-misspell@v1",
+		Uses: misspellAction,
 		With: with,
 	})
 	w.Jobs = map[string]job{"misspell": j}

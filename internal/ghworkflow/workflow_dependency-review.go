@@ -22,7 +22,7 @@ func dependencyReviewWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 	j := baseJob("Review")
 	j.addStep(jobStep{
 		Name: "Dependency Review",
-		Uses: "actions/dependency-review-action@v1",
+		Uses: dependencyReviewAction,
 	})
 	w.Jobs = map[string]job{"review": j}
 	return writeWorkflowToFile(w)
