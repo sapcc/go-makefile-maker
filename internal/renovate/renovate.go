@@ -25,6 +25,7 @@ type renovateConstraints struct {
 
 type renovateConfig struct {
 	Extends           []string            `json:"extends"`
+	GitHubActions     *githubActions      `json:"github-actions,omitempty"`
 	Assignees         []string            `json:"assignees,omitempty"`
 	Constraints       renovateConstraints `json:"constraints"`
 	PostUpdateOptions []string            `json:"postUpdateOptions"`
@@ -32,12 +33,16 @@ type renovateConfig struct {
 	PrHourlyLimit     int                 `json:"prHourlyLimit"`
 }
 
+type githubActions struct {
+	Enabled bool `json:"enabled"`
+}
+
 type packageRule struct {
 	EnableRenovate bool     `json:"enabled"`
 	MatchDepTypes  []string `json:"matchDepTypes"`
 }
 
-func RenderConfig(assignees []string, goVersion string, disableForGHActions bool) error {
+func RenderConfig(assignees []string, goVersion string, enableGHActions bool) error {
 	config := renovateConfig{
 		Extends: []string{
 			"config:base",
@@ -59,11 +64,10 @@ func RenderConfig(assignees []string, goVersion string, disableForGHActions bool
 	} else {
 		config.PostUpdateOptions = append([]string{"gomodTidy"}, config.PostUpdateOptions...)
 	}
-	if disableForGHActions {
-		config.PackageRules = append(config.PackageRules, packageRule{
-			EnableRenovate: false,
-			MatchDepTypes:  []string{"action"},
-		})
+	if !enableGHActions {
+		// By default, Renovate is enabled for GitHub Actions so we need to disable it
+		// here manually in case it is not required.
+		config.GitHubActions = &githubActions{Enabled: enableGHActions}
 	}
 
 	f, err := os.Create(".github/renovate.json")
