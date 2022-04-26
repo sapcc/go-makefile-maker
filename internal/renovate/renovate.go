@@ -25,7 +25,7 @@ type renovateConstraints struct {
 
 type renovateConfig struct {
 	Extends           []string            `json:"extends"`
-	Assignees         []string            `json:"assignees"`
+	Assignees         []string            `json:"assignees,omitempty"`
 	Constraints       renovateConstraints `json:"constraints"`
 	PostUpdateOptions []string            `json:"postUpdateOptions"`
 	PackageRules      []packageRule       `json:"packageRules,omitempty"`
