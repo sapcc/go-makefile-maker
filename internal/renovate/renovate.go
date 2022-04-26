@@ -38,8 +38,9 @@ type githubActions struct {
 }
 
 type packageRule struct {
-	EnableRenovate bool     `json:"enabled"`
-	MatchDepTypes  []string `json:"matchDepTypes"`
+	EnableRenovate       bool     `json:"enabled"`
+	MatchPackagePrefixes []string `json:"matchPackagePrefixes,omitempty"`
+	AllowedVersions      string   `json:"allowedVersions,omitempty"`
 }
 
 func RenderConfig(assignees []string, goVersion string, enableGHActions bool) error {
@@ -57,6 +58,14 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 		PostUpdateOptions: []string{
 			"gomodUpdateImportPaths",
 		},
+		PackageRules: []packageRule{{
+			EnableRenovate:       false,
+			MatchPackagePrefixes: []string{"k8s.io/"},
+			// Since our clusters use k8s v1.22 therefore we set the allowedVersions to `<0.23`.
+			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.23 instead of 1.23.
+			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
+			AllowedVersions: "<0.23",
+		}},
 		PrHourlyLimit: 0,
 	}
 	if goVersion == "1.17" {
@@ -77,6 +86,7 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 
 	encoder := json.NewEncoder(f)
 	encoder.SetIndent("", "  ")
+	encoder.SetEscapeHTML(false) // in order to preserve `<` in allowedVersions field
 	err = encoder.Encode(config)
 	if err != nil {
 		return err
