@@ -28,7 +28,6 @@ jobs:
         run: |2-
           export PATH=$PATH:$(go env GOPATH)/bin
           go-makefile-maker
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
