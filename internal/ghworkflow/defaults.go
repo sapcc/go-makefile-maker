@@ -33,8 +33,6 @@ const (
 	codeqlInitAction    = "github/codeql-action/init@v2"
 	codeqlAnalyzeAction = "github/codeql-action/analyze@v2"
 
-	createPullRequestAction = "peter-evans/create-pull-request@v4"
-
 	golangciLintAction = "golangci/golangci-lint-action@v3"
 
 	misspellAction = "reviewdog/action-misspell@v1"

@@ -47,9 +47,6 @@ func Render(cfg *core.Configuration) error {
 	if err == nil && ghwCfg.SecurityChecks.Enabled {
 		err = dependencyReviewWorkflow(ghwCfg)
 	}
-	if err == nil && ghwCfg.AutoRender.Enabled {
-		err = autoRenderWorkflow(ghwCfg)
-	}
 	if err != nil {
 		return err
 	}
