@@ -73,10 +73,11 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 	} else {
 		cfg.PostUpdateOptions = append([]string{"gomodTidy"}, cfg.PostUpdateOptions...)
 	}
+	// By default, Renovate is enabled for all managers including github-actions therefore
+	// we only set the GitHubActions field if we need to disable Renovate for
+	// github-actions manager.
 	if !enableGHActions {
-		// By default, Renovate is enabled for GitHub Actions so we need to disable it
-		// here manually in case it is not required.
-		cfg.GitHubActions = &githubActions{Enabled: enableGHActions}
+		cfg.GitHubActions = &githubActions{Enabled: false}
 	}
 
 	f, err := os.Create(".github/renovate.json")
