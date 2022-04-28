@@ -19,26 +19,32 @@ import (
 	"os"
 )
 
-type renovateConstraints struct {
+type constraints struct {
 	Go string `json:"go"`
 }
 
-type renovateConfig struct {
-	Extends           []string            `json:"extends"`
-	Assignees         []string            `json:"assignees,omitempty"`
-	Constraints       renovateConstraints `json:"constraints"`
-	PostUpdateOptions []string            `json:"postUpdateOptions"`
-	PackageRules      []packageRule       `json:"packageRules,omitempty"`
-	PrHourlyLimit     int                 `json:"prHourlyLimit"`
+type config struct {
+	Extends           []string       `json:"extends"`
+	GitHubActions     *githubActions `json:"github-actions,omitempty"`
+	Assignees         []string       `json:"assignees,omitempty"`
+	Constraints       constraints    `json:"constraints"`
+	PostUpdateOptions []string       `json:"postUpdateOptions"`
+	PackageRules      []packageRule  `json:"packageRules,omitempty"`
+	PrHourlyLimit     int            `json:"prHourlyLimit"`
+}
+
+type githubActions struct {
+	Enabled bool `json:"enabled"`
 }
 
 type packageRule struct {
-	EnableRenovate bool     `json:"enabled"`
-	MatchDepTypes  []string `json:"matchDepTypes"`
+	EnableRenovate       bool     `json:"enabled"`
+	MatchPackagePrefixes []string `json:"matchPackagePrefixes,omitempty"`
+	AllowedVersions      string   `json:"allowedVersions,omitempty"`
 }
 
-func RenderConfig(assignees []string, goVersion string, disableForGHActions bool) error {
-	config := renovateConfig{
+func RenderConfig(assignees []string, goVersion string, enableGHActions bool) error {
+	cfg := config{
 		Extends: []string{
 			"config:base",
 			"default:pinDigestsDisabled",
@@ -46,24 +52,32 @@ func RenderConfig(assignees []string, goVersion string, disableForGHActions bool
 			"regexManagers:dockerfileVersions",
 		},
 		Assignees: assignees,
-		Constraints: renovateConstraints{
+		Constraints: constraints{
 			Go: goVersion,
 		},
 		PostUpdateOptions: []string{
 			"gomodUpdateImportPaths",
 		},
+		PackageRules: []packageRule{{
+			EnableRenovate:       false,
+			MatchPackagePrefixes: []string{"k8s.io/"},
+			// Since our clusters use k8s v1.22 therefore we set the allowedVersions to `<0.23`.
+			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.23 instead of 1.23.
+			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
+			AllowedVersions: "<0.23",
+		}},
 		PrHourlyLimit: 0,
 	}
 	if goVersion == "1.17" {
-		config.PostUpdateOptions = append([]string{"gomodTidy1.17"}, config.PostUpdateOptions...)
+		cfg.PostUpdateOptions = append([]string{"gomodTidy1.17"}, cfg.PostUpdateOptions...)
 	} else {
-		config.PostUpdateOptions = append([]string{"gomodTidy"}, config.PostUpdateOptions...)
+		cfg.PostUpdateOptions = append([]string{"gomodTidy"}, cfg.PostUpdateOptions...)
 	}
-	if disableForGHActions {
-		config.PackageRules = append(config.PackageRules, packageRule{
-			EnableRenovate: false,
-			MatchDepTypes:  []string{"action"},
-		})
+	// By default, Renovate is enabled for all managers including github-actions therefore
+	// we only set the GitHubActions field if we need to disable Renovate for
+	// github-actions manager.
+	if !enableGHActions {
+		cfg.GitHubActions = &githubActions{Enabled: false}
 	}
 
 	f, err := os.Create(".github/renovate.json")
@@ -73,7 +87,8 @@ func RenderConfig(assignees []string, goVersion string, disableForGHActions bool
 
 	encoder := json.NewEncoder(f)
 	encoder.SetIndent("", "  ")
-	err = encoder.Encode(config)
+	encoder.SetEscapeHTML(false) // in order to preserve `<` in allowedVersions field
+	err = encoder.Encode(cfg)
 	if err != nil {
 		return err
 	}
