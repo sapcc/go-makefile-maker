@@ -25,10 +25,13 @@
     },
     {
       "matchPackagePrefixes": [
+        "github.com/sapcc/go-api-declarations",
+        "github.com/sapcc/gophercloud-sapcc",
         "github.com/sapcc/go-bits"
       ],
       "automerge": true
     }
   ],
-  "prHourlyLimit": 0
+  "prHourlyLimit": 0,
+  "semanticCommits": "disabled"
 }

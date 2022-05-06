@@ -31,6 +31,7 @@ type config struct {
 	PostUpdateOptions []string       `json:"postUpdateOptions"`
 	PackageRules      []packageRule  `json:"packageRules,omitempty"`
 	PrHourlyLimit     int            `json:"prHourlyLimit"`
+	SemanticCommits   string         `json:"semanticCommits,omitempty"`
 }
 
 type githubActions struct {
@@ -79,6 +80,7 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 			AutoMerge: true,
 		}},
 		PrHourlyLimit: 0,
+		SemanticCommits: "disabled",
 	}
 	if goVersion == "1.17" {
 		cfg.PostUpdateOptions = append([]string{"gomodTidy1.17"}, cfg.PostUpdateOptions...)
