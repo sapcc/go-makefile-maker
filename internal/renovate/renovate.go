@@ -71,8 +71,12 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
 			AllowedVersions: "<0.23",
 		}, {
-			MatchPackagePrefixes: []string{"github.com/sapcc/go-bits"},
-			AutoMerge:            true,
+			MatchPackagePrefixes: []string{
+				"github.com/sapcc/go-api-declarations",
+				"github.com/sapcc/gophercloud-sapcc",
+				"github.com/sapcc/go-bits",
+			},
+			AutoMerge: true,
 		}},
 		PrHourlyLimit: 0,
 	}
