@@ -32,6 +32,5 @@
       "automerge": true
     }
   ],
-  "prHourlyLimit": 0,
-  "semanticCommits": "disabled"
+  "prHourlyLimit": 0
 }
