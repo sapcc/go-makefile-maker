@@ -38,12 +38,17 @@ type githubActions struct {
 }
 
 type packageRule struct {
-	EnableRenovate       bool     `json:"enabled"`
+	EnableRenovate       *bool    `json:"enabled,omitempty"`
 	MatchPackagePrefixes []string `json:"matchPackagePrefixes,omitempty"`
 	AllowedVersions      string   `json:"allowedVersions,omitempty"`
+	AutoMerge            bool     `json:"automerge,omitempty"`
 }
 
 func RenderConfig(assignees []string, goVersion string, enableGHActions bool) error {
+	b2p := func(b bool) *bool {
+		return &b
+	}
+
 	cfg := config{
 		Extends: []string{
 			"config:base",
@@ -59,12 +64,15 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 			"gomodUpdateImportPaths",
 		},
 		PackageRules: []packageRule{{
-			EnableRenovate:       false,
+			EnableRenovate:       b2p(false),
 			MatchPackagePrefixes: []string{"k8s.io/"},
 			// Since our clusters use k8s v1.22 therefore we set the allowedVersions to `<0.23`.
 			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.23 instead of 1.23.
 			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
 			AllowedVersions: "<0.23",
+		}, {
+			MatchPackagePrefixes: []string{"github.com/sapcc/go-bits"},
+			AutoMerge:            true,
 		}},
 		PrHourlyLimit: 0,
 	}
