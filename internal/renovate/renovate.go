@@ -79,7 +79,7 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 			},
 			AutoMerge: true,
 		}},
-		PrHourlyLimit: 0,
+		PrHourlyLimit:   0,
 		SemanticCommits: "disabled",
 	}
 	if goVersion == "1.17" {
