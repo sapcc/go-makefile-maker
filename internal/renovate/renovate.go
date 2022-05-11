@@ -16,6 +16,7 @@ package renovate
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 )
 
@@ -40,6 +41,7 @@ type githubActions struct {
 
 type packageRule struct {
 	EnableRenovate       *bool    `json:"enabled,omitempty"`
+	MatchPackageNames    []string `json:"matchPackageNames,omitempty"`
 	MatchPackagePrefixes []string `json:"matchPackagePrefixes,omitempty"`
 	AllowedVersions      string   `json:"allowedVersions,omitempty"`
 	AutoMerge            bool     `json:"automerge,omitempty"`
@@ -71,6 +73,10 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.23 instead of 1.23.
 			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
 			AllowedVersions: "<0.23",
+		}, {
+			EnableRenovate:    b2p(false),
+			MatchPackageNames: []string{"golang"},
+			AllowedVersions:   fmt.Sprintf("<%s.99", goVersion),
 		}, {
 			MatchPackagePrefixes: []string{
 				"github.com/sapcc/go-api-declarations",
