@@ -36,7 +36,8 @@ type config struct {
 }
 
 type githubActions struct {
-	Enabled bool `json:"enabled"`
+	Enabled   bool     `json:"enabled,omitempty"`
+	FileMatch []string `json:"fileMatch,omitempty"`
 }
 
 type packageRule struct {
@@ -91,7 +92,8 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 	// we only set the GitHubActions field if we need to disable Renovate for
 	// github-actions manager.
 	if !enableGHActions {
-		cfg.GitHubActions = &githubActions{Enabled: false}
+		// TODO: make this configurable
+		cfg.GitHubActions = &githubActions{FileMatch: []string{".github/workflows/oci-conformance.yaml"}}
 	}
 
 	f, err := os.Create(".github/renovate.json")
