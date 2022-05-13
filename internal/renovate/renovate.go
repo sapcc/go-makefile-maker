@@ -93,7 +93,7 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 	// github-actions manager.
 	if !enableGHActions {
 		// TODO: make this configurable
-		cfg.GitHubActions = &githubActions{FileMatch: []string{".github/workflows/oci-conformance.yaml"}}
+		cfg.GitHubActions = &githubActions{FileMatch: []string{".github/workflows/oci-distribution-conformance.yml"}}
 	}
 
 	f, err := os.Create(".github/renovate.json")
