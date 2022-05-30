@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/sapcc/go-makefile-maker/actions/workflows/ci.yaml/badge.svg)](https://github.com/sapcc/go-makefile-maker/actions/workflows/ci.yaml)
 
-Generates a Makefile and GitHub workflows for your Go application:
+Generates a Makefile and optionally also GitHub workflows and a Dockerfile for your Go application:
 
 * Makefile follows established Unix conventions for installing and packaging,
   and includes targets for vendoring, running tests and checking code quality.
@@ -67,7 +67,9 @@ metadata:
   url: https://github.com/foo/bar
 ```
 
-`metadata` contains information about the project which cannot easily be guessed like the remote `url`.
+`metadata` contains information about the project which cannot be guessed consistently:
+
+- `url` is the repository's remote URL.
 
 ### `binaries`
 
@@ -114,11 +116,12 @@ dockerfile:
   user: root
 ```
 
-When enabled generates a `Dockerfile` and `.dockerignore`.
-`entrypoint` allows overwriting the final entrypoint.
-`extraIgnores` appends entries in `.dockerignore` to the default ones.
-`extraPackages` installs extra packages to the default `ca-certificates` in the final docker layer.
-`user` changes the arguments given to the Docker `USER` command. If unset defaults to `nobody`.
+When `enabled`, go-makefile-maker will generate a `Dockerfile` and a `.dockerignore` file.
+
+- `entrypoint` allows overwriting the final entrypoint.
+- `extraIgnores` appends entries in `.dockerignore` to the default ones.
+- `extraPackages` installs extra Alpine packages in the final Docker layer. `ca-certificates` is always installed.
+- `user` changes the arguments given to the Docker `USER` command. The default value is `nobody`.
 
 ### `variables`
 
