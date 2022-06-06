@@ -65,10 +65,10 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 		},
 		PackageRules: []packageRule{{
 			MatchPackagePrefixes: []string{"k8s.io/"},
-			// Since our clusters use k8s v1.22 therefore we set the allowedVersions to `<0.23`.
-			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.23 instead of 1.23.
+			// Since our clusters use k8s v1.22 therefore we set the allowedVersions to `0.22.x`.
+			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.22 instead of 1.22.
 			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
-			AllowedVersions: "<0.23",
+			AllowedVersions: "0.22.x",
 		}, {
 			MatchPackageNames: []string{"golang"},
 			AllowedVersions:   fmt.Sprintf("%s.x", goVersion),
