@@ -54,6 +54,14 @@ func main() {
 	util.Must(err)
 	modFile, err := modfile.Parse(modFilename, modFileBytes, nil)
 	util.Must(err)
+	goModulePath := modFile.Module.Mod.Path
+	if goModulePath == "" {
+		util.Must(errors.New("could not find module path from go.mod file, make sure it is defined"))
+	}
+	modFileGoVersion := modFile.Go.Version
+	if modFileGoVersion == "" {
+		util.Must(errors.New("could not find Go version from go.mod file, consider defining manually by setting 'githubWorkflow.global.goVersion' in config"))
+	}
 
 	// Render Dockerfile
 	if cfg.Dockerfile.Enabled {
@@ -65,19 +73,13 @@ func main() {
 
 	// Render golangci-lint config file.
 	if cfg.GolangciLint.CreateConfig {
-		if modFile.Module.Mod.Path == "" {
-			util.Must(errors.New("could not find module path from go.mod file, make sure it is defined"))
-		}
-		util.Must(golangcilint.RenderConfig(cfg.GolangciLint, cfg.Vendoring.Enabled, modFile.Module.Mod.Path, cfg.SpellCheck.IgnoreWords))
+		util.Must(golangcilint.RenderConfig(cfg.GolangciLint, cfg.Vendoring.Enabled, goModulePath, cfg.SpellCheck.IgnoreWords))
 	}
 
 	// Render GitHub workflows.
 	if cfg.GitHubWorkflow != nil {
 		if cfg.GitHubWorkflow.Global.GoVersion == "" {
-			if modFile.Go.Version == "" {
-				util.Must(errors.New("could not find Go version from go.mod file, consider defining manually by setting 'githubWorkflow.global.goVersion' in config"))
-			}
-			cfg.GitHubWorkflow.Global.GoVersion = modFile.Go.Version
+			cfg.GitHubWorkflow.Global.GoVersion = modFileGoVersion
 		}
 		util.Must(ghworkflow.Render(&cfg))
 	}
@@ -85,13 +87,10 @@ func main() {
 	// Render Renovate config.
 	if cfg.Renovate.Enabled {
 		if cfg.Renovate.GoVersion == "" {
-			if modFile.Go.Version == "" {
-				util.Must(errors.New("could not find Go version from go.mod file, consider defining manually by setting 'renovate.goVersion' in config"))
-			}
 			cfg.Renovate.GoVersion = modFile.Go.Version
 		}
-		// Only enable Renovate's github-actions manager for go-makefile-maker itself.
-		enableGHActions := len(cfg.Binaries) > 0 && cfg.Binaries[0].Name == "go-makefile-maker"
+		// Only enable Renovate for github-actions for go-makefile-maker itself.
+		enableGHActions := goModulePath == "github.com/sapcc/go-makefile-maker"
 		util.Must(renovate.RenderConfig(cfg.GitHubWorkflow.Global.Assignees, cfg.Renovate.GoVersion, enableGHActions))
 	}
 }
