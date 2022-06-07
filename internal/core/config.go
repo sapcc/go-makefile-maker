@@ -46,6 +46,8 @@ type Configuration struct {
 	SpellCheck     SpellCheckConfiguration      `yaml:"spellCheck"`
 	GitHubWorkflow *GithubWorkflowConfiguration `yaml:"githubWorkflow"`
 	Renovate       RenovateConfig               `yaml:"renovate"`
+	Dockerfile     DockerfileConfig             `yaml:"dockerfile"`
+	Metadata       Metadata                     `yaml:"metadata"`
 }
 
 //Variable returns the value of this variable if it's overridden in the config,
@@ -154,6 +156,19 @@ type commonWorkflowConfigOpts struct {
 type RenovateConfig struct {
 	Enabled   bool   `yaml:"enabled"`
 	GoVersion string `yaml:"goVersion"`
+}
+
+// DockerfileConfig appears in type Configuration.
+type DockerfileConfig struct {
+	Enabled       bool     `yaml:"enabled"`
+	Entrypoint    []string `yaml:"entrypoint"`
+	ExtraIgnores  []string `yaml:"extraIgnores"`
+	ExtraPackages []string `yaml:"extraPackages"`
+	User          string   `yaml:"user"`
+}
+
+type Metadata struct {
+	URL string `yaml:"url"`
 }
 
 ///////////////////////////////////////////////////////////////////////////////
