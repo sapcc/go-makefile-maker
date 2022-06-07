@@ -87,7 +87,7 @@ func main() {
 	// Render Renovate config.
 	if cfg.Renovate.Enabled {
 		if cfg.Renovate.GoVersion == "" {
-			cfg.Renovate.GoVersion = modFile.Go.Version
+			cfg.Renovate.GoVersion = modFileGoVersion
 		}
 		// Only enable Renovate for github-actions for go-makefile-maker itself.
 		enableGHActions := goModulePath == "github.com/sapcc/go-makefile-maker"
