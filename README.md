@@ -137,12 +137,16 @@ This mechanism cannot be used to define new variables to use in your own rules; 
 By default, all accepted variables are empty.
 The only exception is that `GO_BUILDFLAGS` defaults to `-mod vendor` when vendoring is enabled (see below).
 
-A typical usage of this is to give compile-time values to the Go compiler with the `-X` linker flag:
+A typical usage of `GO_LDFLAGS` is to give compile-time values to the Go compiler with the `-X` linker flag:
 
 ```yaml
 variables:
   GO_LDFLAGS: '-X github.com/foo/bar.Version = $(shell git describe --abbrev=7)'
 ```
+
+However, for this specific usecase, we suggest that your application use `github.com/sapcc/go-api-declarations/bininfo`
+instead. When the respective module is present as a direct dependency in the `go.mod` file, go-makefile-maker will
+auto-generate suitable linker flags to fill the global variables in the `bininfo` package.
 
 `GO_TESTENV` can contain environment variables to pass to `go test`:
 

@@ -24,6 +24,7 @@ import (
 
 	"golang.org/x/mod/modfile"
 	"golang.org/x/mod/module"
+	"golang.org/x/mod/semver"
 
 	"github.com/sapcc/go-makefile-maker/internal/util"
 )
@@ -34,6 +35,7 @@ type ScanResult struct {
 	ModulePath           string           // from "module" directive in go.mod, e.g. "github.com/foo/bar"
 	GoVersion            string           // from "go" directive in go.mod, e.g. "1.17"
 	GoDirectDependencies []module.Version // from "require" directive(s) in go.mod without the "// indirect" comment
+	HasBinInfo           bool             // whether we can produce linker instructions for "github.com/sapcc/go-api-declarations/bininfo"
 }
 
 func Scan() (ScanResult, error) {
@@ -48,9 +50,16 @@ func Scan() (ScanResult, error) {
 	}
 
 	var goDeps []module.Version
+	hasBinInfo := false
 	for _, v := range modFile.Require {
 		if !v.Indirect {
 			goDeps = append(goDeps, v.Mod)
+		}
+		if v.Mod.Path == "github.com/sapcc/go-api-declarations" {
+			if semver.Compare(v.Mod.Version, "v1.2.0") >= 0 {
+				hasBinInfo = true
+				break
+			}
 		}
 	}
 
@@ -58,6 +67,7 @@ func Scan() (ScanResult, error) {
 		GoVersion:            modFile.Go.Version,
 		ModulePath:           modFile.Module.Mod.Path,
 		GoDirectDependencies: goDeps,
+		HasBinInfo:           hasBinInfo,
 	}, nil
 }
 
