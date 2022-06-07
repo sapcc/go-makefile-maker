@@ -20,8 +20,9 @@ import "strings"
 // Constants
 
 const (
-	defaultPostgresVersion = "12"
-	defaultRunnerOS        = "ubuntu-latest"
+	defaultPostgresVersion   = "12"
+	defaultK8sEnvtestVersion = "1.22.x!"
+	defaultRunnerOS          = "ubuntu-latest"
 )
 
 const (
