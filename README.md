@@ -211,11 +211,37 @@ If `spellCheck.ignoreWords` is defined then both `golangci-lint` and spell check
 renovate:
   enabled: true
   goVersion: 1.17
+  packageRules:
+    - matchPackageNames: []
+      matchPackagePrefixes: []
+      matchUpdateTypes: []
+      matchDepTypes: []
+      matchFiles: []
+      allowedVersions: ""
+      autoMerge: false
+      enabled: false
 ```
 
 Generate [RenovateBot](https://renovatebot.com/) config to automatically create pull requests with dependency updates.
 
-Optionally overwrite go version with `goVersion` if go.mod detection fails.
+Optionally overwrite go version with `goVersion`, by default the Go version from `go.mod` file will be used.
+
+Additionally, you can also define [`packageRules`](https://docs.renovatebot.com/configuration-options/#packagerules). Note that only the fields mentioned above are accepted when defining a `packageRule`. The following package rules are defined by default:
+
+```yaml
+packageRules:
+  - matchPackagePrefixes: ["k8s.io/"]
+    allowedVersions: 0.22.x
+  - matchPackageNames: ["golang"]
+    allowedVersions: $goVersion.x
+  - matchPackagePrefixes:
+      - github.com/sapcc/go-api-declarations
+      - github.com/sapcc/gophercloud-sapcc
+      - github.com/sapcc/go-bits
+    autoMerge: true
+  - matchDepTypes: ["action"]
+    enabled: false
+```
 
 ### `verbatim`
 
