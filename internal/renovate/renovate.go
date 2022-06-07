@@ -25,19 +25,13 @@ type constraints struct {
 }
 
 type config struct {
-	Extends           []string       `json:"extends"`
-	GitHubActions     *githubActions `json:"github-actions,omitempty"`
-	Assignees         []string       `json:"assignees,omitempty"`
-	Constraints       constraints    `json:"constraints"`
-	PostUpdateOptions []string       `json:"postUpdateOptions"`
-	PackageRules      []PackageRule  `json:"packageRules,omitempty"`
-	PrHourlyLimit     int            `json:"prHourlyLimit"`
-	SemanticCommits   string         `json:"semanticCommits,omitempty"`
-}
-
-type githubActions struct {
-	Enabled   bool     `json:"enabled,omitempty"`
-	FileMatch []string `json:"fileMatch,omitempty"`
+	Extends           []string      `json:"extends"`
+	Assignees         []string      `json:"assignees,omitempty"`
+	Constraints       constraints   `json:"constraints"`
+	PostUpdateOptions []string      `json:"postUpdateOptions"`
+	PackageRules      []PackageRule `json:"packageRules,omitempty"`
+	PrHourlyLimit     int           `json:"prHourlyLimit"`
+	SemanticCommits   string        `json:"semanticCommits,omitempty"`
 }
 
 type PackageRule struct {
@@ -95,12 +89,11 @@ func RenderConfig(assignees []string, customPackageRules []PackageRule, goVersio
 	} else {
 		cfg.PostUpdateOptions = append([]string{"gomodTidy"}, cfg.PostUpdateOptions...)
 	}
-	// By default, Renovate is enabled for all managers including github-actions therefore
-	// we only set the GitHubActions field if we need to disable Renovate for
-	// github-actions manager.
 	if !enableGHActions {
-		// TODO: make this configurable
-		cfg.GitHubActions = &githubActions{FileMatch: []string{".github/workflows/oci-distribution-conformance.yml"}}
+		cfg.addPackageRule(PackageRule{
+			MatchDepTypes:  []string{"action"},
+			EnableRenovate: &enableGHActions,
+		})
 	}
 
 	// Renovate will evaluate all packageRules and not stop once it gets a first match
