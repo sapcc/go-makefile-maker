@@ -25,30 +25,31 @@ type constraints struct {
 }
 
 type config struct {
-	Extends           []string       `json:"extends"`
-	GitHubActions     *githubActions `json:"github-actions,omitempty"`
-	Assignees         []string       `json:"assignees,omitempty"`
-	Constraints       constraints    `json:"constraints"`
-	PostUpdateOptions []string       `json:"postUpdateOptions"`
-	PackageRules      []packageRule  `json:"packageRules,omitempty"`
-	PrHourlyLimit     int            `json:"prHourlyLimit"`
-	SemanticCommits   string         `json:"semanticCommits,omitempty"`
+	Extends           []string      `json:"extends"`
+	Assignees         []string      `json:"assignees,omitempty"`
+	Constraints       constraints   `json:"constraints"`
+	PostUpdateOptions []string      `json:"postUpdateOptions"`
+	PackageRules      []PackageRule `json:"packageRules,omitempty"`
+	PrHourlyLimit     int           `json:"prHourlyLimit"`
+	SemanticCommits   string        `json:"semanticCommits,omitempty"`
 }
 
-type githubActions struct {
-	Enabled   bool     `json:"enabled,omitempty"`
-	FileMatch []string `json:"fileMatch,omitempty"`
+type PackageRule struct {
+	MatchPackageNames    []string `yaml:"matchPackageNames" json:"matchPackageNames,omitempty"`
+	MatchPackagePrefixes []string `yaml:"matchPackagePrefixes" json:"matchPackagePrefixes,omitempty"`
+	MatchUpdateTypes     []string `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
+	MatchDepTypes        []string `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
+	MatchFiles           []string `yaml:"matchFiles" json:"matchFiles,omitempty"`
+	AllowedVersions      string   `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
+	AutoMerge            bool     `yaml:"automerge" json:"automerge,omitempty"`
+	EnableRenovate       *bool    `yaml:"enabled" json:"enabled,omitempty"`
 }
 
-type packageRule struct {
-	EnableRenovate       *bool    `json:"enabled,omitempty"`
-	MatchPackageNames    []string `json:"matchPackageNames,omitempty"`
-	MatchPackagePrefixes []string `json:"matchPackagePrefixes,omitempty"`
-	AllowedVersions      string   `json:"allowedVersions,omitempty"`
-	AutoMerge            bool     `json:"automerge,omitempty"`
+func (c *config) addPackageRule(rule PackageRule) {
+	c.PackageRules = append(c.PackageRules, rule)
 }
 
-func RenderConfig(assignees []string, goVersion string, enableGHActions bool) error {
+func RenderConfig(assignees []string, customPackageRules []PackageRule, goVersion string, enableGHActions bool) error {
 	cfg := config{
 		Extends: []string{
 			"config:base",
@@ -63,23 +64,27 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 		PostUpdateOptions: []string{
 			"gomodUpdateImportPaths",
 		},
-		PackageRules: []packageRule{{
-			MatchPackagePrefixes: []string{"k8s.io/"},
-			// Since our clusters use k8s v1.22 therefore we set the allowedVersions to `<0.23`.
-			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.23 instead of 1.23.
-			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
-			AllowedVersions: "<0.23",
-		}, {
-			MatchPackageNames: []string{"golang"},
-			AllowedVersions:   fmt.Sprintf("%s.x", goVersion),
-		}, {
-			MatchPackagePrefixes: []string{
-				"github.com/sapcc/go-api-declarations",
-				"github.com/sapcc/gophercloud-sapcc",
-				"github.com/sapcc/go-bits",
+		PackageRules: []PackageRule{
+			//NOTE: When changing this list, please also adjust the documentation for
+			//default package rules in the README.
+			{
+				MatchPackagePrefixes: []string{"k8s.io/"},
+				// Since our clusters use k8s v1.22 therefore we set the allowedVersions to `0.22.x`.
+				// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.22 instead of 1.22.
+				// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
+				AllowedVersions: "0.22.x",
+			}, {
+				MatchPackageNames: []string{"golang"},
+				AllowedVersions:   fmt.Sprintf("%s.x", goVersion),
+			}, {
+				MatchPackagePrefixes: []string{
+					"github.com/sapcc/go-api-declarations",
+					"github.com/sapcc/gophercloud-sapcc",
+					"github.com/sapcc/go-bits",
+				},
+				AutoMerge: true,
 			},
-			AutoMerge: true,
-		}},
+		},
 		PrHourlyLimit:   0,
 		SemanticCommits: "disabled",
 	}
@@ -88,12 +93,18 @@ func RenderConfig(assignees []string, goVersion string, enableGHActions bool) er
 	} else {
 		cfg.PostUpdateOptions = append([]string{"gomodTidy"}, cfg.PostUpdateOptions...)
 	}
-	// By default, Renovate is enabled for all managers including github-actions therefore
-	// we only set the GitHubActions field if we need to disable Renovate for
-	// github-actions manager.
 	if !enableGHActions {
-		// TODO: make this configurable
-		cfg.GitHubActions = &githubActions{FileMatch: []string{".github/workflows/oci-distribution-conformance.yml"}}
+		cfg.addPackageRule(PackageRule{
+			MatchDepTypes:  []string{"action"},
+			EnableRenovate: &enableGHActions,
+		})
+	}
+
+	// Renovate will evaluate all packageRules and not stop once it gets a first match
+	// therefore the packageRules should be in the order of importance so that user
+	// defined rules can override settings from earlier rules.
+	for _, rule := range customPackageRules {
+		cfg.addPackageRule(rule)
 	}
 
 	f, err := os.Create(".github/renovate.json")
