@@ -20,7 +20,7 @@
       "matchPackagePrefixes": [
         "k8s.io/"
       ],
-      "allowedVersions": "<0.23"
+      "allowedVersions": "0.22.x"
     },
     {
       "matchPackageNames": [
