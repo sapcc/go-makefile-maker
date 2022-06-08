@@ -71,9 +71,10 @@ FROM alpine:${ALPINE_VERSION}
 RUN apk add --no-cache%[4]s
 COPY --from=builder /pkg/ /usr/
 
+ARG COMMIT_ID=unknown
 LABEL source_repository="%[3]s" \
   org.opencontainers.image.url="%[3]s" \
-  org.opencontainers.image.revision=unknown
+  org.opencontainers.image.revision=$(COMMIT_ID)
 
 USER %[5]s:%[5]s
 WORKDIR /var/empty
