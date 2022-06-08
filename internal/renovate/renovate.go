@@ -64,23 +64,27 @@ func RenderConfig(assignees []string, customPackageRules []PackageRule, goVersio
 		PostUpdateOptions: []string{
 			"gomodUpdateImportPaths",
 		},
-		PackageRules: []PackageRule{{
-			MatchPackagePrefixes: []string{"k8s.io/"},
-			// Since our clusters use k8s v1.22 therefore we set the allowedVersions to `0.22.x`.
-			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.22 instead of 1.22.
-			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
-			AllowedVersions: "0.22.x",
-		}, {
-			MatchPackageNames: []string{"golang"},
-			AllowedVersions:   fmt.Sprintf("%s.x", goVersion),
-		}, {
-			MatchPackagePrefixes: []string{
-				"github.com/sapcc/go-api-declarations",
-				"github.com/sapcc/gophercloud-sapcc",
-				"github.com/sapcc/go-bits",
+		PackageRules: []PackageRule{
+			//NOTE: When changing this list, please also adjust the documentation for
+			//default package rules in the README.
+			{
+				MatchPackagePrefixes: []string{"k8s.io/"},
+				// Since our clusters use k8s v1.22 therefore we set the allowedVersions to `0.22.x`.
+				// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.22 instead of 1.22.
+				// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
+				AllowedVersions: "0.22.x",
+			}, {
+				MatchPackageNames: []string{"golang"},
+				AllowedVersions:   fmt.Sprintf("%s.x", goVersion),
+			}, {
+				MatchPackagePrefixes: []string{
+					"github.com/sapcc/go-api-declarations",
+					"github.com/sapcc/gophercloud-sapcc",
+					"github.com/sapcc/go-bits",
+				},
+				AutoMerge: true,
 			},
-			AutoMerge: true,
-		}},
+		},
 		PrHourlyLimit:   0,
 		SemanticCommits: "disabled",
 	}
