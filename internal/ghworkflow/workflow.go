@@ -141,13 +141,16 @@ func (j *job) addStep(s jobStep) {
 
 // jobStep is a task that is run as part of a job.
 type jobStep struct {
+	// A name for your step to display on GitHub.
+	Name string `yaml:"name"`
+
 	// A unique identifier for the step. You can use the id to reference the
 	// step in contexts.
 	// Ref: https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions
 	ID string `yaml:"id,omitempty"`
 
-	// A name for your step to display on GitHub.
-	Name string `yaml:"name"`
+	// You can use the if conditional to prevent a step from running unless a condition is met.
+	If string `yaml:"if,omitempty"`
 
 	// Selects an action to run as part of a step in your job.
 	//

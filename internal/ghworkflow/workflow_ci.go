@@ -15,6 +15,7 @@
 package ghworkflow
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
@@ -84,6 +85,32 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 				"--health-retries 5",
 			}, " "),
 		}}
+	}
+	if cfg.CI.KubernetesEnvtest.Enabled {
+		testJob.addStep(jobStep{
+			ID:   "cache-envtest",
+			Name: "Cache envtest binaries",
+			Uses: cacheAction,
+			With: map[string]interface{}{
+				"path":         "test/bin",
+				"key":          `${{ runner.os }}-envtest-${{ hashFiles('Makefile.maker.yaml') }}`,
+				"restore-keys": "${{ runner.os }}-envtest-",
+			},
+		})
+		// Download the envtest binaries, in case of cache miss.
+		envtestVersion := defaultK8sEnvtestVersion
+		if cfg.CI.KubernetesEnvtest.Version != "" {
+			envtestVersion = cfg.CI.KubernetesEnvtest.Version
+		}
+		testJob.addStep(jobStep{
+			Name: "Download envtest binaries",
+			If:   "steps.cache-envtest.outputs.cache-hit != 'true'",
+			Run: makeMultilineYAMLString([]string{
+				"go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest",
+				"mkdir -p test/bin", // create dir if it doesn't exist already
+				fmt.Sprintf("setup-envtest --bin-dir test/bin use %s", envtestVersion),
+			}),
+		})
 	}
 	testJob.addStep(jobStep{
 		Name: "Run tests and generate coverage report",
