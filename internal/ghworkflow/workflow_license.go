@@ -33,8 +33,8 @@ func licenseWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 	}
 
 	w := newWorkflow("License", cfg.Global.DefaultBranch, ignorePaths)
-	j := baseJobWithGo("Check", cfg.Global.GoVersion)
-	j.Steps = append(j.Steps, jobStep{
+	j := baseJobWithGo("Check", cfg.Global.GoVersion, false)
+	j.addStep(jobStep{
 		Name: "Check if source code files have license header",
 		Run: makeMultilineYAMLString([]string{
 			"go install github.com/google/addlicense@latest",

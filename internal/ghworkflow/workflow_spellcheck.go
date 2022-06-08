@@ -39,7 +39,7 @@ func spellCheckWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []str
 	w := newWorkflow("Spell", cfg.Global.DefaultBranch, ignorePaths)
 	j := baseJob("Check")
 	j.Permissions.Checks = tokenScopeWrite // for nicer output in pull request diffs
-	j.Steps = append(j.Steps, jobStep{
+	j.addStep(jobStep{
 		Name: "Check for spelling errors",
 		Uses: misspellAction,
 		With: with,

@@ -32,8 +32,8 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 	w.Jobs = make(map[string]job)
 
 	// 01. Lint codebase.
-	lintJob := baseJobWithGo("Lint", goVersion)
-	// No need for actions/cache here as golangci-lint has built-in caching.
+	// No need to enable Go modules cache here as golangci-lint has built-in caching.
+	lintJob := baseJobWithGo("Lint", goVersion, false)
 	lintJob.addStep(jobStep{
 		Name: "Run golangci-lint",
 		Uses: golangciLintAction,
@@ -121,24 +121,24 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 			"GIT_BRANCH":      "${{ github.head_ref }}",
 			"COVERALLS_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
 		}
-		getCmd := "go install github.com/mattn/goveralls@latest"
+		installGoveralls := "go install github.com/mattn/goveralls@latest"
 		cmd := "goveralls -service=github -coverprofile=build/cover.out"
 		if multipleOS {
 			cmd += ` -parallel -flagname="Unit-${{ matrix.os }}"`
 		}
 		testJob.addStep(jobStep{
 			Name: "Upload coverage report to Coveralls",
-			Run:  makeMultilineYAMLString([]string{getCmd, cmd}),
+			Run:  makeMultilineYAMLString([]string{installGoveralls, cmd}),
 			Env:  env,
 		})
 
 		if multipleOS {
 			// 04. Tell Coveralls to merge coverage results.
-			finishJob := baseJobWithGo("Finish", goVersion)
+			finishJob := baseJobWithGo("Finish", goVersion, false)
 			finishJob.Needs = []string{"test"} // this is the <job_id> for the test job
 			finishJob.addStep(jobStep{
 				Name: "Coveralls post build webhook",
-				Run:  makeMultilineYAMLString([]string{getCmd, "goveralls -parallel-finish"}),
+				Run:  makeMultilineYAMLString([]string{installGoveralls, "goveralls -parallel-finish"}),
 				Env:  env,
 			})
 			w.Jobs["finish"] = finishJob
@@ -157,20 +157,15 @@ type buildTestJobOpts struct {
 }
 
 func buildOrTestBaseJob(opts buildTestJobOpts) job {
-	j := baseJobWithGo(opts.name, opts.goVersion)
-	buildCache := true
+	j := baseJobWithGo(opts.name, opts.goVersion, !opts.vendoring)
 	switch len(opts.runnerOSList) {
 	case 0:
-		// baseJobWithGo() sets j.RunsOn to defaultRunnerOS
+		// baseJobWithGo() will set j.RunsOn to defaultRunnerOS.
 	case 1:
 		j.RunsOn = opts.runnerOSList[0]
 	default:
-		buildCache = false
 		j.RunsOn = "${{ matrix.os }}"
 		j.Strategy.Matrix.OS = opts.runnerOSList
-	}
-	if !opts.vendoring {
-		j.addStep(cacheGoModules(buildCache, j.RunsOn))
 	}
 	return j
 }

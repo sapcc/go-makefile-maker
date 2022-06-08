@@ -14,8 +14,6 @@
 
 package ghworkflow
 
-import "strings"
-
 ///////////////////////////////////////////////////////////////////////////////
 // Constants
 
@@ -66,44 +64,16 @@ func baseJob(name string) job {
 	}
 }
 
-func baseJobWithGo(name, goVersion string) job {
+func baseJobWithGo(name, goVersion string, cacheGoModules bool) job {
 	j := baseJob(name)
-	j.addStep(jobStep{
+	step := jobStep{
 		Name: "Set up Go",
 		Uses: setupGoAction,
 		With: map[string]interface{}{"go-version": goVersion},
-	})
+	}
+	if cacheGoModules {
+		step.With["cache"] = true
+	}
+	j.addStep(step)
 	return j
-}
-
-// Ref: https://github.com/actions/cache/blob/main/examples.md#go---modules\
-// enableBuildCache enables additional caching of `go-build` directory.
-// runnerOS is only required when enableBuildCache is true.
-func cacheGoModules(enableBuildCache bool, runnerOS string) jobStep {
-	js := jobStep{
-		Name: "Cache Go modules",
-		Uses: cacheAction,
-		With: map[string]interface{}{
-			"key":          `${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}`,
-			"restore-keys": "${{ runner.os }}-go-",
-		},
-	}
-
-	paths := []string{"~/go/pkg/mod"}
-	if strings.HasPrefix(runnerOS, "windows") {
-		paths[0] = `~\go\pkg\mod`
-	}
-	if enableBuildCache {
-		switch {
-		case strings.HasPrefix(runnerOS, "ubuntu"):
-			paths = append(paths, "~/.cache/go-build")
-		case strings.HasPrefix(runnerOS, "macos"):
-			paths = append(paths, "~/Library/Caches/go-build")
-		case strings.HasPrefix(runnerOS, "windows"):
-			paths = append(paths, `~\AppData\Local\go-build`)
-		}
-	}
-	js.With["path"] = makeMultilineYAMLString(paths)
-
-	return js
 }
