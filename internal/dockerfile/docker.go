@@ -74,7 +74,7 @@ COPY --from=builder /pkg/ /usr/
 ARG COMMIT_ID=unknown
 LABEL source_repository="%[3]s" \
   org.opencontainers.image.url="%[3]s" \
-  org.opencontainers.image.revision=$(COMMIT_ID)
+  org.opencontainers.image.revision=${COMMIT_ID}
 
 USER %[5]s:%[5]s
 WORKDIR /var/empty
