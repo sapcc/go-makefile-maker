@@ -92,9 +92,8 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 			Name: "Cache envtest binaries",
 			Uses: cacheAction,
 			With: map[string]interface{}{
-				"path":         "test/bin",
-				"key":          `${{ runner.os }}-envtest-${{ hashFiles('Makefile.maker.yaml') }}`,
-				"restore-keys": "${{ runner.os }}-envtest-",
+				"path": "test/bin",
+				"key":  `${{ runner.os }}-envtest-${{ hashFiles('Makefile.maker.yaml') }}`,
 			},
 		})
 		// Download the envtest binaries, in case of cache miss.
