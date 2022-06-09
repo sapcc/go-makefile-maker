@@ -17,6 +17,7 @@ package dockerfile
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -33,7 +34,18 @@ func mustI(_ int, err error) {
 //go:embed Dockerfile.template
 var template []byte
 
+var argStatementRx = regexp.MustCompile(`^ARG\s*(\w+)\s*=\s*(.+?)\s*$`)
+
 func RenderConfig(cfg core.Configuration) error {
+	//read "ARG" statements from `Dockerfile.template`
+	buildArgs := make(map[string]string)
+	for _, line := range strings.Split(string(template), "\n") {
+		match := argStatementRx.FindStringSubmatch(line)
+		if match != nil {
+			buildArgs[match[1]] = match[2]
+		}
+	}
+
 	var goBuildflags, packages, user, entrypoint string
 
 	if cfg.Vendoring.Enabled {
@@ -57,29 +69,28 @@ func RenderConfig(cfg core.Configuration) error {
 	}
 
 	dockerfile := fmt.Sprintf(
-		`%[1]s
-FROM golang:${GOLANG_VERSION}${ALPINE_VERSION} as builder
+		`FROM golang:%[1]s%[2]s as builder
 RUN apk add --no-cache gcc git make musl-dev
 
 COPY . /src
-RUN make -C /src install PREFIX=/pkg%[2]s
+RUN make -C /src install PREFIX=/pkg%[3]s
 
 ################################################################################
 
-FROM alpine:${ALPINE_VERSION}
+FROM alpine:%[2]s
 
-RUN apk add --no-cache%[4]s
+RUN apk add --no-cache%[5]s
 COPY --from=builder /pkg/ /usr/
 
 ARG COMMIT_ID=unknown
-LABEL source_repository="%[3]s" \
-  org.opencontainers.image.url="%[3]s" \
+LABEL source_repository="%[4]s" \
+  org.opencontainers.image.url="%[4]s" \
   org.opencontainers.image.revision=${COMMIT_ID}
 
-USER %[5]s:%[5]s
+USER %[6]s:%[6]s
 WORKDIR /var/empty
-ENTRYPOINT [ %[6]s ]
-`, template, goBuildflags, cfg.Metadata.URL, packages, user, entrypoint)
+ENTRYPOINT [ %[7]s ]
+`, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], goBuildflags, cfg.Metadata.URL, packages, user, entrypoint)
 
 	f, err := os.Create("Dockerfile")
 	util.Must(err)
