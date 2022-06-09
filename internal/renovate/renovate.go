@@ -49,7 +49,7 @@ func (c *config) addPackageRule(rule PackageRule) {
 	c.PackageRules = append(c.PackageRules, rule)
 }
 
-func RenderConfig(assignees []string, customPackageRules []PackageRule, goVersion string, enableGHActions bool) error {
+func RenderConfig(assignees []string, customPackageRules []PackageRule, goVersion string, isGoMakefileMakerRepo bool) error {
 	cfg := config{
 		Extends: []string{
 			"config:base",
@@ -93,10 +93,14 @@ func RenderConfig(assignees []string, customPackageRules []PackageRule, goVersio
 	} else {
 		cfg.PostUpdateOptions = append([]string{"gomodTidy"}, cfg.PostUpdateOptions...)
 	}
-	if !enableGHActions {
+	if !isGoMakefileMakerRepo {
 		cfg.addPackageRule(PackageRule{
 			MatchDepTypes:  []string{"action"},
-			EnableRenovate: &enableGHActions,
+			EnableRenovate: &isGoMakefileMakerRepo,
+		})
+		cfg.addPackageRule(PackageRule{
+			MatchDepTypes:  []string{"dockerfile"},
+			EnableRenovate: &isGoMakefileMakerRepo,
 		})
 	}
 
