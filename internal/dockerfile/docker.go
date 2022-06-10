@@ -17,8 +17,6 @@ package dockerfile
 import (
 	"fmt"
 	"os"
-	"regexp"
-	"strconv"
 	"strings"
 
 	_ "embed"
@@ -63,7 +61,8 @@ func RenderConfig(cfg core.Configuration) error {
 	}
 
 	if len(cfg.Dockerfile.Entrypoint) > 0 {
-		entrypoint = strconv.Quote(strings.Join(cfg.Dockerfile.Entrypoint, `", "`))
+		entrypoint = fmt.Sprintf(`"%s"`, strings.Join(cfg.Dockerfile.Entrypoint, `", "`))
+
 	} else {
 		entrypoint = fmt.Sprintf(`"/usr/bin/%s"`, cfg.Binaries[0].Name)
 	}
