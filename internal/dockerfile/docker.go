@@ -17,6 +17,7 @@ package dockerfile
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	_ "embed"
