@@ -51,7 +51,7 @@ func RenderConfig(cfg core.Configuration) error {
 		goBuildflags = ` GO_BUILDFLAGS='-mod vendor'`
 	}
 
-	for _, v := range append([]string{"ca-certificates", "tzdata"}, cfg.Dockerfile.ExtraPackages...) {
+	for _, v := range append([]string{"ca-certificates"}, cfg.Dockerfile.ExtraPackages...) {
 		packages += fmt.Sprintf(" %s", v)
 	}
 
