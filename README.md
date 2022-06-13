@@ -210,7 +210,7 @@ If `spellCheck.ignoreWords` is defined then both `golangci-lint` and spell check
 ```yaml
 renovate:
   enabled: true
-  goVersion: 1.17
+  goVersion: 1.18
   packageRules:
     - matchPackageNames: []
       matchPackagePrefixes: []
@@ -272,7 +272,7 @@ value.
 ```yaml
 global:
   defaultBranch: dev
-  goVersion: 1.17
+  goVersion: 1.18
   ignorePaths:
     - "README.md"
     - "docs/**"
