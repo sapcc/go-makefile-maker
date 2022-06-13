@@ -106,7 +106,8 @@ func (m *makefile) help() *rule {
 		}
 
 		result.addRecipe(`@printf "\n"`)
-		result.addRecipe(`@printf "%s\n"`, brightStr(strings.Title(cName)))
+		cNameTitleCase := strings.Title(cName) //nolint:staticcheck //ignore SA1019 (strings.Title is still fine for ASCII-only input)
+		result.addRecipe(`@printf "%s\n"`, brightStr(cNameTitleCase))
 		if cName == "general" {
 			// Add help description to general.
 			result.addRecipe(targetDescStr(longestTargetCharCount, "help", "Display this help."))
