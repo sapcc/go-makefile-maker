@@ -63,7 +63,6 @@ func RenderConfig(cfg core.Configuration) error {
 
 	if len(cfg.Dockerfile.Entrypoint) > 0 {
 		entrypoint = fmt.Sprintf(`"%s"`, strings.Join(cfg.Dockerfile.Entrypoint, `", "`))
-
 	} else {
 		entrypoint = fmt.Sprintf(`"/usr/bin/%s"`, cfg.Binaries[0].Name)
 	}
