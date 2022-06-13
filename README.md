@@ -45,6 +45,7 @@ The config file has the following sections:
 
 * [metadata](#metadata)
 * [binaries](#binaries)
+* [testPackages](#testpackages)
 * [coverageTest](#coveragetest)
 * [docker](#docker)
 * [variables](#variables)
@@ -88,6 +89,19 @@ The `fromPackage` is a Go module path relative to the directory containing the M
 If `installTo` is set for at least one binary, the `install` target is added to the Makefile, and all binaries with `installTo` are installed by it.
 In this case, `example` would be installed as `/usr/bin/example` by default, and `test-helper` would not be installed.
 
+### `testPackages`
+
+```yaml
+testPackages:
+  only: '/internal'
+  except: '/test/util|/test/mock'
+```
+
+By default, all packages inside the repository are subject to testing, but this section can be used to restrict this.
+
+The values in `only` and `except` are regexes for `grep -E`.
+Since only entire packages (not single source files) can be selected for coverage testing, the regexes have to match package names, not on file names.
+
 ### `coverageTest`
 
 ```yaml
@@ -98,6 +112,7 @@ coverageTest:
 
 When `make check` runs `go test`, it produces a test coverage report.
 By default, all packages inside the repository are subject to coverage testing, but this section can be used to restrict this.
+
 The values in `only` and `except` are regexes for `grep -E`.
 Since only entire packages (not single source files) can be selected for coverage testing, the regexes have to match package names, not on file names.
 
