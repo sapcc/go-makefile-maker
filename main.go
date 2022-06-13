@@ -83,8 +83,7 @@ func main() {
 			}
 			cfg.Renovate.GoVersion = sr.GoVersion
 		}
-		// Only enable Renovate for github-actions for go-makefile-maker itself.
 		isGoMakefileMakerRepo := sr.MustModulePath() == "github.com/sapcc/go-makefile-maker"
-		util.Must(renovate.RenderConfig(cfg.GitHubWorkflow.Global.Assignees, cfg.Renovate.PackageRules, cfg.Renovate.GoVersion, isGoMakefileMakerRepo))
+		util.Must(renovate.RenderConfig(cfg.GitHubWorkflow.Global.Assignees, cfg.Renovate.PackageRules, cfg.Renovate.GoVersion, sr.GoDirectDependencies, isGoMakefileMakerRepo))
 	}
 }

@@ -23,6 +23,7 @@ import (
 	"os"
 
 	"golang.org/x/mod/modfile"
+	"golang.org/x/mod/module"
 
 	"github.com/sapcc/go-makefile-maker/internal/util"
 )
@@ -30,8 +31,9 @@ import (
 // ScanResult contains data obtained through a scan of the configuration files
 // in the repository. At the moment, only `go.mod` is scanned.
 type ScanResult struct {
-	ModulePath string // from "module" directive in go.mod, e.g. "github.com/foo/bar"
-	GoVersion  string // from "go" directive in go.mod, e.g. "1.17"
+	ModulePath           string           // from "module" directive in go.mod, e.g. "github.com/foo/bar"
+	GoVersion            string           // from "go" directive in go.mod, e.g. "1.17"
+	GoDirectDependencies []module.Version // from "require" directive(s) in go.mod without the "// indirect" comment
 }
 
 func Scan() (ScanResult, error) {
@@ -45,9 +47,17 @@ func Scan() (ScanResult, error) {
 		return ScanResult{}, err
 	}
 
+	var goDeps []module.Version
+	for _, v := range modFile.Require {
+		if !v.Indirect {
+			goDeps = append(goDeps, v.Mod)
+		}
+	}
+
 	return ScanResult{
-		GoVersion:  modFile.Go.Version,
-		ModulePath: modFile.Module.Mod.Path,
+		GoVersion:            modFile.Go.Version,
+		ModulePath:           modFile.Module.Mod.Path,
+		GoDirectDependencies: goDeps,
 	}, nil
 }
 
