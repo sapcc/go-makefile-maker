@@ -15,6 +15,7 @@
 package ghworkflow
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
@@ -31,9 +32,10 @@ func spellCheckWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []str
 		"reporter":      "github-check",
 		"fail_on_error": true,
 		"github_token":  "${{ secrets.GITHUB_TOKEN }}",
+		"ignore":        "importas", //importas is a valid linter name, so we always ignore it
 	}
 	if len(ignoreWords) > 0 {
-		with["ignore"] = strings.Join(ignoreWords, ",")
+		with["ignore"] = fmt.Sprintf("%s,%s", with["ignore"], strings.Join(ignoreWords, ","))
 	}
 
 	w := newWorkflow("Spell", cfg.Global.DefaultBranch, ignorePaths)
