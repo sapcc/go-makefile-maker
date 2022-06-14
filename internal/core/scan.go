@@ -52,15 +52,15 @@ func Scan() (ScanResult, error) {
 	var goDeps []module.Version
 	hasBinInfo := false
 	for _, v := range modFile.Require {
-		if !v.Indirect {
-			goDeps = append(goDeps, v.Mod)
+		if v.Indirect {
+			continue
 		}
 		if v.Mod.Path == "github.com/sapcc/go-api-declarations" {
 			if semver.Compare(v.Mod.Version, "v1.2.0") >= 0 {
 				hasBinInfo = true
-				break
 			}
 		}
+		goDeps = append(goDeps, v.Mod)
 	}
 
 	return ScanResult{
