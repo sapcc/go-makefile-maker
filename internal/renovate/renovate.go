@@ -78,27 +78,23 @@ func RenderConfig(
 		cfg.PostUpdateOptions = append([]string{"gomodTidy"}, cfg.PostUpdateOptions...)
 	}
 
-	// Only enable Dockerfile and github-actions updates for go-makefile-maker itself.
-	if isGoMakefileMakerRepo {
-		cfg.Extends = append(cfg.Extends, "docker:enableMajor", "regexManagers:dockerfileVersions")
-	} else {
-		cfg.addPackageRule(PackageRule{
-			MatchDepTypes:  []string{"action"},
-			EnableRenovate: &isGoMakefileMakerRepo,
-		})
-		cfg.addPackageRule(PackageRule{
-			MatchDepTypes:  []string{"dockerfile"},
-			EnableRenovate: &isGoMakefileMakerRepo,
-		})
-	}
-
 	// Default package rules.
+	//
 	// NOTE: When changing this list, please also adjust the documentation for
 	// default package rules in the README.
 	cfg.addPackageRule(PackageRule{
 		MatchPackageNames: []string{"golang"},
 		AllowedVersions:   fmt.Sprintf("%s.x", goVersion),
 	})
+	// Only enable Dockerfile and github-actions updates for go-makefile-maker itself.
+	if isGoMakefileMakerRepo {
+		cfg.Extends = append(cfg.Extends, "docker:enableMajor", "regexManagers:dockerfileVersions")
+	} else {
+		cfg.addPackageRule(PackageRule{
+			MatchDepTypes:  []string{"action", "dockerfile"},
+			EnableRenovate: &isGoMakefileMakerRepo,
+		})
+	}
 	hasK8sIOPkgs := false
 	var autoMergePkgs []string
 	for _, v := range goDeps {
@@ -129,6 +125,8 @@ func RenderConfig(
 		})
 	}
 
+	// Custom package rules specified in config.
+	//
 	// Renovate will evaluate all packageRules and not stop once it gets a first match
 	// therefore the packageRules should be in the order of importance so that user
 	// defined rules can override settings from earlier rules.
