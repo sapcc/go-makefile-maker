@@ -230,17 +230,21 @@ Additionally, you can also define [`packageRules`](https://docs.renovatebot.com/
 
 ```yaml
 packageRules:
-  - matchPackagePrefixes: ["k8s.io/"]
-    allowedVersions: 0.22.x
   - matchPackageNames: ["golang"]
     allowedVersions: $goVersion.x
+  - matchDepTypes: ["action"]
+    enabled: false # because github-actions will be updated by go-makefile-maker itself, see githubWorkflow config section below.
+  - matchDepTypes: ["dockerfile"]
+    enabled: false # because dockerfile will be updated by go-makefile-maker itself, see docker config section above.
+  # This package rule will be added if go.mod file has a `k8s.io/*` dependency.
+  - matchPackagePrefixes: ["k8s.io/"]
+    allowedVersions: 0.22.x
+  # This package rule will be added along with the required matchPackagePrefixes if go.mod file has the respective dependencies.
   - matchPackagePrefixes:
       - github.com/sapcc/go-api-declarations
       - github.com/sapcc/gophercloud-sapcc
       - github.com/sapcc/go-bits
     autoMerge: true
-  - matchDepTypes: ["action"]
-    enabled: false
 ```
 
 ### `verbatim`

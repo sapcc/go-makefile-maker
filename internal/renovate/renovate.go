@@ -18,6 +18,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
+
+	"golang.org/x/mod/module"
 )
 
 type constraints struct {
@@ -49,13 +52,15 @@ func (c *config) addPackageRule(rule PackageRule) {
 	c.PackageRules = append(c.PackageRules, rule)
 }
 
-func RenderConfig(assignees []string, customPackageRules []PackageRule, goVersion string, isGoMakefileMakerRepo bool) error {
+func RenderConfig(
+	assignees []string, customPackageRules []PackageRule,
+	goVersion string, goDeps []module.Version,
+	isGoMakefileMakerRepo bool) error {
+
 	cfg := config{
 		Extends: []string{
 			"config:base",
 			"default:pinDigestsDisabled",
-			"docker:enableMajor",
-			"regexManagers:dockerfileVersions",
 		},
 		Assignees: assignees,
 		Constraints: constraints{
@@ -63,27 +68,6 @@ func RenderConfig(assignees []string, customPackageRules []PackageRule, goVersio
 		},
 		PostUpdateOptions: []string{
 			"gomodUpdateImportPaths",
-		},
-		PackageRules: []PackageRule{
-			//NOTE: When changing this list, please also adjust the documentation for
-			//default package rules in the README.
-			{
-				MatchPackagePrefixes: []string{"k8s.io/"},
-				// Since our clusters use k8s v1.22 therefore we set the allowedVersions to `0.22.x`.
-				// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.22 instead of 1.22.
-				// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
-				AllowedVersions: "0.22.x",
-			}, {
-				MatchPackageNames: []string{"golang"},
-				AllowedVersions:   fmt.Sprintf("%s.x", goVersion),
-			}, {
-				MatchPackagePrefixes: []string{
-					"github.com/sapcc/go-api-declarations",
-					"github.com/sapcc/gophercloud-sapcc",
-					"github.com/sapcc/go-bits",
-				},
-				AutoMerge: true,
-			},
 		},
 		PrHourlyLimit:   0,
 		SemanticCommits: "disabled",
@@ -93,7 +77,11 @@ func RenderConfig(assignees []string, customPackageRules []PackageRule, goVersio
 	} else {
 		cfg.PostUpdateOptions = append([]string{"gomodTidy"}, cfg.PostUpdateOptions...)
 	}
-	if !isGoMakefileMakerRepo {
+
+	// Only enable Dockerfile and github-actions updates for go-makefile-maker itself.
+	if isGoMakefileMakerRepo {
+		cfg.Extends = append(cfg.Extends, "docker:enableMajor", "regexManagers:dockerfileVersions")
+	} else {
 		cfg.addPackageRule(PackageRule{
 			MatchDepTypes:  []string{"action"},
 			EnableRenovate: &isGoMakefileMakerRepo,
@@ -101,6 +89,43 @@ func RenderConfig(assignees []string, customPackageRules []PackageRule, goVersio
 		cfg.addPackageRule(PackageRule{
 			MatchDepTypes:  []string{"dockerfile"},
 			EnableRenovate: &isGoMakefileMakerRepo,
+		})
+	}
+
+	// Default package rules.
+	// NOTE: When changing this list, please also adjust the documentation for
+	// default package rules in the README.
+	cfg.addPackageRule(PackageRule{
+		MatchPackageNames: []string{"golang"},
+		AllowedVersions:   fmt.Sprintf("%s.x", goVersion),
+	})
+	hasK8sIOPkgs := false
+	var autoMergePkgs []string
+	for _, v := range goDeps {
+		switch dep := v.Path; {
+		case strings.HasPrefix(dep, "k8s.io/"):
+			hasK8sIOPkgs = true
+		case dep == "github.com/sapcc/go-api-declarations":
+			autoMergePkgs = append(autoMergePkgs, "github.com/sapcc/go-api-declarations")
+		case dep == "github.com/sapcc/gophercloud-sapcc":
+			autoMergePkgs = append(autoMergePkgs, "github.com/sapcc/gophercloud-sapcc")
+		case dep == "github.com/sapcc/go-bits":
+			autoMergePkgs = append(autoMergePkgs, "github.com/sapcc/go-bits")
+		}
+	}
+	if hasK8sIOPkgs {
+		cfg.addPackageRule(PackageRule{
+			MatchPackagePrefixes: []string{"k8s.io/"},
+			// Since our clusters use k8s v1.22 therefore we set the allowedVersions to `0.22.x`.
+			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.22 instead of 1.22.
+			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
+			AllowedVersions: "0.22.x",
+		})
+	}
+	if len(autoMergePkgs) > 0 {
+		cfg.addPackageRule(PackageRule{
+			MatchPackagePrefixes: autoMergePkgs,
+			AutoMerge:            true,
 		})
 	}
 
