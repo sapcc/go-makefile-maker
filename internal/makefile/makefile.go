@@ -20,6 +20,7 @@ package makefile
 
 import (
 	"fmt"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -28,7 +29,7 @@ import (
 
 // newMakefile defines the structure of the Makefile. Order is important as categories,
 // rules, and definitions will appear in the exact order as they are defined.
-func newMakefile(cfg *core.Configuration) *makefile {
+func newMakefile(cfg *core.Configuration, sr core.ScanResult) *makefile {
 	hasBinaries := len(cfg.Binaries) > 0
 
 	///////////////////////////////////////////////////////////////////////////
@@ -70,9 +71,17 @@ endif
 	build.addDefinition("GO_BUILDFLAGS =%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
 	build.addDefinition("GO_LDFLAGS =%s", cfg.Variable("GO_LDFLAGS", ""))
 	build.addDefinition("GO_TESTENV =%s", cfg.Variable("GO_TESTENV", ""))
+	if sr.HasBinInfo {
+		build.addDefinition("")
+		build.addDefinition("# These definitions are overridable, e.g. to provide fixed version/commit values when")
+		build.addDefinition("# no .git directory is present or to provide a fixed build date for reproducability.")
+		build.addDefinition(`BININFO_VERSION     ?= $(shell git describe --tags --always --abbrev=7)`)
+		build.addDefinition(`BININFO_COMMIT_HASH ?= $(shell git rev-parse --verify HEAD)`)
+		build.addDefinition(`BININFO_BUILD_DATE  ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")`)
+	}
 
 	if hasBinaries {
-		build.addRule(buildTargets(cfg.Binaries)...)
+		build.addRule(buildTargets(cfg.Binaries, sr)...)
 		if r, ok := installTarget(cfg.Binaries); ok {
 			build.addRule(r)
 		}
@@ -145,7 +154,10 @@ endif
 		orderOnlyPrerequisites: []string{"build"},
 		recipe: []string{
 			`@printf "\e[1;36m>> go test\e[0m\n"`,
-			`@env $(GO_TESTENV) go test $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -shuffle=on -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
+			fmt.Sprintf(
+				`@env $(GO_TESTENV) go test $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -shuffle=on -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
+				makeDefaultLinkerFlags(path.Base(sr.MustModulePath()), sr),
+			),
 		},
 	})
 
@@ -231,7 +243,7 @@ endif
 	}
 }
 
-func buildTargets(binaries []core.BinaryConfiguration) []rule {
+func buildTargets(binaries []core.BinaryConfiguration, sr core.ScanResult) []rule {
 	result := make([]rule, 0, len(binaries)+1)
 	bAllRule := rule{
 		description: "Build all binaries.",
@@ -246,7 +258,8 @@ func buildTargets(binaries []core.BinaryConfiguration) []rule {
 			phony:       true,
 			target:      fmt.Sprintf("build/%s", bin.Name),
 			recipe: []string{fmt.Sprintf(
-				"go build $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -o build/%s %s",
+				"go build $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -o build/%s %s",
+				makeDefaultLinkerFlags(bin.Name, sr),
 				bin.Name, bin.FromPackage,
 			)},
 		}
@@ -257,6 +270,19 @@ func buildTargets(binaries []core.BinaryConfiguration) []rule {
 	result[0].prerequisites = allPrerequisites
 
 	return result
+}
+
+func makeDefaultLinkerFlags(binaryName string, sr core.ScanResult) string {
+	flags := "-s -w"
+
+	if sr.HasBinInfo {
+		flags += fmt.Sprintf(
+			` -X %[1]s.binName=%[2]s -X %[1]s.version=$(BININFO_VERSION) -X %[1]s.commit=$(BININFO_COMMIT_HASH) -X %[1]s.buildDate=$(BININFO_BUILD_DATE)`,
+			"github.com/sapcc/go-api-declarations/bininfo", binaryName,
+		)
+	}
+
+	return flags
 }
 
 // installTarget also returns a bool that tells whether the install target was requested

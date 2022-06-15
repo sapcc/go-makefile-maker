@@ -49,7 +49,7 @@ func main() {
 	util.Must(err)
 
 	// Render Makefile.
-	util.Must(makefile.Render(&cfg))
+	util.Must(makefile.Render(&cfg, sr))
 
 	// Render Dockerfile
 	if cfg.Dockerfile.Enabled {
