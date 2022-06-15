@@ -92,14 +92,22 @@ endif
 	test := category{name: "test"}
 
 	test.addDefinition(`# which packages to test with "go test"`)
-	test.addDefinition(`GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./...)`)
+	testPkgGreps := ""
+	if cfg.Test.Only != "" {
+		testPkgGreps += fmt.Sprintf(" | grep -E '%s'", cfg.Test.Only)
+	}
+	if cfg.Test.Except != "" {
+		testPkgGreps += fmt.Sprintf(" | grep -Ev '%s'", cfg.Test.Except)
+	}
+	test.addDefinition(`GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./...%s)`, testPkgGreps)
+
 	test.addDefinition(`# which packages to measure coverage for`)
 	coverPkgGreps := ""
 	if cfg.Coverage.Only != "" {
-		coverPkgGreps += fmt.Sprintf(" | command grep -E '%s'", cfg.Coverage.Only)
+		coverPkgGreps += fmt.Sprintf(" | grep -E '%s'", cfg.Coverage.Only)
 	}
 	if cfg.Coverage.Except != "" {
-		coverPkgGreps += fmt.Sprintf(" | command grep -Ev '%s'", cfg.Coverage.Except)
+		coverPkgGreps += fmt.Sprintf(" | grep -Ev '%s'", cfg.Coverage.Except)
 	}
 	test.addDefinition(`GO_COVERPKGS := $(shell go list ./...%s)`, coverPkgGreps)
 	test.addDefinition(`# to get around weird Makefile syntax restrictions, we need variables containing a space and comma`)

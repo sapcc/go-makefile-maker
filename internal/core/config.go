@@ -42,6 +42,7 @@ type Configuration struct {
 	Verbatim       string                       `yaml:"verbatim"`
 	VariableValues map[string]string            `yaml:"variables"`
 	Binaries       []BinaryConfiguration        `yaml:"binaries"`
+	Test           TestConfiguration            `yaml:"testPackages"`
 	Coverage       CoverageConfiguration        `yaml:"coverageTest"`
 	Vendoring      VendoringConfiguration       `yaml:"vendoring"`
 	GolangciLint   GolangciLintConfiguration    `yaml:"golangciLint"`
@@ -70,6 +71,12 @@ type BinaryConfiguration struct {
 	Name        string `yaml:"name"`
 	FromPackage string `yaml:"fromPackage"`
 	InstallTo   string `yaml:"installTo"`
+}
+
+//TestConfiguration appears in type Configuration.
+type TestConfiguration struct {
+	Only   string `yaml:"only"`
+	Except string `yaml:"except"`
 }
 
 //CoverageConfiguration appears in type Configuration.
