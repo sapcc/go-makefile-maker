@@ -100,7 +100,7 @@ testPackages:
 By default, all packages inside the repository are subject to testing, but this section can be used to restrict this.
 
 The values in `only` and `except` are regexes for `grep -E`.
-Since only entire packages (not single source files) can be selected for coverage testing, the regexes have to match package names, not on file names.
+Since only entire packages (not single source files) can be selected for testing, the regexes have to match package names, not on file names.
 
 ### `coverageTest`
 
