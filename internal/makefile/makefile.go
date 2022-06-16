@@ -284,10 +284,15 @@ func makeDefaultLinkerFlags(binaryName string, sr core.ScanResult) string {
 	flags := "-s -w"
 
 	if sr.HasBinInfo {
-		flags += fmt.Sprintf(
-			` -X %[1]s.binName=%[2]s -X %[1]s.version=$(BININFO_VERSION) -X %[1]s.commit=$(BININFO_COMMIT_HASH) -X %[1]s.buildDate=$(BININFO_BUILD_DATE)`,
-			"github.com/sapcc/go-api-declarations/bininfo", binaryName,
-		)
+		f := []string{
+			flags,
+			"-X %[1]s.binName=%[2]s",
+			"-X %[1]s.version=$(BININFO_VERSION)",
+			"-X %[1]s.commit=$(BININFO_COMMIT_HASH)",
+			"-X %[1]s.buildDate=$(BININFO_BUILD_DATE)",
+		}
+		// Split the flags over multiple lines to avoid an excessively long single line.
+		flags = fmt.Sprintf(strings.Join(f, " \\\n\t\t"), "github.com/sapcc/go-api-declarations/bininfo", binaryName)
 	}
 
 	return flags
