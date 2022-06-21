@@ -414,8 +414,8 @@ directory.
 
 `ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this particular workflow.
 
-**Hint**: you can also `addlicense` to add license headers to Go files by running `make
-license-headers`.
+**Hint**: you can also use `addlicense` to add license headers to all Go files excluding
+`vendor` directory by running `make license-headers`.
 
 #### `githubWorkflow.spellCheck`
 
