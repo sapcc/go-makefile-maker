@@ -395,12 +395,20 @@ uses [`addlicense`][addlicense] for this.
 license:
   enabled: true
   patterns:
-    - "*.go"
-    - "internal/"
+    - "**/*.go"
+  ignorePatterns:
+    - "vendor/**"
   ignorePaths: []
 ```
 
-`patterns` specifies a list of filename patterns to check. Directory patterns are scanned recursively. See `addlicense`'s [README][addlicense] for more info.
+`patterns` specifies a list of file patterns to check. For convenience, the `globstar`
+option is enabled for the workflow's shell session therefore you can use `**` in your file
+patterns. Additionally, `addlicense` will scan directory patterns recursively. See
+`addlicense`'s [README][addlicense] for more info.
+
+`ignorePatterns` specifies a list of file patterns to check. You can use any pattern
+[supported by doublestar][doublestar-pattern]. See `addlicense`'s [README][addlicense] for
+more info.
 
 `ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this particular workflow.
 
@@ -425,6 +433,7 @@ particular workflow.
 [codeql]: https://codeql.github.com/
 [coveralls]: https://coveralls.io
 [docker-hub-postgres]: https://hub.docker.com/_/postgres/
+[doublestar-pattern]: https://github.com/bmatcuk/doublestar#patterns
 [misspell]: https://github.com/client9/misspell
 [postgres-service-container]: https://docs.github.com/en/actions/guides/creating-postgresql-service-containers#testing-the-postgresql-service-container
 [ref-onpushpull]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths

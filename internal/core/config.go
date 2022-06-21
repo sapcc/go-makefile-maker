@@ -143,8 +143,9 @@ type CIWorkflowConfig struct {
 type LicenseWorkflowConfig struct {
 	commonWorkflowConfigOpts `yaml:",inline"`
 
-	Enabled  bool     `yaml:"enabled"`
-	Patterns []string `yaml:"patterns"`
+	Enabled        bool     `yaml:"enabled"`
+	Patterns       []string `yaml:"patterns"`
+	IgnorePatterns []string `yaml:"ignorePatterns"`
 }
 
 // SpellCheckWorkflowConfig appears in type Configuration.
