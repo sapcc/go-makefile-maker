@@ -15,6 +15,7 @@
 package ghworkflow
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
@@ -26,10 +27,20 @@ func licenseWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 		ignorePaths = cfg.License.IgnorePaths
 	}
 
-	cmd := "addlicense --check -- " + strings.Join(cfg.License.Patterns, " ")
-	if len(cfg.License.Patterns) == 0 {
-		// Check all .go files excluding the vendor directory.
-		cmd = `find * \( -name vendor -type d -prune \) -o \( -name \*.go -exec addlicense --check -- {} + \)`
+	// Default behavior is to check all Go files excluding the vendor directory.
+	patterns := []string{"**/*.go"}
+	if len(cfg.License.Patterns) > 0 {
+		patterns = cfg.License.Patterns
+	}
+
+	ignorePatterns := []string{"vendor/**"}
+	if len(cfg.License.IgnorePatterns) > 0 {
+		ignorePatterns = cfg.License.IgnorePatterns
+	}
+	// Each ignore pattern is quoted to avoid glob expansion and prefixed with the
+	// `-ignore` flag.
+	for i, v := range ignorePatterns {
+		ignorePatterns[i] = fmt.Sprintf("-ignore %q", v)
 	}
 
 	w := newWorkflow("License", cfg.Global.DefaultBranch, ignorePaths)
@@ -37,8 +48,12 @@ func licenseWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 	j.addStep(jobStep{
 		Name: "Check if source code files have license header",
 		Run: makeMultilineYAMLString([]string{
+			"shopt -s globstar", // so that we can use '**' in file patterns
 			"go install github.com/google/addlicense@latest",
-			cmd,
+			fmt.Sprintf("addlicense --check %s -- %s",
+				strings.Join(ignorePatterns, " "),
+				strings.Join(patterns, " "),
+			),
 		}),
 	})
 	w.Jobs = map[string]job{"addlicense": j}
