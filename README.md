@@ -404,11 +404,13 @@ license:
 `patterns` specifies a list of file patterns to check. For convenience, the `globstar`
 option is enabled for the workflow's shell session therefore you can use `**` in your file
 patterns. Additionally, `addlicense` will scan directory patterns recursively. See
-`addlicense`'s [README][addlicense] for more info.
+`addlicense`'s [README][addlicense] for more info. Default value for this is `**/*.go`,
+i.e. check all Go files.
 
 `ignorePatterns` specifies a list of file patterns to check. You can use any pattern
 [supported by doublestar][doublestar-pattern]. See `addlicense`'s [README][addlicense] for
-more info.
+more info. Default value for this is `vendor/**`, i.e. exclude everything under `vendor`
+directory.
 
 `ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this particular workflow.
 
