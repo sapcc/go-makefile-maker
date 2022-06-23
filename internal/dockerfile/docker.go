@@ -69,9 +69,11 @@ func RenderConfig(cfg core.Configuration) error {
 
 	dockerfile := fmt.Sprintf(
 		`FROM golang:%[1]s%[2]s as builder
+
 RUN apk add --no-cache gcc git make musl-dev
 
 COPY . /src
+ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION # provided to 'make install'
 RUN make -C /src install PREFIX=/pkg%[3]s
 
 ################################################################################
@@ -81,10 +83,12 @@ FROM alpine:%[2]s
 RUN apk add --no-cache%[5]s
 COPY --from=builder /pkg/ /usr/
 
-ARG COMMIT_ID=unknown
+ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
 LABEL source_repository="%[4]s" \
   org.opencontainers.image.url="%[4]s" \
-  org.opencontainers.image.revision=${COMMIT_ID}
+  org.opencontainers.image.created=${BININFO_BUILD_DATE} \
+  org.opencontainers.image.revision=${BININFO_COMMIT_HASH} \
+  org.opencontainers.image.version=${BININFO_VERSION}
 
 USER %[6]s:%[6]s
 WORKDIR /var/empty
