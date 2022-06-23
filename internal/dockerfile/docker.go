@@ -70,11 +70,10 @@ func RenderConfig(cfg core.Configuration) error {
 	dockerfile := fmt.Sprintf(
 		`FROM golang:%[1]s%[2]s as builder
 
-ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
-
 RUN apk add --no-cache gcc git make musl-dev
 
 COPY . /src
+ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION # provided to 'make install'
 RUN make -C /src install PREFIX=/pkg%[3]s
 
 ################################################################################
