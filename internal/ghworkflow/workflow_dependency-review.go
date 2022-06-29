@@ -23,6 +23,10 @@ func dependencyReviewWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 	j.addStep(jobStep{
 		Name: "Dependency Review",
 		Uses: dependencyReviewAction,
+		With: map[string]interface{}{
+			"fail-on-severity": "high",
+			"deny-licenses":    "AGPL-1.0, AGPL-3.0, GPL-1.0, GPL-2.0, GPL-3.0, LGPL-2.0, LGPL-2.1, LGPL-3.0",
+		},
 	})
 	w.Jobs = map[string]job{"review": j}
 	return writeWorkflowToFile(w)
