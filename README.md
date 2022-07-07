@@ -121,7 +121,7 @@ Since only entire packages (not single source files) can be selected for coverag
 ```yaml
 dockerfile:
   enabled: true
-  entrypoint: { "/bin/bash", "--", "--arg" }
+  entrypoint: [ "/bin/bash", "--", "--arg" ]
   extraIgnores:
     - tmp
     - files
