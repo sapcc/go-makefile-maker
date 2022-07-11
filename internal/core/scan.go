@@ -19,14 +19,13 @@
 package core
 
 import (
-	"errors"
 	"os"
 
+	"github.com/sapcc/go-bits/logg"
+	"github.com/sapcc/go-bits/must"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/mod/module"
 	"golang.org/x/mod/semver"
-
-	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
 // ScanResult contains data obtained through a scan of the configuration files
@@ -38,16 +37,10 @@ type ScanResult struct {
 	HasBinInfo           bool             // whether we can produce linker instructions for "github.com/sapcc/go-api-declarations/bininfo"
 }
 
-func Scan() (ScanResult, error) {
+func Scan() ScanResult {
 	modFilename := "go.mod"
-	modFileBytes, err := os.ReadFile(modFilename)
-	if err != nil {
-		return ScanResult{}, err
-	}
-	modFile, err := modfile.Parse(modFilename, modFileBytes, nil)
-	if err != nil {
-		return ScanResult{}, err
-	}
+	modFileBytes := must.Return(os.ReadFile(modFilename))
+	modFile := must.Return(modfile.Parse(modFilename, modFileBytes, nil))
 
 	var goDeps []module.Version
 	hasBinInfo := false
@@ -67,13 +60,13 @@ func Scan() (ScanResult, error) {
 		ModulePath:           modFile.Module.Mod.Path,
 		GoDirectDependencies: goDeps,
 		HasBinInfo:           hasBinInfo,
-	}, nil
+	}
 }
 
 //MustModulePath reads the ModulePath field, but fails if it is empty.
 func (sr ScanResult) MustModulePath() string {
 	if sr.ModulePath == "" {
-		util.Must(errors.New("could not find module path from go.mod file, make sure it is defined"))
+		logg.Fatal("could not find module path from go.mod file, make sure it is defined")
 	}
 	return sr.ModulePath
 }

@@ -22,12 +22,13 @@ import (
 
 	_ "embed"
 
+	"github.com/sapcc/go-bits/must"
+
 	"github.com/sapcc/go-makefile-maker/internal/core"
-	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
 func mustI(_ int, err error) {
-	util.Must(err)
+	must.Succeed(err)
 }
 
 //go:embed Dockerfile.template
@@ -35,7 +36,7 @@ var template []byte
 
 var argStatementRx = regexp.MustCompile(`^ARG\s*(\w+)\s*=\s*(.+?)\s*$`)
 
-func RenderConfig(cfg core.Configuration) error {
+func RenderConfig(cfg core.Configuration) {
 	//read "ARG" statements from `Dockerfile.template`
 	buildArgs := make(map[string]string)
 	for _, line := range strings.Split(string(template), "\n") {
@@ -95,14 +96,12 @@ WORKDIR /var/empty
 ENTRYPOINT [ %[7]s ]
 `, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], goBuildflags, cfg.Metadata.URL, packages, user, entrypoint)
 
-	f, err := os.Create("Dockerfile")
-	util.Must(err)
+	f := must.Return(os.Create("Dockerfile"))
 
 	mustI(f.WriteString(dockerfile))
-	util.Must(f.Close())
+	must.Succeed(f.Close())
 
-	f, err = os.Create(".dockerignore")
-	util.Must(err)
+	f = must.Return(os.Create(".dockerignore"))
 
 	mustI(f.WriteString(
 		`.dockerignore
@@ -125,5 +124,5 @@ shell.nix
 /testing/
 `))
 	mustI(f.WriteString(strings.Join(cfg.Dockerfile.ExtraIgnores, "\n") + "\n"))
-	return f.Close()
+	must.Succeed(f.Close())
 }

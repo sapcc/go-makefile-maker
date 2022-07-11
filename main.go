@@ -19,10 +19,12 @@
 package main
 
 import (
-	"errors"
 	"os"
 
 	"gopkg.in/yaml.v3"
+
+	"github.com/sapcc/go-bits/logg"
+	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/dockerfile"
@@ -30,60 +32,57 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/golangcilint"
 	"github.com/sapcc/go-makefile-maker/internal/makefile"
 	"github.com/sapcc/go-makefile-maker/internal/renovate"
-	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
 func main() {
-	file, err := os.Open("Makefile.maker.yaml")
-	util.Must(err)
+	file := must.Return(os.Open("Makefile.maker.yaml"))
 
 	var cfg core.Configuration
 	dec := yaml.NewDecoder(file)
 	dec.KnownFields(true)
-	util.Must(dec.Decode(&cfg))
-	util.Must(file.Close())
-	util.Must(cfg.Validate())
+	must.Succeed(dec.Decode(&cfg))
+	must.Succeed(file.Close())
+	cfg.Validate()
 
 	// Scan go.mod file for additional context information.
-	sr, err := core.Scan()
-	util.Must(err)
+	sr := core.Scan()
 
 	// Render Makefile.
-	util.Must(makefile.Render(&cfg, sr))
+	makefile.Render(&cfg, sr)
 
 	// Render Dockerfile
 	if cfg.Dockerfile.Enabled {
 		if cfg.Metadata.URL == "" {
-			util.Must(errors.New("metadata.url needs to be set when docker.enabled is true"))
+			logg.Fatal("metadata.url needs to be set when docker.enabled is true")
 		}
-		util.Must(dockerfile.RenderConfig(cfg))
+		dockerfile.RenderConfig(cfg)
 	}
 
 	// Render golangci-lint config file.
 	if cfg.GolangciLint.CreateConfig {
-		util.Must(golangcilint.RenderConfig(cfg.GolangciLint, cfg.Vendoring.Enabled, sr.MustModulePath(), cfg.SpellCheck.IgnoreWords))
+		golangcilint.RenderConfig(cfg.GolangciLint, cfg.Vendoring.Enabled, sr.MustModulePath(), cfg.SpellCheck.IgnoreWords)
 	}
 
 	// Render GitHub workflows.
 	if cfg.GitHubWorkflow != nil {
 		if cfg.GitHubWorkflow.Global.GoVersion == "" {
 			if sr.GoVersion == "" {
-				util.Must(errors.New("could not find Go version from go.mod file, consider defining manually by setting 'githubWorkflow.global.goVersion' in config"))
+				logg.Fatal("could not find Go version from go.mod file, consider defining manually by setting 'githubWorkflow.global.goVersion' in config")
 			}
 			cfg.GitHubWorkflow.Global.GoVersion = sr.GoVersion
 		}
-		util.Must(ghworkflow.Render(&cfg))
+		ghworkflow.Render(&cfg)
 	}
 
 	// Render Renovate config.
 	if cfg.Renovate.Enabled {
 		if cfg.Renovate.GoVersion == "" {
 			if sr.GoVersion == "" {
-				util.Must(errors.New("could not find Go version from go.mod file, consider defining manually by setting 'renovate.goVersion' in config"))
+				logg.Fatal("could not find Go version from go.mod file, consider defining manually by setting 'renovate.goVersion' in config")
 			}
 			cfg.Renovate.GoVersion = sr.GoVersion
 		}
 		isGoMakefileMakerRepo := sr.MustModulePath() == "github.com/sapcc/go-makefile-maker"
-		util.Must(renovate.RenderConfig(cfg.GitHubWorkflow.Global.Assignees, cfg.Renovate.PackageRules, cfg.Renovate.GoVersion, sr.GoDirectDependencies, isGoMakefileMakerRepo))
+		renovate.RenderConfig(cfg.GitHubWorkflow.Global.Assignees, cfg.Renovate.PackageRules, cfg.Renovate.GoVersion, sr.GoDirectDependencies, isGoMakefileMakerRepo)
 	}
 }

@@ -15,7 +15,7 @@ package ghworkflow
 
 import "github.com/sapcc/go-makefile-maker/internal/core"
 
-func dependencyReviewWorkflow(cfg *core.GithubWorkflowConfiguration) error {
+func dependencyReviewWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	w := newWorkflow("Dependency Review", cfg.Global.DefaultBranch, nil)
 	w.On.Push.Branches = []string{} // trigger only on pull requests
 
@@ -29,5 +29,5 @@ func dependencyReviewWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 		},
 	})
 	w.Jobs = map[string]job{"review": j}
-	return writeWorkflowToFile(w)
+	writeWorkflowToFile(w)
 }
