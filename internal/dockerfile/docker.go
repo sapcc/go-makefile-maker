@@ -27,10 +27,6 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func mustI(_ int, err error) {
-	must.Succeed(err)
-}
-
 //go:embed Dockerfile.template
 var template []byte
 
@@ -96,33 +92,29 @@ WORKDIR /var/empty
 ENTRYPOINT [ %[7]s ]
 `, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], goBuildflags, cfg.Metadata.URL, packages, user, entrypoint)
 
-	f := must.Return(os.Create("Dockerfile"))
+	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 
-	mustI(f.WriteString(dockerfile))
-	must.Succeed(f.Close())
+	dockerignoreLines := append([]string{
+		`.dockerignore`,
+		`# TODO: uncomment when applications no longer use git to get version information`,
+		`#.git/`,
+		`.github/`,
+		`.gitignore`,
+		`.goreleaser.yml`,
+		`/*.env*`,
+		`.golangci.yaml`,
+		`build/`,
+		`CONTRIBUTING.md`,
+		`Dockerfile`,
+		`docs/`,
+		`LICENSE*`,
+		`Makefile.maker.yaml`,
+		`README.md`,
+		`report.html`,
+		`shell.nix`,
+		`/testing/`,
+	}, cfg.Dockerfile.ExtraIgnores...)
+	dockerignore := strings.Join(dockerignoreLines, "\n") + "\n"
 
-	f = must.Return(os.Create(".dockerignore"))
-
-	mustI(f.WriteString(
-		`.dockerignore
-# TODO: uncomment when applications no longer use git to get version information
-#.git/
-.github/
-.gitignore
-.goreleaser.yml
-/*.env*
-.golangci.yaml
-build/
-CONTRIBUTING.md
-Dockerfile
-docs/
-LICENSE*
-Makefile.maker.yaml
-README.md
-report.html
-shell.nix
-/testing/
-`))
-	mustI(f.WriteString(strings.Join(cfg.Dockerfile.ExtraIgnores, "\n") + "\n"))
-	must.Succeed(f.Close())
+	must.Succeed(os.WriteFile(".dockerignore", []byte(dockerignore), 0666))
 }
