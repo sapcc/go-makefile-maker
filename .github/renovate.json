@@ -21,6 +21,12 @@
         "golang"
       ],
       "allowedVersions": "1.18.x"
+    },
+    {
+      "matchPackagePrefixes": [
+        "github.com/sapcc/go-bits"
+      ],
+      "automerge": true
     }
   ],
   "prHourlyLimit": 0,
