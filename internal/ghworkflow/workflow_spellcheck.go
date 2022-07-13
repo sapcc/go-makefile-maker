@@ -21,7 +21,7 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func spellCheckWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string) error {
+func spellCheckWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string) {
 	ignorePaths := cfg.Global.IgnorePaths
 	if cfg.SpellCheck.IgnorePaths != nil {
 		ignorePaths = cfg.SpellCheck.IgnorePaths
@@ -48,5 +48,5 @@ func spellCheckWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []str
 	})
 	w.Jobs = map[string]job{"misspell": j}
 
-	return writeWorkflowToFile(w)
+	writeWorkflowToFile(w)
 }

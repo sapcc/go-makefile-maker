@@ -15,7 +15,7 @@ package ghworkflow
 
 import "github.com/sapcc/go-makefile-maker/internal/core"
 
-func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) error {
+func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	w := newWorkflow("CodeQL", cfg.Global.DefaultBranch, nil)
 	w.Permissions.Actions = tokenScopeRead         // for github/codeql-action/init to get workflow details
 	w.Permissions.SecurityEvents = tokenScopeWrite // for github/codeql-action/analyze to upload SARIF results
@@ -40,5 +40,5 @@ func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 	})
 	w.Jobs = map[string]job{"analyze": j}
 
-	return writeWorkflowToFile(w)
+	writeWorkflowToFile(w)
 }

@@ -20,6 +20,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/sapcc/go-bits/must"
 	"golang.org/x/mod/module"
 )
 
@@ -55,7 +56,7 @@ func (c *config) addPackageRule(rule PackageRule) {
 func RenderConfig(
 	assignees []string, customPackageRules []PackageRule,
 	goVersion string, goDeps []module.Version,
-	isGoMakefileMakerRepo bool) error {
+	isGoMakefileMakerRepo bool) {
 
 	cfg := config{
 		Extends: []string{
@@ -134,18 +135,12 @@ func RenderConfig(
 		cfg.addPackageRule(rule)
 	}
 
-	f, err := os.Create(".github/renovate.json")
-	if err != nil {
-		return err
-	}
+	f := must.Return(os.Create(".github/renovate.json"))
 
 	encoder := json.NewEncoder(f)
 	encoder.SetIndent("", "  ")
 	encoder.SetEscapeHTML(false) // in order to preserve `<` in allowedVersions field
-	err = encoder.Encode(cfg)
-	if err != nil {
-		return err
-	}
+	must.Succeed(encoder.Encode(cfg))
 
-	return f.Close()
+	must.Succeed(f.Close())
 }

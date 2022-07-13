@@ -21,7 +21,7 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func licenseWorkflow(cfg *core.GithubWorkflowConfiguration) error {
+func licenseWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	ignorePaths := cfg.Global.IgnorePaths
 	if cfg.License.IgnorePaths != nil {
 		ignorePaths = cfg.License.IgnorePaths
@@ -58,5 +58,5 @@ func licenseWorkflow(cfg *core.GithubWorkflowConfiguration) error {
 	})
 	w.Jobs = map[string]job{"addlicense": j}
 
-	return writeWorkflowToFile(w)
+	writeWorkflowToFile(w)
 }

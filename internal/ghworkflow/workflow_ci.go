@@ -21,7 +21,7 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bool) error {
+func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bool) {
 	goVersion := cfg.Global.GoVersion
 	ignorePaths := cfg.Global.IgnorePaths
 	if cfg.CI.IgnorePaths != nil {
@@ -146,7 +146,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 	}
 	w.Jobs["test"] = testJob
 
-	return writeWorkflowToFile(w)
+	writeWorkflowToFile(w)
 }
 
 type buildTestJobOpts struct {

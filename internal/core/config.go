@@ -19,10 +19,10 @@
 package core
 
 import (
-	"errors"
-	"fmt"
 	"os/exec"
 	"strings"
+
+	"github.com/sapcc/go-bits/logg"
 
 	"github.com/sapcc/go-makefile-maker/internal/renovate"
 )
@@ -189,10 +189,10 @@ type Metadata struct {
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions
 
-func (c *Configuration) Validate() error {
+func (c *Configuration) Validate() {
 	// Validate GolangciLintConfiguration.
 	if len(c.GolangciLint.ErrcheckExcludes) > 0 && !c.GolangciLint.CreateConfig {
-		return errors.New("golangciLint.createConfig needs to be set to 'true' if golangciLint.errcheckExcludes is defined")
+		logg.Fatal("golangciLint.createConfig needs to be set to 'true' if golangciLint.errcheckExcludes is defined")
 	}
 
 	// Validate GithubWorkflowConfiguration.
@@ -203,12 +203,12 @@ func (c *Configuration) Validate() error {
 			errMsg := "could not find default branch using git, you can define manually be setting 'githubWorkflow.global.defaultBranch' in config"
 			b, err := exec.Command("git", "symbolic-ref", "refs/remotes/origin/HEAD").CombinedOutput()
 			if err != nil {
-				return fmt.Errorf("%s: %s", errMsg, err.Error())
+				logg.Fatal("%s: %s", errMsg, err.Error())
 			}
 
 			branch := strings.TrimPrefix(string(b), "refs/remotes/origin/")
 			if branch == string(b) {
-				return errors.New(errMsg)
+				logg.Fatal(errMsg)
 			} else {
 				c.GitHubWorkflow.Global.DefaultBranch = strings.TrimSpace(branch)
 			}
@@ -217,15 +217,13 @@ func (c *Configuration) Validate() error {
 		// Validate CI workflow configuration.
 		if ghwCfg.CI.Postgres.Enabled || ghwCfg.CI.KubernetesEnvtest.Enabled {
 			if !ghwCfg.CI.Enabled {
-				return errors.New("githubWorkflow.ci.enabled needs to be set to 'true' when githubWorkflow.ci.postgres or githubWorkflow.ci.kubernetesEnvtest is enabled")
+				logg.Fatal("githubWorkflow.ci.enabled needs to be set to 'true' when githubWorkflow.ci.postgres or githubWorkflow.ci.kubernetesEnvtest is enabled")
 			}
 			if len(ghwCfg.CI.RunnerOSList) > 0 {
 				if len(ghwCfg.CI.RunnerOSList) > 1 || !strings.HasPrefix(ghwCfg.CI.RunnerOSList[0], "ubuntu") {
-					return errors.New("githubWorkflow.ci.runOn must only define a single Ubuntu based runner when githubWorkflow.ci.postgres or githubWorkflow.ci.kubernetesEnvtest is enabled")
+					logg.Fatal("githubWorkflow.ci.runOn must only define a single Ubuntu based runner when githubWorkflow.ci.postgres or githubWorkflow.ci.kubernetesEnvtest is enabled")
 				}
 			}
 		}
 	}
-
-	return nil
 }

@@ -22,20 +22,17 @@ import (
 
 	_ "embed"
 
-	"github.com/sapcc/go-makefile-maker/internal/core"
-	"github.com/sapcc/go-makefile-maker/internal/util"
-)
+	"github.com/sapcc/go-bits/must"
 
-func mustI(_ int, err error) {
-	util.Must(err)
-}
+	"github.com/sapcc/go-makefile-maker/internal/core"
+)
 
 //go:embed Dockerfile.template
 var template []byte
 
 var argStatementRx = regexp.MustCompile(`^ARG\s*(\w+)\s*=\s*(.+?)\s*$`)
 
-func RenderConfig(cfg core.Configuration) error {
+func RenderConfig(cfg core.Configuration) {
 	//read "ARG" statements from `Dockerfile.template`
 	buildArgs := make(map[string]string)
 	for _, line := range strings.Split(string(template), "\n") {
@@ -95,35 +92,29 @@ WORKDIR /var/empty
 ENTRYPOINT [ %[7]s ]
 `, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], goBuildflags, cfg.Metadata.URL, packages, user, entrypoint)
 
-	f, err := os.Create("Dockerfile")
-	util.Must(err)
+	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 
-	mustI(f.WriteString(dockerfile))
-	util.Must(f.Close())
+	dockerignoreLines := append([]string{
+		`.dockerignore`,
+		`# TODO: uncomment when applications no longer use git to get version information`,
+		`#.git/`,
+		`.github/`,
+		`.gitignore`,
+		`.goreleaser.yml`,
+		`/*.env*`,
+		`.golangci.yaml`,
+		`build/`,
+		`CONTRIBUTING.md`,
+		`Dockerfile`,
+		`docs/`,
+		`LICENSE*`,
+		`Makefile.maker.yaml`,
+		`README.md`,
+		`report.html`,
+		`shell.nix`,
+		`/testing/`,
+	}, cfg.Dockerfile.ExtraIgnores...)
+	dockerignore := strings.Join(dockerignoreLines, "\n") + "\n"
 
-	f, err = os.Create(".dockerignore")
-	util.Must(err)
-
-	mustI(f.WriteString(
-		`.dockerignore
-# TODO: uncomment when applications no longer use git to get version information
-#.git/
-.github/
-.gitignore
-.goreleaser.yml
-/*.env*
-.golangci.yaml
-build/
-CONTRIBUTING.md
-Dockerfile
-docs/
-LICENSE*
-Makefile.maker.yaml
-README.md
-report.html
-shell.nix
-/testing/
-`))
-	mustI(f.WriteString(strings.Join(cfg.Dockerfile.ExtraIgnores, "\n") + "\n"))
-	return f.Close()
+	must.Succeed(os.WriteFile(".dockerignore", []byte(dockerignore), 0666))
 }
