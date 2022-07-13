@@ -19,7 +19,6 @@
 package core
 
 import (
-	"log"
 	"os/exec"
 	"strings"
 
@@ -209,7 +208,7 @@ func (c *Configuration) Validate() {
 
 			branch := strings.TrimPrefix(string(b), "refs/remotes/origin/")
 			if branch == string(b) {
-				log.Fatal(errMsg)
+				logg.Fatal(errMsg)
 			} else {
 				c.GitHubWorkflow.Global.DefaultBranch = strings.TrimSpace(branch)
 			}
@@ -218,7 +217,7 @@ func (c *Configuration) Validate() {
 		// Validate CI workflow configuration.
 		if ghwCfg.CI.Postgres.Enabled || ghwCfg.CI.KubernetesEnvtest.Enabled {
 			if !ghwCfg.CI.Enabled {
-				log.Fatal("githubWorkflow.ci.enabled needs to be set to 'true' when githubWorkflow.ci.postgres or githubWorkflow.ci.kubernetesEnvtest is enabled")
+				logg.Fatal("githubWorkflow.ci.enabled needs to be set to 'true' when githubWorkflow.ci.postgres or githubWorkflow.ci.kubernetesEnvtest is enabled")
 			}
 			if len(ghwCfg.CI.RunnerOSList) > 0 {
 				if len(ghwCfg.CI.RunnerOSList) > 1 || !strings.HasPrefix(ghwCfg.CI.RunnerOSList[0], "ubuntu") {
