@@ -35,6 +35,7 @@ type ScanResult struct {
 	GoVersion            string           // from "go" directive in go.mod, e.g. "1.17"
 	GoDirectDependencies []module.Version // from "require" directive(s) in go.mod without the "// indirect" comment
 	HasBinInfo           bool             // whether we can produce linker instructions for "github.com/sapcc/go-api-declarations/bininfo"
+	UsesPostgres         bool             // wether postgres is used
 }
 
 func Scan() ScanResult {
@@ -44,6 +45,8 @@ func Scan() ScanResult {
 
 	var goDeps []module.Version
 	hasBinInfo := false
+	usesPostgres := false
+
 	for _, v := range modFile.Require {
 		if !v.Indirect {
 			goDeps = append(goDeps, v.Mod)
@@ -53,6 +56,9 @@ func Scan() ScanResult {
 				hasBinInfo = true
 			}
 		}
+		if v.Mod.Path == "github.com/lib/pq" {
+			usesPostgres = true
+		}
 	}
 
 	return ScanResult{
@@ -60,6 +66,7 @@ func Scan() ScanResult {
 		ModulePath:           modFile.Module.Mod.Path,
 		GoDirectDependencies: goDeps,
 		HasBinInfo:           hasBinInfo,
+		UsesPostgres:         usesPostgres,
 	}
 }
 
