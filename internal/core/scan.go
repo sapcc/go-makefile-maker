@@ -63,7 +63,7 @@ func Scan() ScanResult {
 	}
 }
 
-//MustModulePath reads the ModulePath field, but fails if it is empty.
+// MustModulePath reads the ModulePath field, but fails if it is empty.
 func (sr ScanResult) MustModulePath() string {
 	if sr.ModulePath == "" {
 		logg.Fatal("could not find module path from go.mod file, make sure it is defined")

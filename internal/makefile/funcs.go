@@ -25,11 +25,11 @@ import (
 
 var isRecipeRx = regexp.MustCompile(`^\s+\S`)
 
-//FixRuleIndentation takes a Makefile snippet from our YAML input, and ensures
-//that recipes (the shell commands inside a Makefile rule) are correctly
-//indented with tabs instead of spaces. This is important because YAML requires
-//spaces for indentation, so writing out the tabs correctly in the Makefile is
-//cumbersome and error-prone.
+// FixRuleIndentation takes a Makefile snippet from our YAML input, and ensures
+// that recipes (the shell commands inside a Makefile rule) are correctly
+// indented with tabs instead of spaces. This is important because YAML requires
+// spaces for indentation, so writing out the tabs correctly in the Makefile is
+// cumbersome and error-prone.
 func FixRuleIndentation(in string) string {
 	var out strings.Builder
 	var currentRecipeLines []string
@@ -55,8 +55,8 @@ func FixRuleIndentation(in string) string {
 	return out.String()
 }
 
-//Helper for FixRuleIndentation(): Replace consistent leading whitespace on the
-//given set of lines with a single tab.
+// Helper for FixRuleIndentation(): Replace consistent leading whitespace on the
+// given set of lines with a single tab.
 func fixRecipeIndentation(lines []string) []string {
 	prefixLen := 0
 	for prefixLen+1 < len(lines[0]) {
