@@ -314,8 +314,12 @@ endif
 	for _, bin := range binaries {
 		if bin.InstallTo != "" {
 			r.prerequisites = append(r.prerequisites, fmt.Sprintf("build/%s", bin.Name))
+			// stupid MacOS does not have -D
 			r.recipe = append(r.recipe, fmt.Sprintf(
-				`install -D -m 0755 build/%s "$(DESTDIR)$(PREFIX)/%s/%s"`,
+				`install -d -m 0755 "$(DESTDIR)$(PREFIX)/%s"`, filepath.Clean(bin.InstallTo),
+			))
+			r.recipe = append(r.recipe, fmt.Sprintf(
+				`install -m 0755 build/%s "$(DESTDIR)$(PREFIX)/%s/%s"`,
 				bin.Name, filepath.Clean(bin.InstallTo), bin.Name,
 			))
 		}
