@@ -29,6 +29,12 @@ var configTmpl = template.Must(template.New("golangci").Parse(strings.TrimSpace(
 run:
 	deadline: 3m # 1m by default
 	modules-download-mode: {{ .ModDownloadMode }}
+	{{- if .SkipDirs }}
+	skip-dirs:
+		{{- range .SkipDirs }}
+		- {{ . }}
+		{{- end }}
+	{{- end }}
 
 output:
 	# Do not print lines of code with issue.
@@ -112,6 +118,7 @@ type configTmplData struct {
 	ModDownloadMode     string
 	MisspellIgnoreWords []string
 	ErrcheckExcludes    []string
+	SkipDirs            []string
 }
 
 func RenderConfig(cfg core.GolangciLintConfiguration, vendoring bool, modulePath string, misspellIgnoreWords []string) {
@@ -127,6 +134,7 @@ func RenderConfig(cfg core.GolangciLintConfiguration, vendoring bool, modulePath
 		ModDownloadMode:     mode,
 		MisspellIgnoreWords: misspellIgnoreWords,
 		ErrcheckExcludes:    cfg.ErrcheckExcludes,
+		SkipDirs:            cfg.SkipDirs,
 	}))
 	fmt.Fprintln(f) // empty line at end
 

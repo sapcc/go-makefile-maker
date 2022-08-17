@@ -94,6 +94,7 @@ type VendoringConfiguration struct {
 type GolangciLintConfiguration struct {
 	CreateConfig     bool     `yaml:"createConfig"`
 	ErrcheckExcludes []string `yaml:"errcheckExcludes"`
+	SkipDirs         []string `yaml:"skipDirs"`
 }
 
 // SpellCheckConfiguration appears in type Configuration.
