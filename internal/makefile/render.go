@@ -68,7 +68,7 @@ func Render(cfg *core.Configuration, sr core.ScanResult) {
 	fmt.Fprintln(f, ".PHONY: FORCE")
 
 	if sr.UsesPostgres {
-		must.Succeed(os.Mkdir("testing", os.ModePerm))
+		must.Succeed(os.MkdirAll("testing", os.ModePerm))
 		must.Succeed(os.WriteFile("testing/with-postgres-db.sh", withPostgresDBScript, 0666))
 	}
 }
