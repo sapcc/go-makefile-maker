@@ -3,7 +3,7 @@ module github.com/sapcc/go-makefile-maker
 go 1.19
 
 require (
-	github.com/sapcc/go-bits v0.0.0-20220818150340-83be1a419ef1
+	github.com/sapcc/go-bits v0.0.0-20220819141629-31b96bd61763
 	golang.org/x/mod v0.5.1
 	gopkg.in/yaml.v3 v3.0.1
 )
