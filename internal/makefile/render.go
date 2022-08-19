@@ -15,6 +15,7 @@
 package makefile
 
 import (
+	_ "embed"
 	"fmt"
 	"io"
 	"os"
@@ -24,6 +25,9 @@ import (
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
+
+//go:embed with-postgres-db.sh
+var withPostgresDBScript []byte
 
 // Render renders the Makefile.
 func Render(cfg *core.Configuration, sr core.ScanResult) {
@@ -62,6 +66,11 @@ func Render(cfg *core.Configuration, sr core.ScanResult) {
 	m.help().render(f)
 	fmt.Fprintln(f)
 	fmt.Fprintln(f, ".PHONY: FORCE")
+
+	if sr.UsesPostgres {
+		must.Succeed(os.Mkdir("testing", os.ModePerm))
+		must.Succeed(os.WriteFile("testing/with-postgres-db.sh", withPostgresDBScript, 0666))
+	}
 }
 
 // makefile holds the components of a Makefile.
@@ -177,7 +186,7 @@ func (r *rule) render(w io.Writer) {
 		fmt.Fprintln(w)
 	}
 
-	// Render rule hdr, i.e. target and prequisites.
+	// Render rule hdr, i.e. target and prerequisites.
 	hdr := r.target + ":"
 	if r.phony {
 		hdr += " FORCE"
