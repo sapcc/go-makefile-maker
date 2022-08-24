@@ -136,7 +136,6 @@ linters:
 	disable-all: true
 	enable:
 		- bodyclose
-		- deadcode
 		- dupl
 		- errcheck
 		- exportloopref
@@ -153,14 +152,12 @@ linters:
 		- rowserrcheck
 		- sqlclosecheck
 		- staticcheck
-		- structcheck
 		- stylecheck
 		- typecheck
 		- unconvert
 		- unparam
 		- unused
 		- usestdlibvars
-		- varcheck
 		- whitespace
 `, "\t", "  "))))
 
