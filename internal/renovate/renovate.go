@@ -74,7 +74,7 @@ func RenderConfig(
 			"gomodUpdateImportPaths",
 		},
 		PrHourlyLimit:   0,
-		Schedule: []string{"before 8am on Friday"},
+		Schedule:        []string{"before 8am on Friday"},
 		SemanticCommits: "disabled",
 	}
 	if goVersion == "1.17" {
