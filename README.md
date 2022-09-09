@@ -243,7 +243,7 @@ renovate:
       enabled: false
 ```
 
-Generate [RenovateBot](https://renovatebot.com/) config to automatically create pull requests with dependency updates.
+Generate [RenovateBot](https://renovatebot.com/) config to automatically create pull requests weekly on Fridays with dependency updates.
 
 Optionally overwrite go version with `goVersion`, by default the Go version from `go.mod` file will be used.
 
@@ -251,6 +251,8 @@ Additionally, you can also define [`packageRules`](https://docs.renovatebot.com/
 
 ```yaml
 packageRules:
+  - matchPackagePatterns: [".*"]
+    groupName: "all" # group all PRs together
   - matchPackageNames: ["golang"]
     allowedVersions: $goVersion.x
   - matchDepTypes: ["action"]

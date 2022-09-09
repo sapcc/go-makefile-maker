@@ -35,11 +35,13 @@ type config struct {
 	PostUpdateOptions []string      `json:"postUpdateOptions"`
 	PackageRules      []PackageRule `json:"packageRules,omitempty"`
 	PrHourlyLimit     int           `json:"prHourlyLimit"`
+	Schedule          []string      `json:"schedule"`
 	SemanticCommits   string        `json:"semanticCommits,omitempty"`
 }
 
 type PackageRule struct {
 	MatchPackageNames    []string `yaml:"matchPackageNames" json:"matchPackageNames,omitempty"`
+	MatchPackagePatterns []string `yaml:"matchPackagePatterns" json:"matchPackagePatterns,omitempty"`
 	MatchPackagePrefixes []string `yaml:"matchPackagePrefixes" json:"matchPackagePrefixes,omitempty"`
 	MatchUpdateTypes     []string `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
 	MatchDepTypes        []string `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
@@ -47,6 +49,7 @@ type PackageRule struct {
 	AllowedVersions      string   `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
 	AutoMerge            bool     `yaml:"automerge" json:"automerge,omitempty"`
 	EnableRenovate       *bool    `yaml:"enabled" json:"enabled,omitempty"`
+	GroupName            string   `yaml:"groupName" json:"groupName,omitempty"`
 }
 
 func (c *config) addPackageRule(rule PackageRule) {
@@ -71,6 +74,7 @@ func RenderConfig(
 			"gomodUpdateImportPaths",
 		},
 		PrHourlyLimit:   0,
+		Schedule: []string{"before 8am on Friday"},
 		SemanticCommits: "disabled",
 	}
 	if goVersion == "1.17" {
@@ -86,6 +90,10 @@ func RenderConfig(
 	cfg.addPackageRule(PackageRule{
 		MatchPackageNames: []string{"golang"},
 		AllowedVersions:   fmt.Sprintf("%s.x", goVersion),
+	})
+	cfg.addPackageRule(PackageRule{
+		MatchPackagePatterns: []string{".*"},
+		GroupName:            "all",
 	})
 	// Only enable Dockerfile and github-actions updates for go-makefile-maker itself.
 	if isGoMakefileMakerRepo {
