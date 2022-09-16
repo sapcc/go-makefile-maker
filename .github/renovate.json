@@ -27,12 +27,6 @@
         ".*"
       ],
       "groupName": "all"
-    },
-    {
-      "matchPackagePrefixes": [
-        "github.com/sapcc/go-bits"
-      ],
-      "automerge": true
     }
   ],
   "prHourlyLimit": 0,

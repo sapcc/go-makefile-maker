@@ -91,6 +91,7 @@ func RenderConfig(
 		MatchPackageNames: []string{"golang"},
 		AllowedVersions:   fmt.Sprintf("%s.x", goVersion),
 	})
+	// incompatible with auto merge
 	cfg.addPackageRule(PackageRule{
 		MatchPackagePatterns: []string{".*"},
 		GroupName:            "all",
@@ -110,12 +111,14 @@ func RenderConfig(
 		switch dep := v.Path; {
 		case strings.HasPrefix(dep, "k8s.io/"):
 			hasK8sIOPkgs = true
-		case dep == "github.com/sapcc/go-api-declarations":
-			autoMergePkgs = append(autoMergePkgs, "github.com/sapcc/go-api-declarations")
-		case dep == "github.com/sapcc/gophercloud-sapcc":
-			autoMergePkgs = append(autoMergePkgs, "github.com/sapcc/gophercloud-sapcc")
-		case dep == "github.com/sapcc/go-bits":
-			autoMergePkgs = append(autoMergePkgs, "github.com/sapcc/go-bits")
+			// Disabled because combined ("all") PRs containing one of theses dependencies would be auto merged
+			// even when containing dependencies which are not listed here
+			// case dep == "github.com/sapcc/go-api-declarations":
+			// 	autoMergePkgs = append(autoMergePkgs, "github.com/sapcc/go-api-declarations")
+			// case dep == "github.com/sapcc/gophercloud-sapcc":
+			// 	autoMergePkgs = append(autoMergePkgs, "github.com/sapcc/gophercloud-sapcc")
+			// case dep == "github.com/sapcc/go-bits":
+			// 	autoMergePkgs = append(autoMergePkgs, "github.com/sapcc/go-bits")
 		}
 	}
 	if hasK8sIOPkgs {
