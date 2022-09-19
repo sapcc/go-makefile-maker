@@ -40,16 +40,17 @@ type config struct {
 }
 
 type PackageRule struct {
-	MatchPackageNames    []string `yaml:"matchPackageNames" json:"matchPackageNames,omitempty"`
-	MatchPackagePatterns []string `yaml:"matchPackagePatterns" json:"matchPackagePatterns,omitempty"`
-	MatchPackagePrefixes []string `yaml:"matchPackagePrefixes" json:"matchPackagePrefixes,omitempty"`
-	MatchUpdateTypes     []string `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
-	MatchDepTypes        []string `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
-	MatchFiles           []string `yaml:"matchFiles" json:"matchFiles,omitempty"`
-	AllowedVersions      string   `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
-	AutoMerge            bool     `yaml:"automerge" json:"automerge,omitempty"`
-	EnableRenovate       *bool    `yaml:"enabled" json:"enabled,omitempty"`
-	GroupName            string   `yaml:"groupName" json:"groupName,omitempty"`
+	ExcludePackagePatterns []string `yaml:"excludePackagePatterns" json:"excludePackagePatterns,omitempty"`
+	MatchPackageNames      []string `yaml:"matchPackageNames" json:"matchPackageNames,omitempty"`
+	MatchPackagePatterns   []string `yaml:"matchPackagePatterns" json:"matchPackagePatterns,omitempty"`
+	MatchPackagePrefixes   []string `yaml:"matchPackagePrefixes" json:"matchPackagePrefixes,omitempty"`
+	MatchUpdateTypes       []string `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
+	MatchDepTypes          []string `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
+	MatchFiles             []string `yaml:"matchFiles" json:"matchFiles,omitempty"`
+	AllowedVersions        string   `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
+	AutoMerge              bool     `yaml:"automerge" json:"automerge,omitempty"`
+	EnableRenovate         *bool    `yaml:"enabled" json:"enabled,omitempty"`
+	GroupName              string   `yaml:"groupName" json:"groupName,omitempty"`
 }
 
 func (c *config) addPackageRule(rule PackageRule) {
@@ -91,11 +92,22 @@ func RenderConfig(
 		MatchPackageNames: []string{"golang"},
 		AllowedVersions:   fmt.Sprintf("%s.x", goVersion),
 	})
-	// incompatible with auto merge
+
+	// combine and automerge all dependencies under github.com/sapcc/
 	cfg.addPackageRule(PackageRule{
-		MatchPackagePatterns: []string{".*"},
-		GroupName:            "all",
+		MatchPackagePatterns: []string{`^github\.com\/sapcc\/.*`},
+		GroupName:            "github.com/sapcc",
+		AutoMerge:            true,
 	})
+
+	// combine all dependencies not under github.com/sapcc/
+	cfg.addPackageRule(PackageRule{
+		MatchPackagePatterns:   []string{`.*`},
+		ExcludePackagePatterns: []string{`^github\.com\/sapcc\/.*`},
+		GroupName:              "External dependencies",
+		AutoMerge:              false,
+	})
+
 	// Only enable Dockerfile and github-actions updates for go-makefile-maker itself.
 	if isGoMakefileMakerRepo {
 		cfg.Extends = append(cfg.Extends, "docker:enableMajor", "regexManagers:dockerfileVersions")
@@ -106,19 +118,10 @@ func RenderConfig(
 		})
 	}
 	hasK8sIOPkgs := false
-	var autoMergePkgs []string
 	for _, v := range goDeps {
 		switch dep := v.Path; {
 		case strings.HasPrefix(dep, "k8s.io/"):
 			hasK8sIOPkgs = true
-			// Disabled because combined ("all") PRs containing one of theses dependencies would be auto merged
-			// even when containing dependencies which are not listed here
-			// case dep == "github.com/sapcc/go-api-declarations":
-			// 	autoMergePkgs = append(autoMergePkgs, "github.com/sapcc/go-api-declarations")
-			// case dep == "github.com/sapcc/gophercloud-sapcc":
-			// 	autoMergePkgs = append(autoMergePkgs, "github.com/sapcc/gophercloud-sapcc")
-			// case dep == "github.com/sapcc/go-bits":
-			// 	autoMergePkgs = append(autoMergePkgs, "github.com/sapcc/go-bits")
 		}
 	}
 	if hasK8sIOPkgs {
@@ -128,12 +131,6 @@ func RenderConfig(
 			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.22 instead of 1.22.
 			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
 			AllowedVersions: "0.22.x",
-		})
-	}
-	if len(autoMergePkgs) > 0 {
-		cfg.addPackageRule(PackageRule{
-			MatchPackagePrefixes: autoMergePkgs,
-			AutoMerge:            true,
 		})
 	}
 
