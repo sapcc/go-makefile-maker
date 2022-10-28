@@ -223,15 +223,17 @@ endif
 		})
 	}
 
-	dev.addRule(rule{
-		description: "Add license headers to all .go files excluding the vendor directory.",
-		target:      "license-headers",
-		phony:       true,
-		recipe: []string{
-			`@if ! hash addlicense 2>/dev/null; then printf "\e[1;36m>> Installing addlicense...\e[0m\n"; go install github.com/google/addlicense@latest; fi`,
-			`find * \( -name vendor -type d -prune \) -o \( -name \*.go -exec addlicense -c "SAP SE" -- {} + \)`,
-		},
-	})
+	if strings.HasPrefix(sr.ModulePath, "github.com/sapcc") || strings.HasPrefix(sr.ModulePath, "github.wdf.sap.corp") || strings.HasPrefix(sr.ModulePath, "github.tools.sap") {
+		dev.addRule(rule{
+			description: "Add license headers to all .go files excluding the vendor directory.",
+			target:      "license-headers",
+			phony:       true,
+			recipe: []string{
+				`@if ! hash addlicense 2>/dev/null; then printf "\e[1;36m>> Installing addlicense...\e[0m\n"; go install github.com/google/addlicense@latest; fi`,
+				`find * \( -name vendor -type d -prune \) -o \( -name \*.go -exec addlicense -c "SAP SE" -- {} + \)`,
+			},
+		})
+	}
 
 	//add cleaning target
 	dev.addRule(rule{
