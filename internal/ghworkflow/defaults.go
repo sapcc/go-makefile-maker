@@ -19,7 +19,7 @@ package ghworkflow
 
 const (
 	defaultPostgresVersion   = "12"
-	defaultK8sEnvtestVersion = "1.22.x!"
+	defaultK8sEnvtestVersion = "1.23.x!"
 	defaultRunnerOS          = "ubuntu-latest"
 )
 
