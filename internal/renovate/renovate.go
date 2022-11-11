@@ -127,10 +127,10 @@ func RenderConfig(
 	if hasK8sIOPkgs {
 		cfg.addPackageRule(PackageRule{
 			MatchPackagePrefixes: []string{"k8s.io/"},
-			// Since our clusters use k8s v1.22 therefore we set the allowedVersions to `0.22.x`.
-			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.22 instead of 1.22.
+			// Since our clusters use k8s v1.25 therefore we set the allowedVersions to `0.25.x`.
+			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.25 instead of 1.25.
 			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
-			AllowedVersions: "0.22.x",
+			AllowedVersions: "0.25.x",
 		})
 	}
 

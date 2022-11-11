@@ -261,7 +261,7 @@ packageRules:
     enabled: false # because dockerfile will be updated by go-makefile-maker itself, see docker config section above.
   # This package rule will be added if go.mod file has a `k8s.io/*` dependency.
   - matchPackagePrefixes: ["k8s.io/"]
-    allowedVersions: 0.22.x
+    allowedVersions: 0.25.x
   # This package rule will be added along with the required matchPackagePrefixes if go.mod file has the respective dependencies.
   - matchPackagePrefixes:
       - github.com/sapcc/go-api-declarations
@@ -345,7 +345,7 @@ ci:
     version: 12
   kubernetesEnvtest:
     enabled: true
-    version: 1.22.x!
+    version: 1.25.x!
   ignorePaths: []
 ```
 
@@ -367,7 +367,7 @@ If `kubernetesEnvtest.enabled` is `true` then
 using
 [`setup-envtest`](https://pkg.go.dev/sigs.k8s.io/controller-runtime/tools/setup-envtest)
 for the `test` job. The version for binaries can be specified using the
-`kubernetesEnvtest.version` field. By default `1.22.x!` is used as the version.
+`kubernetesEnvtest.version` field. By default `1.25.x!` is used as the version.
 
 `ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this particular workflow.
 
