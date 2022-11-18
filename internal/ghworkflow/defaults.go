@@ -27,7 +27,7 @@ const (
 	cacheAction            = "actions/cache@v3"
 	checkoutAction         = "actions/checkout@v3"
 	setupGoAction          = "actions/setup-go@v3"
-	dependencyReviewAction = "actions/dependency-review-action@v2"
+	dependencyReviewAction = "actions/dependency-review-action@v3"
 
 	codeqlInitAction    = "github/codeql-action/init@v2"
 	codeqlAnalyzeAction = "github/codeql-action/analyze@v2"
