@@ -41,7 +41,8 @@ install: FORCE build/go-makefile-maker
 GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./...)
 # which packages to measure coverage for
 GO_COVERPKGS := $(shell go list ./...)
-# to get around weird Makefile syntax restrictions, we need variables containing a space and comma
+# to get around weird Makefile syntax restrictions, we need variables containing nothing, a space and comma
+null :=
 space := $(null) $(null)
 comma := ,
 

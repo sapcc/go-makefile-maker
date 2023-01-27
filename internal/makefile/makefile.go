@@ -110,7 +110,8 @@ endif
 		coverPkgGreps += fmt.Sprintf(" | grep -Ev '%s'", cfg.Coverage.Except)
 	}
 	test.addDefinition(`GO_COVERPKGS := $(shell go list ./...%s)`, coverPkgGreps)
-	test.addDefinition(`# to get around weird Makefile syntax restrictions, we need variables containing a space and comma`)
+	test.addDefinition(`# to get around weird Makefile syntax restrictions, we need variables containing nothing, a space and comma`)
+	test.addDefinition(`null :=`)
 	test.addDefinition(`space := $(null) $(null)`)
 	test.addDefinition(`comma := ,`)
 
