@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/sapcc/go-bits/must"
@@ -62,7 +64,8 @@ func Render(cfg *core.Configuration, sr core.ScanResult) {
 			}
 		}
 	}
-	// Add help and phony target at the end of the Makefile.
+	// Add targets generated from other targets at the end of the Makefile.
+	m.vars().render(f)
 	m.help().render(f)
 	fmt.Fprintln(f)
 	fmt.Fprintln(f, ".PHONY: FORCE")
@@ -76,6 +79,51 @@ func Render(cfg *core.Configuration, sr core.ScanResult) {
 // makefile holds the components of a Makefile.
 type makefile struct {
 	categories []category
+}
+
+func (m *makefile) vars() *rule {
+	//collect all variable refs that look like $(THIS) or $(LIKE_THAT) from definitions and recipes
+	varRefRx := regexp.MustCompile(`\$\([A-Za-z_][A-Za-z0-9_]*\)`)
+	isVarRef := make(map[string]bool)
+	searchIn := func(inputs []string) {
+		for _, input := range inputs {
+			for _, match := range varRefRx.FindAllString(input, -1) {
+				isVarRef[match] = true
+			}
+		}
+	}
+	for _, c := range m.categories {
+		searchIn(c.definitions)
+		for _, r := range c.rules {
+			searchIn(r.definitions)
+			searchIn(r.recipe)
+		}
+	}
+
+	//skip some variables that we only use internally to circumvent Makefile syntax limitations
+	delete(isVarRef, "$(comma)")
+	delete(isVarRef, "$(null)")
+	delete(isVarRef, "$(space)")
+
+	//compile a sorted list of variable names
+	var varNames []string
+	for varRef := range isVarRef {
+		str := strings.TrimPrefix(varRef, "$(")
+		str = strings.TrimSuffix(str, ")")
+		varNames = append(varNames, str)
+	}
+	sort.Strings(varNames)
+
+	//generate a target printing their values (the output is not colorized to allow usage like `eval "$(make vars)"`)
+	result := rule{
+		phony:  true,
+		target: "vars",
+	}
+	for _, varName := range varNames {
+		result.addRecipe(`@printf "%[1]s=$(%[1]s)\n"`, varName)
+	}
+
+	return &result
 }
 
 func (m *makefile) help() *rule {
@@ -103,7 +151,7 @@ func (m *makefile) help() *rule {
 			}
 		}
 	}
-	hasDescriptiveTarget["general"] = true // because `make help` belongs to general
+	hasDescriptiveTarget["general"] = true // because `make vars/help` belong to general
 
 	for _, c := range m.categories {
 		cName := c.name
@@ -115,7 +163,8 @@ func (m *makefile) help() *rule {
 		cNameTitleCase := strings.Title(cName) //nolint:staticcheck //ignore SA1019 (strings.Title is still fine for ASCII-only input)
 		result.addRecipe(`@printf "%s\n"`, brightStr(cNameTitleCase))
 		if cName == "general" {
-			// Add help description to general.
+			// Add help for targets generated from other targets.
+			result.addRecipe(targetDescStr(longestTargetCharCount, "vars", "Display values of relevant Makefile variables."))
 			result.addRecipe(targetDescStr(longestTargetCharCount, "help", "Display this help."))
 		}
 

@@ -83,12 +83,21 @@ license-headers: FORCE
 clean: FORCE
 	git clean -dxf build
 
+vars: FORCE
+	@printf "DESTDIR=$(DESTDIR)\n"
+	@printf "GO_BUILDFLAGS=$(GO_BUILDFLAGS)\n"
+	@printf "GO_COVERPKGS=$(GO_COVERPKGS)\n"
+	@printf "GO_LDFLAGS=$(GO_LDFLAGS)\n"
+	@printf "GO_TESTENV=$(GO_TESTENV)\n"
+	@printf "GO_TESTPKGS=$(GO_TESTPKGS)\n"
+	@printf "PREFIX=$(PREFIX)\n"
 help: FORCE
 	@printf "\n"
 	@printf "\e[1mUsage:\e[0m\n"
 	@printf "  make \e[36m<target>\e[0m\n"
 	@printf "\n"
 	@printf "\e[1mGeneral\e[0m\n"
+	@printf "  \e[36mvars\e[0m                     Display values of relevant Makefile variables.\n"
 	@printf "  \e[36mhelp\e[0m                     Display this help.\n"
 	@printf "\n"
 	@printf "\e[1mBuild\e[0m\n"
