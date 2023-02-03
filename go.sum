@@ -1,5 +1,5 @@
-github.com/sapcc/go-bits v0.0.0-20230126153021-8e21336fc7f8 h1:fjiy7YnGDaRyReWha1ZbvWjLMbbt2FDHhFDrmDlvCzs=
-github.com/sapcc/go-bits v0.0.0-20230126153021-8e21336fc7f8/go.mod h1:kXLnyyteE5opVQhCTIEwZ9nL31PbcQFpHmzX14lK00U=
+github.com/sapcc/go-bits v0.0.0-20230127160334-4cfcb11b2ecb h1:hjTaf884mNe96WLGiVaKH/8/cp9QE2mkXuw7BtGUWxw=
+github.com/sapcc/go-bits v0.0.0-20230127160334-4cfcb11b2ecb/go.mod h1:kXLnyyteE5opVQhCTIEwZ9nL31PbcQFpHmzX14lK00U=
 golang.org/x/mod v0.7.0 h1:LapD9S96VoQRhi/GrNTqeBJFrUjs5UHCAtTlgwA5oZA=
 golang.org/x/mod v0.7.0/go.mod h1:iBbtSCu2XBx23ZKBPSOrRkjjQPZFPuis4dIYUhu/chs=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
