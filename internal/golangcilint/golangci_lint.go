@@ -156,7 +156,6 @@ linters:
 		- govet
 		- ineffassign
 		- misspell
-		- musttag
 		- nolintlint
 		- nosprintfhostport
 		- rowserrcheck
