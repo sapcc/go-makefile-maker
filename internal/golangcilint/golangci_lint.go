@@ -144,7 +144,6 @@ linters:
 		- dupl
 		- dupword
 		- errcheck
-		- errchkjson
 		- exportloopref
 		- forbidigo
 		- gocheckcompilerdirectives
