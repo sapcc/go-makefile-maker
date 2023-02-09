@@ -50,7 +50,7 @@ type permissions struct {
 	SecurityEvents githubTokenScope `yaml:"security-events,omitempty"`
 }
 
-// eventTriggers contains rules about the events that that trigger a specific
+// eventTriggers contains rules about the events that trigger a specific
 // workflow.
 // Ref: https://docs.github.com/en/actions/reference/events-that-trigger-workflows
 type eventTrigger struct {
