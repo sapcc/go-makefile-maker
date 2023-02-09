@@ -119,13 +119,17 @@ linters-settings:
 			{{- end }}
 	{{- end }}
 	usestdlibvars:
-	    http-method: true
-	    http-status-code: true
-	    time-weekday: true
-	    time-month: true
-	    time-layout: true
-	    crypto-hash: true
-	    default-rpc-path: true
+    constant-kind: true
+    crypto-hash: true
+		default-rpc-path: true
+		http-method: true
+		http-status-code: true
+		os-dev-null: true
+		rpc-default-path: true
+		time-weekday: true
+		time-month: true
+		time-layout: true
+		tls-signature-scheme: true
 	whitespace:
 		# Enforce newlines (or comments) after multi-line function signatures.
 		multi-func: true
@@ -136,10 +140,14 @@ linters:
 	disable-all: true
 	enable:
 		- bodyclose
+		- containedctx
 		- dupl
+		- dupword
 		- errcheck
+		- errchkjson
 		- exportloopref
 		- forbidigo
+		- gocheckcompilerdirectives
 		- gocritic
 		- gofmt
 		- goimports
@@ -148,11 +156,14 @@ linters:
 		- govet
 		- ineffassign
 		- misspell
+		- musttag
 		- nolintlint
+		- nosprintfhostport
 		- rowserrcheck
 		- sqlclosecheck
 		- staticcheck
 		- stylecheck
+		- tenv
 		- typecheck
 		- unconvert
 		- unparam
