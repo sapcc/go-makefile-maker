@@ -60,7 +60,20 @@ func (c *config) addPackageRule(rule PackageRule) {
 func RenderConfig(
 	assignees []string, customPackageRules []PackageRule,
 	goVersion string, goDeps []module.Version,
-	isGoMakefileMakerRepo bool) {
+	isGoMakefileMakerRepo, isApplicationRepo bool) {
+
+	// Our default rule is to have Renovate send us PRs once a week. (More
+	// frequent PRs become too overwhelming with the sheer amount of repos that
+	// we manage.) Friday works well for this because when we merge, we can let
+	// the changes simmer in QA over the weekend, and then have high confidence
+	// when we deploy these updates on Monday.
+	schedule := "before 8am on Friday"
+	// However, for pure library repos, we do the PRs on Thursday instead, so
+	// that the dependency updates in these library repos trickle down into the
+	// application repos without an extra week of delay.
+	if !isApplicationRepo {
+		schedule = "before 8am on Thursday"
+	}
 
 	cfg := config{
 		Extends: []string{
@@ -75,7 +88,7 @@ func RenderConfig(
 			"gomodUpdateImportPaths",
 		},
 		PrHourlyLimit:   0,
-		Schedule:        []string{"before 8am on Friday"},
+		Schedule:        []string{schedule},
 		SemanticCommits: "disabled",
 	}
 	if goVersion == "1.17" {
