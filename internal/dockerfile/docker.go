@@ -67,7 +67,7 @@ func RenderConfig(cfg core.Configuration) {
 	dockerfile := fmt.Sprintf(
 		`FROM golang:%[1]s%[2]s as builder
 
-RUN apk add --no-cache gcc git make musl-dev
+RUN apk add --no-cache --no-progress gcc git make musl-dev
 
 COPY . /src
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION # provided to 'make install'
@@ -77,7 +77,7 @@ RUN make -C /src install PREFIX=/pkg%[3]s
 
 FROM alpine:%[2]s
 
-RUN apk add --no-cache%[5]s
+RUN apk add --no-cache --no-progress%[5]s
 COPY --from=builder /pkg/ /usr/
 
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
