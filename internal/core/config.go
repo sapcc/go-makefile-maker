@@ -180,7 +180,8 @@ type DockerfileConfig struct {
 	Entrypoint    []string `yaml:"entrypoint"`
 	ExtraIgnores  []string `yaml:"extraIgnores"`
 	ExtraPackages []string `yaml:"extraPackages"`
-	User          string   `yaml:"user"`
+	RunAsRoot     bool     `yaml:"runAsRoot"`
+	User          string   `yaml:"user"` //obsolete; will produce an error when used
 }
 
 type Metadata struct {
