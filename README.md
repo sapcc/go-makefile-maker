@@ -47,7 +47,7 @@ The config file has the following sections:
 * [binaries](#binaries)
 * [testPackages](#testpackages)
 * [coverageTest](#coveragetest)
-* [docker](#docker)
+* [dockerfile](#dockerfile)
 * [variables](#variables)
 * [vendoring](#vendoring)
 * [golangciLint](#golangcilint)
@@ -116,7 +116,7 @@ By default, all packages inside the repository are subject to coverage testing, 
 The values in `only` and `except` are regexes for `grep -E`.
 Since only entire packages (not single source files) can be selected for coverage testing, the regexes have to match package names, not on file names.
 
-### `docker`
+### `dockerfile`
 
 ```yaml
 dockerfile:
@@ -132,11 +132,14 @@ dockerfile:
 ```
 
 When `enabled`, go-makefile-maker will generate a `Dockerfile` and a `.dockerignore` file.
+The Dockerfile uses the [Golang base image](https://hub.docker.com/_/golang) to run `make install`, then copies all installed files into a fresh [Alpine base image](https://hub.docker.com/_/alpine).
+The image is provisioned with a dedicated user account (name `appuser`, UID 4200, home directory `/home/appuser`) and user group (name `appgroup`, GID 4200) with stable names and IDs.
+This user account is intended for use with all payloads that do not require a root user.
 
 - `entrypoint` allows overwriting the final entrypoint.
 - `extraIgnores` appends entries in `.dockerignore` to the default ones.
 - `extraPackages` installs extra Alpine packages in the final Docker layer. `ca-certificates` is always installed.
-- `user` changes the arguments given to the Docker `USER` command. The default value is `nobody`.
+- `runAsRoot` skips the privilege drop in the Dockerfile, i.e. the `USER appuser:appgroup` command is not added.
 
 ### `variables`
 

@@ -22,6 +22,7 @@ import (
 
 	_ "embed"
 
+	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
@@ -33,6 +34,14 @@ var template []byte
 var argStatementRx = regexp.MustCompile(`^ARG\s*(\w+)\s*=\s*(.+?)\s*$`)
 
 func RenderConfig(cfg core.Configuration) {
+	if cfg.Dockerfile.User != "" {
+		if cfg.Dockerfile.User == "root" {
+			logg.Fatal("the `dockerfile.user` config option has been removed; set `dockerfile.runAsRoot` if you need to run as root")
+		} else {
+			logg.Fatal("the `dockerfile.user` config option has been removed; commands now run as user `appuser` (ID 4200) in group `appgroup` (ID 4200)")
+		}
+	}
+
 	//read "ARG" statements from `Dockerfile.template`
 	buildArgs := make(map[string]string)
 	for _, line := range strings.Split(string(template), "\n") {
@@ -42,7 +51,7 @@ func RenderConfig(cfg core.Configuration) {
 		}
 	}
 
-	var goBuildflags, packages, user, entrypoint string
+	var goBuildflags, packages, userCommand, entrypoint string
 
 	if cfg.Vendoring.Enabled {
 		goBuildflags = ` GO_BUILDFLAGS='-mod vendor'`
@@ -52,10 +61,13 @@ func RenderConfig(cfg core.Configuration) {
 		packages += fmt.Sprintf(" %s", v)
 	}
 
-	if cfg.Dockerfile.User != "" {
-		user = cfg.Dockerfile.User
+	if cfg.Dockerfile.RunAsRoot {
+		userCommand = ""
 	} else {
-		user = "nobody"
+		// this is the same as `USER appuser:appgroup`, but using numeric IDs
+		// should allow Kubernetes to validate the `runAsNonRoot` rule without
+		// requiring an explicit `runAsUser: 4200` setting in the container spec
+		userCommand = "USER 4200:4200\n"
 	}
 
 	if len(cfg.Dockerfile.Entrypoint) > 0 {
@@ -77,6 +89,8 @@ RUN make -C /src install PREFIX=/pkg%[3]s
 
 FROM alpine:%[2]s
 
+RUN addgroup -g 4200 appgroup
+RUN adduser -h /home/appuser -s /sbin/nologin -G appgroup -D -u 4200 appuser
 RUN apk add --no-cache --no-progress%[5]s
 COPY --from=builder /pkg/ /usr/
 
@@ -87,10 +101,9 @@ LABEL source_repository="%[4]s" \
   org.opencontainers.image.revision=${BININFO_COMMIT_HASH} \
   org.opencontainers.image.version=${BININFO_VERSION}
 
-USER %[6]s:%[6]s
-WORKDIR /var/empty
+%[6]sWORKDIR /var/empty
 ENTRYPOINT [ %[7]s ]
-`, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], goBuildflags, cfg.Metadata.URL, packages, user, entrypoint)
+`, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], goBuildflags, cfg.Metadata.URL, packages, userCommand, entrypoint)
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 
