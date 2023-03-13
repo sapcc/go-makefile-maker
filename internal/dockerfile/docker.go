@@ -76,6 +76,11 @@ func RenderConfig(cfg core.Configuration) {
 		entrypoint = fmt.Sprintf(`"/usr/bin/%s"`, cfg.Binaries[0].Name)
 	}
 
+	extraDirectives := strings.Join(cfg.Dockerfile.ExtraDirectives, "\n")
+	if extraDirectives != "" {
+		extraDirectives += "\n"
+	}
+
 	dockerfile := fmt.Sprintf(
 		`FROM golang:%[1]s%[2]s as builder
 
@@ -101,9 +106,9 @@ LABEL source_repository="%[4]s" \
   org.opencontainers.image.revision=${BININFO_COMMIT_HASH} \
   org.opencontainers.image.version=${BININFO_VERSION}
 
-%[6]sWORKDIR /var/empty
-ENTRYPOINT [ %[7]s ]
-`, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], goBuildflags, cfg.Metadata.URL, packages, userCommand, entrypoint)
+%[6]s%[7]sWORKDIR /var/empty
+ENTRYPOINT [ %[8]s ]
+`, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], goBuildflags, cfg.Metadata.URL, packages, extraDirectives, userCommand, entrypoint)
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 

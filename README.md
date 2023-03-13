@@ -39,7 +39,7 @@ In addition to the `Makefile`, you should also commit the `Makefile.maker.yaml` 
 
 `go-makefile-maker` requires a config file (`Makefile.maker.yaml`) in the [YAML format][yaml].
 
-Take a look at `go-makefile-maker`'s [own config file](./Makefile.maker.yaml) for an example of what a bare minimum config could like.
+Take a look at `go-makefile-maker`'s [own config file](./Makefile.maker.yaml) for an example of what a config could like.
 
 The config file has the following sections:
 
@@ -122,6 +122,8 @@ Since only entire packages (not single source files) can be selected for coverag
 dockerfile:
   enabled: true
   entrypoint: [ "/bin/bash", "--", "--arg" ]
+  extraDirectives:
+    - 'LABEL mylabel=myvalu'
   extraIgnores:
     - tmp
     - files
@@ -137,6 +139,7 @@ The image is provisioned with a dedicated user account (name `appuser`, UID 4200
 This user account is intended for use with all payloads that do not require a root user.
 
 - `entrypoint` allows overwriting the final entrypoint.
+- `extraDirectives` appends additional directives near the end of the Dockerfile.
 - `extraIgnores` appends entries in `.dockerignore` to the default ones.
 - `extraPackages` installs extra Alpine packages in the final Docker layer. `ca-certificates` is always installed.
 - `runAsRoot` skips the privilege drop in the Dockerfile, i.e. the `USER appuser:appgroup` command is not added.
