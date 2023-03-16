@@ -26,7 +26,7 @@ const (
 const (
 	cacheAction            = "actions/cache@v3"
 	checkoutAction         = "actions/checkout@v3"
-	setupGoAction          = "actions/setup-go@v3"
+	setupGoAction          = "actions/setup-go@v4"
 	dependencyReviewAction = "actions/dependency-review-action@v3"
 
 	codeqlInitAction    = "github/codeql-action/init@v2"
@@ -64,15 +64,12 @@ func baseJob(name string) job {
 	}
 }
 
-func baseJobWithGo(name, goVersion string, cacheGoModules bool) job {
+func baseJobWithGo(name, goVersion string) job {
 	j := baseJob(name)
 	step := jobStep{
 		Name: "Set up Go",
 		Uses: setupGoAction,
 		With: map[string]interface{}{"go-version": goVersion},
-	}
-	if cacheGoModules {
-		step.With["cache"] = true
 	}
 	j.addStep(step)
 	return j

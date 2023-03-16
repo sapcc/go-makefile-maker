@@ -44,7 +44,7 @@ func licenseWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	}
 
 	w := newWorkflow("License", cfg.Global.DefaultBranch, ignorePaths)
-	j := baseJobWithGo("Check", cfg.Global.GoVersion, false)
+	j := baseJobWithGo("Check", cfg.Global.GoVersion)
 	j.addStep(jobStep{
 		Name: "Check if source code files have license header",
 		Run: makeMultilineYAMLString([]string{

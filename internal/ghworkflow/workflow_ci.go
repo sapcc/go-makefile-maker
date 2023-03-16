@@ -32,8 +32,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 	w.Jobs = make(map[string]job)
 
 	// 01. Lint codebase.
-	// No need to enable Go modules cache here as golangci-lint has built-in caching.
-	lintJob := baseJobWithGo("Lint", goVersion, false)
+	lintJob := baseJobWithGo("Lint", goVersion)
 	lintJob.addStep(jobStep{
 		Name: "Run golangci-lint",
 		Uses: golangciLintAction,
@@ -134,7 +133,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 
 		if multipleOS {
 			// 04. Tell Coveralls to merge coverage results.
-			finishJob := baseJobWithGo("Finish", goVersion, false)
+			finishJob := baseJobWithGo("Finish", goVersion)
 			finishJob.Needs = []string{"test"} // this is the <job_id> for the test job
 			finishJob.addStep(jobStep{
 				Name: "Coveralls post build webhook",
@@ -157,7 +156,7 @@ type buildTestJobOpts struct {
 }
 
 func buildOrTestBaseJob(opts buildTestJobOpts) job {
-	j := baseJobWithGo(opts.name, opts.goVersion, !opts.vendoring)
+	j := baseJobWithGo(opts.name, opts.goVersion)
 	switch len(opts.runnerOSList) {
 	case 0:
 		// baseJobWithGo() will set j.RunsOn to defaultRunnerOS.
