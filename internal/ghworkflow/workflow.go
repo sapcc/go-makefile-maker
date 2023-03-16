@@ -47,6 +47,7 @@ type permissions struct {
 	Actions        githubTokenScope `yaml:"actions,omitempty"`
 	Checks         githubTokenScope `yaml:"checks,omitempty"`
 	Contents       githubTokenScope `yaml:"contents,omitempty"`
+	Packages       githubTokenScope `yaml:"packages,omitempty"`
 	SecurityEvents githubTokenScope `yaml:"security-events,omitempty"`
 }
 

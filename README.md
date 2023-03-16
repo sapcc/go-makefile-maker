@@ -57,6 +57,7 @@ The config file has the following sections:
 * [githubWorkflow](#githubworkflow)
   * [githubWorkflow\.global](#githubworkflowglobal)
   * [githubWorkflow\.ci](#githubworkflowci)
+  * [githubWorkflow\.pushContainerToGhcr](#githubworkflowpushcontainertoghcr)
   * [githubWorkflow\.securityChecks](#githubworkflowsecuritychecks)
   * [githubWorkflow\.license](#githubworkflowlicense)
   * [githubWorkflow\.spellCheck](#githubworkflowspellcheck)
@@ -138,11 +139,11 @@ The Dockerfile uses the [Golang base image](https://hub.docker.com/_/golang) to 
 The image is provisioned with a dedicated user account (name `appuser`, UID 4200, home directory `/home/appuser`) and user group (name `appgroup`, GID 4200) with stable names and IDs.
 This user account is intended for use with all payloads that do not require a root user.
 
-- `entrypoint` allows overwriting the final entrypoint.
-- `extraDirectives` appends additional directives near the end of the Dockerfile.
-- `extraIgnores` appends entries in `.dockerignore` to the default ones.
-- `extraPackages` installs extra Alpine packages in the final Docker layer. `ca-certificates` is always installed.
-- `runAsRoot` skips the privilege drop in the Dockerfile, i.e. the `USER appuser:appgroup` command is not added.
+* `entrypoint` allows overwriting the final entrypoint.
+* `extraDirectives` appends additional directives near the end of the Dockerfile.
+* `extraIgnores` appends entries in `.dockerignore` to the default ones.
+* `extraPackages` installs extra Alpine packages in the final Docker layer. `ca-certificates` is always installed.
+* `runAsRoot` skips the privilege drop in the Dockerfile, i.e. the `USER appuser:appgroup` command is not added.
 
 ### `variables`
 
@@ -376,6 +377,15 @@ for the `test` job. The version for binaries can be specified using the
 `kubernetesEnvtest.version` field. By default `1.25.x!` is used as the version.
 
 `ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this particular workflow.
+
+### `githubWorkflow.pushContainerToGhcr`
+
+If `enabled` is set to true, the generated `Dockerfile` is build and pushed to repository path under `ghcr.io`.
+
+```yaml
+pushContainerToGhcr:
+  enabled: true
+```
 
 #### `githubWorkflow.securityChecks`
 

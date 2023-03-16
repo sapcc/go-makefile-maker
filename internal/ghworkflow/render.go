@@ -49,6 +49,9 @@ func Render(cfg *core.Configuration) {
 	if ghwCfg.SecurityChecks.Enabled {
 		dependencyReviewWorkflow(ghwCfg)
 	}
+	if ghwCfg.PushContainerToGhcr.Enabled {
+		ghcrWorkflow(ghwCfg)
+	}
 }
 
 func writeWorkflowToFile(w *workflow) {

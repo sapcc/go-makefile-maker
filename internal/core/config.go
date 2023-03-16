@@ -117,10 +117,11 @@ type GithubWorkflowConfiguration struct {
 		GoVersion     string   `yaml:"goVersion"`
 	} `yaml:"global"`
 
-	CI             CIWorkflowConfig             `yaml:"ci"`
-	License        LicenseWorkflowConfig        `yaml:"license"`
-	SpellCheck     SpellCheckWorkflowConfig     `yaml:"spellCheck"`
-	SecurityChecks SecurityChecksWorkflowConfig `yaml:"securityChecks"`
+	CI                  CIWorkflowConfig             `yaml:"ci"`
+	License             LicenseWorkflowConfig        `yaml:"license"`
+	PushContainerToGhcr PushContainerToGhcrConfig    `yaml:"pushContainerToGhcr"`
+	SpellCheck          SpellCheckWorkflowConfig     `yaml:"spellCheck"`
+	SecurityChecks      SecurityChecksWorkflowConfig `yaml:"securityChecks"`
 }
 
 // CIWorkflowConfig appears in type Configuration.
@@ -147,6 +148,10 @@ type LicenseWorkflowConfig struct {
 	Enabled        bool     `yaml:"enabled"`
 	Patterns       []string `yaml:"patterns"`
 	IgnorePatterns []string `yaml:"ignorePatterns"`
+}
+
+type PushContainerToGhcrConfig struct {
+	Enabled bool `yaml:"enabled"`
 }
 
 // SpellCheckWorkflowConfig appears in type Configuration.

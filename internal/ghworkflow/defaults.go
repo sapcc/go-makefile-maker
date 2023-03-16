@@ -29,6 +29,10 @@ const (
 	setupGoAction          = "actions/setup-go@v4"
 	dependencyReviewAction = "actions/dependency-review-action@v3"
 
+	dockerLoginAction     = "docker/login-action@v2"
+	dockerMetadataAction  = "docker/metadata-action@v4"
+	dockerBuildPushAction = "docker/build-push-action@v4"
+
 	codeqlInitAction    = "github/codeql-action/init@v2"
 	codeqlAnalyzeAction = "github/codeql-action/analyze@v2"
 
