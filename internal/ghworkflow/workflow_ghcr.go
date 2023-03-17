@@ -22,6 +22,7 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	w.Permissions.Packages = tokenScopeWrite
 
 	w.On.Push.Branches = []string{cfg.Global.DefaultBranch}
+	w.On.Push.Tags = []string{"*"}
 	w.On.PullRequest.Branches = nil
 
 	registry := "ghcr.io"
@@ -42,6 +43,8 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 		Uses: dockerMetadataAction,
 		With: map[string]interface{}{
 			"images": registry + "/${{ github.repository }}",
+			// https://github.com/docker/metadata-action#latest-tag
+			"tags": "type=raw,value=latest,enable={{is_default_branch}}",
 		},
 	})
 	j.addStep(jobStep{

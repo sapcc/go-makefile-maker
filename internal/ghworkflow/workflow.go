@@ -71,6 +71,7 @@ type pushAndPRTriggerOpts struct {
 	Branches    []string `yaml:"branches"`
 	Paths       []string `yaml:"paths,omitempty"`
 	PathsIgnore []string `yaml:"paths-ignore,omitempty"`
+	Tags        []string `yaml:"tags,omitempty"`
 }
 
 type workflowDispatch struct {
