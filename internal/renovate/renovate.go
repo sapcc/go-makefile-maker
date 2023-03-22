@@ -153,6 +153,7 @@ func RenderConfig(
 		cfg.addPackageRule(rule)
 	}
 
+	must.Succeed(os.MkdirAll(".github", 0750))
 	f := must.Return(os.Create(".github/renovate.json"))
 
 	encoder := json.NewEncoder(f)
