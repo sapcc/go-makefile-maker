@@ -84,6 +84,6 @@ func main() {
 		}
 		isGoMakefileMakerRepo := sr.MustModulePath() == "github.com/sapcc/go-makefile-maker"
 		isApplicationRepo := len(cfg.Binaries) > 0
-		renovate.RenderConfig(cfg.GitHubWorkflow.Global.Assignees, cfg.Renovate.PackageRules, cfg.Renovate.GoVersion, sr.GoDirectDependencies, isGoMakefileMakerRepo, isApplicationRepo)
+		renovate.RenderConfig(cfg.Renovate.Assignees, cfg.Renovate.PackageRules, cfg.Renovate.GoVersion, sr.GoDirectDependencies, isGoMakefileMakerRepo, isApplicationRepo)
 	}
 }

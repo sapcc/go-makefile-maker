@@ -112,9 +112,8 @@ type GithubWorkflowConfiguration struct {
 	Global struct {
 		commonWorkflowConfigOpts `yaml:",inline"`
 
-		Assignees     []string `yaml:"assignees"`
-		DefaultBranch string   `yaml:"defaultBranch"`
-		GoVersion     string   `yaml:"goVersion"`
+		DefaultBranch string `yaml:"defaultBranch"`
+		GoVersion     string `yaml:"goVersion"`
 	} `yaml:"global"`
 
 	CI                  CIWorkflowConfig             `yaml:"ci"`
@@ -175,6 +174,7 @@ type commonWorkflowConfigOpts struct {
 // RenovateConfig appears in type Configuration.
 type RenovateConfig struct {
 	Enabled      bool                   `yaml:"enabled"`
+	Assignees    []string               `yaml:"assignees"`
 	GoVersion    string                 `yaml:"goVersion"`
 	PackageRules []renovate.PackageRule `yaml:"packageRules"`
 }

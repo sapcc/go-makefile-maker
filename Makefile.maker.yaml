@@ -13,8 +13,6 @@ golangciLint:
 
 githubWorkflow:
   global:
-    assignees:
-    - SuperSandro2000
     ignorePaths: ["README.md"]
   ci:
     enabled: true
@@ -29,6 +27,8 @@ githubWorkflow:
 
 renovate:
   enabled: true
+  assignees:
+    - SuperSandro2000
 
 verbatim: |
   run: build/go-makefile-maker
