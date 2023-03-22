@@ -238,6 +238,9 @@ If `spellCheck.ignoreWords` is defined then both `golangci-lint` and spell check
 ```yaml
 renovate:
   enabled: true
+  assignees:
+    - devnull
+    - urandom
   goVersion: 1.18
   packageRules:
     - matchPackageNames: []
@@ -251,6 +254,8 @@ renovate:
 ```
 
 Generate [RenovateBot](https://renovatebot.com/) config to automatically create pull requests weekly on Fridays with dependency updates.
+
+To assign people to the PRs created by renovate, add their GitHub handle to the `assignees` list.
 
 Optionally overwrite go version with `goVersion`, by default the Go version from `go.mod` file will be used.
 
