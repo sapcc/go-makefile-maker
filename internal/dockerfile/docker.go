@@ -51,7 +51,7 @@ func RenderConfig(cfg core.Configuration) {
 		}
 	}
 
-	var goBuildflags, packages, userCommand, entrypoint string
+	var goBuildflags, packages, userCommand, entrypoint, workingDir string
 
 	if cfg.Vendoring.Enabled {
 		goBuildflags = ` GO_BUILDFLAGS='-mod vendor'`
@@ -63,11 +63,13 @@ func RenderConfig(cfg core.Configuration) {
 
 	if cfg.Dockerfile.RunAsRoot {
 		userCommand = ""
+		workingDir = "/"
 	} else {
 		// this is the same as `USER appuser:appgroup`, but using numeric IDs
 		// should allow Kubernetes to validate the `runAsNonRoot` rule without
 		// requiring an explicit `runAsUser: 4200` setting in the container spec
 		userCommand = "USER 4200:4200\n"
+		workingDir = "/home/appuser"
 	}
 
 	if len(cfg.Dockerfile.Entrypoint) > 0 {
@@ -106,9 +108,9 @@ LABEL source_repository="%[4]s" \
   org.opencontainers.image.revision=${BININFO_COMMIT_HASH} \
   org.opencontainers.image.version=${BININFO_VERSION}
 
-%[6]s%[7]sWORKDIR /var/empty
-ENTRYPOINT [ %[8]s ]
-`, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], goBuildflags, cfg.Metadata.URL, packages, extraDirectives, userCommand, entrypoint)
+%[6]s%[7]sWORKDIR %[8]s
+ENTRYPOINT [ %[9]s ]
+`, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], goBuildflags, cfg.Metadata.URL, packages, extraDirectives, userCommand, workingDir, entrypoint)
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 
