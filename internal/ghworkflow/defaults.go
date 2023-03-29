@@ -33,8 +33,9 @@ const (
 	dockerMetadataAction  = "docker/metadata-action@v4"
 	dockerBuildPushAction = "docker/build-push-action@v4"
 
-	codeqlInitAction    = "github/codeql-action/init@v2"
-	codeqlAnalyzeAction = "github/codeql-action/analyze@v2"
+	codeqlInitAction      = "github/codeql-action/init@v2"
+	codeqlAnalyzeAction   = "github/codeql-action/analyze@v2"
+	codeqlAutobuildAction = "github/codeql-action/autobuild@v2"
 
 	golangciLintAction = "golangci/golangci-lint-action@v3"
 
