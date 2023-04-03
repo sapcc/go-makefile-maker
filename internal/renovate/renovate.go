@@ -79,6 +79,7 @@ func RenderConfig(
 		Extends: []string{
 			"config:base",
 			"default:pinDigestsDisabled",
+			"github>whitesource/merge-confidence:beta",
 		},
 		Assignees: assignees,
 		Constraints: constraints{
