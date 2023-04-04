@@ -43,8 +43,12 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 		Uses: dockerMetadataAction,
 		With: map[string]interface{}{
 			"images": registry + "/${{ github.repository }}",
-			// https://github.com/docker/metadata-action#latest-tag
-			"tags": "type=raw,value=latest,enable={{is_default_branch}}",
+			"tags": `# https://github.com/docker/metadata-action#latest-tag
+type=raw,value=latest,enable={{is_default_branch}}
+# https://github.com/docker/metadata-action#typesemver
+type=semver,pattern={{raw}}
+type=semver,pattern=v{{major}}.{{minor}}
+type=semver,pattern=v{{major}}`,
 		},
 	})
 	j.addStep(jobStep{
