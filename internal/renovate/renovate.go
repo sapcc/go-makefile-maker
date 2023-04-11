@@ -29,14 +29,15 @@ type constraints struct {
 }
 
 type config struct {
-	Extends           []string      `json:"extends"`
-	Assignees         []string      `json:"assignees,omitempty"`
-	Constraints       constraints   `json:"constraints"`
-	PostUpdateOptions []string      `json:"postUpdateOptions"`
-	PackageRules      []PackageRule `json:"packageRules,omitempty"`
-	PrHourlyLimit     int           `json:"prHourlyLimit"`
-	Schedule          []string      `json:"schedule"`
-	SemanticCommits   string        `json:"semanticCommits,omitempty"`
+	Extends             []string      `json:"extends"`
+	Assignees           []string      `json:"assignees,omitempty"`
+	CommitMessageAction string        `json:"commitMessageAction"`
+	Constraints         constraints   `json:"constraints"`
+	PostUpdateOptions   []string      `json:"postUpdateOptions"`
+	PackageRules        []PackageRule `json:"packageRules,omitempty"`
+	PrHourlyLimit       int           `json:"prHourlyLimit"`
+	Schedule            []string      `json:"schedule"`
+	SemanticCommits     string        `json:"semanticCommits,omitempty"`
 }
 
 type PackageRule struct {
@@ -82,6 +83,11 @@ func RenderConfig(
 			"github>whitesource/merge-confidence:beta",
 		},
 		Assignees: assignees,
+		// CommitMessageAction is the verb that appears at the start of Renovate's
+		// commit messages (and therefore, PR titles). The default value is "Update".
+		// We choose something more specific because some of us have filter rules
+		// in their mail client to separate Renovate PRs from other PRs.
+		CommitMessageAction: "Renovate: Update",
 		Constraints: constraints{
 			Go: goVersion,
 		},
