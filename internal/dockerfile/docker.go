@@ -96,8 +96,8 @@ RUN make -C /src install PREFIX=/pkg%[3]s
 
 FROM alpine:%[2]s
 
-RUN addgroup -g 4200 appgroup
-RUN adduser -h /home/appuser -s /sbin/nologin -G appgroup -D -u 4200 appuser
+RUN addgroup -g 4200 appgroup \
+  && adduser -h /home/appuser -s /sbin/nologin -G appgroup -D -u 4200 appuser
 # upgrade all installed packages to fix potential CVEs in advance
 RUN apk upgrade --no-cache --no-progress \
   && apk add --no-cache --no-progress%[5]s
