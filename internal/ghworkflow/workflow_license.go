@@ -35,7 +35,7 @@ func licenseWorkflow(cfg *core.GithubWorkflowConfiguration) {
 
 	ignorePatterns := []string{"vendor/**"}
 	if len(cfg.License.IgnorePatterns) > 0 {
-		ignorePatterns = cfg.License.IgnorePatterns
+		ignorePatterns = append(ignorePatterns, cfg.License.IgnorePatterns...)
 	}
 	// Each ignore pattern is quoted to avoid glob expansion and prefixed with the
 	// `-ignore` flag.
