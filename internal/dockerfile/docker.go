@@ -51,7 +51,7 @@ func RenderConfig(cfg core.Configuration) {
 		}
 	}
 
-	var goBuildflags, packages, userCommand, entrypoint, workingDir string
+	var goBuildflags, packages, userCommand, entrypoint, workingDir, addUserGroup string
 
 	if cfg.Vendoring.Enabled {
 		goBuildflags = ` GO_BUILDFLAGS='-mod vendor'`
@@ -64,12 +64,16 @@ func RenderConfig(cfg core.Configuration) {
 	if cfg.Dockerfile.RunAsRoot {
 		userCommand = ""
 		workingDir = "/"
+		addUserGroup = ""
 	} else {
 		// this is the same as `USER appuser:appgroup`, but using numeric IDs
 		// should allow Kubernetes to validate the `runAsNonRoot` rule without
 		// requiring an explicit `runAsUser: 4200` setting in the container spec
 		userCommand = "USER 4200:4200\n"
 		workingDir = "/home/appuser"
+		addUserGroup = `RUN addgroup -g 4200 appgroup \
+  && adduser -h /home/appuser -s /sbin/nologin -G appgroup -D -u 4200 appuser
+`
 	}
 
 	if len(cfg.Dockerfile.Entrypoint) > 0 {
@@ -90,29 +94,27 @@ RUN apk add --no-cache --no-progress gcc git make musl-dev
 
 COPY . /src
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION # provided to 'make install'
-RUN make -C /src install PREFIX=/pkg%[3]s
+RUN make -C /src install PREFIX=/pkg%[4]s
 
 ################################################################################
 
 FROM alpine:%[2]s
 
-RUN addgroup -g 4200 appgroup \
-  && adduser -h /home/appuser -s /sbin/nologin -G appgroup -D -u 4200 appuser
-# upgrade all installed packages to fix potential CVEs in advance
+%[3]s# upgrade all installed packages to fix potential CVEs in advance
 RUN apk upgrade --no-cache --no-progress \
-  && apk add --no-cache --no-progress%[5]s
+  && apk add --no-cache --no-progress%[6]s
 COPY --from=builder /pkg/ /usr/
 
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
-LABEL source_repository="%[4]s" \
-  org.opencontainers.image.url="%[4]s" \
+LABEL source_repository="%[5]s" \
+  org.opencontainers.image.url="%[5]s" \
   org.opencontainers.image.created=${BININFO_BUILD_DATE} \
   org.opencontainers.image.revision=${BININFO_COMMIT_HASH} \
   org.opencontainers.image.version=${BININFO_VERSION}
 
-%[6]s%[7]sWORKDIR %[8]s
-ENTRYPOINT [ %[9]s ]
-`, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], goBuildflags, cfg.Metadata.URL, packages, extraDirectives, userCommand, workingDir, entrypoint)
+%[7]s%[8]sWORKDIR %[9]s
+ENTRYPOINT [ %[10]s ]
+`, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], addUserGroup, goBuildflags, cfg.Metadata.URL, packages, extraDirectives, userCommand, workingDir, entrypoint)
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 
