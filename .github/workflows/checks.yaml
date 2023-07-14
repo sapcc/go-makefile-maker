@@ -3,23 +3,19 @@
 # Edit Makefile.maker.yaml instead.                                            #
 ################################################################################
 
-name: License
+name: Checks
 "on":
   push:
     branches:
       - main
-    paths-ignore:
-      - README.md
   pull_request:
     branches:
       - '*'
-    paths-ignore:
-      - README.md
 permissions:
   contents: read
 jobs:
   addlicense:
-    name: Check
+    name: License header
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -33,3 +29,30 @@ jobs:
           shopt -s globstar
           go install github.com/google/addlicense@latest
           addlicense --check -ignore "vendor/**" -- **/*.go
+  misspell:
+    name: Spellcheck
+    permissions:
+      checks: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Check for spelling errors
+        uses: reviewdog/action-misspell@v1
+        with:
+          exclude: ./vendor/*
+          fail_on_error: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          ignore: importas
+          reporter: github-check
+  review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v3
+        with:
+          deny-licenses: AGPL-1.0, AGPL-3.0, GPL-1.0, GPL-2.0, GPL-3.0, LGPL-2.0, LGPL-2.1, LGPL-3.0
+          fail-on-severity: high

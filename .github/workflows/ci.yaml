@@ -9,12 +9,12 @@ name: CI
     branches:
       - main
     paths-ignore:
-      - README.md
+      - '**.md'
   pull_request:
     branches:
       - '*'
     paths-ignore:
-      - README.md
+      - '**.md'
 permissions:
   contents: read
 jobs:

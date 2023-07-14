@@ -34,20 +34,19 @@ func Render(cfg *core.Configuration) {
 	ghwCfg := cfg.GitHubWorkflow
 
 	must.Succeed(os.MkdirAll(workflowDir, 0o755))
+
+	// remove renamed files
+	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "dependency-review.yaml")))
+	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "license.yaml")))
+	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "spell.yaml")))
+
+	checksWorkflow(ghwCfg, cfg.SpellCheck.IgnoreWords)
+
 	if ghwCfg.CI.Enabled {
 		ciWorkflow(ghwCfg, cfg.Vendoring.Enabled, len(cfg.Binaries) > 0)
 	}
-	if ghwCfg.License.Enabled {
-		licenseWorkflow(ghwCfg)
-	}
-	if ghwCfg.SpellCheck.Enabled {
-		spellCheckWorkflow(ghwCfg, cfg.SpellCheck.IgnoreWords)
-	}
 	if ghwCfg.SecurityChecks.Enabled {
 		codeQLWorkflow(ghwCfg)
-	}
-	if ghwCfg.SecurityChecks.Enabled {
-		dependencyReviewWorkflow(ghwCfg)
 	}
 	if ghwCfg.PushContainerToGhcr.Enabled {
 		ghcrWorkflow(ghwCfg)

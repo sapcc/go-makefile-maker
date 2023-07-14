@@ -12,18 +12,16 @@ golangciLint:
   createConfig: true
 
 githubWorkflow:
-  global:
-    ignorePaths: ["README.md"]
   ci:
     enabled: true
     coveralls: true
+    ignorePaths: ["**.md"]
   securityChecks:
     enabled: true
   license:
     enabled: true
   spellCheck:
     enabled: true
-    ignorePaths: [] # don't ignore README.md
 
 renovate:
   enabled: true

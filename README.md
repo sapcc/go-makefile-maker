@@ -312,9 +312,6 @@ value.
 global:
   defaultBranch: dev
   goVersion: 1.18
-  ignorePaths:
-    - "README.md"
-    - "docs/**"
 ```
 
 `defaultBranch` specifies the Git branch on which `push` actions will trigger the
@@ -326,14 +323,6 @@ automatically run `git symbolic-ref refs/remotes/origin/HEAD | sed
 `goVersion` specifies the Go version that is used for jobs that require Go.
 `go-makefile-maker` will automatically retrieve the Go version from `go.mod` file and use
 that by default.
-
-`ignorePaths` specifies a list of filename patterns. Workflows will not trigger if a path
-name matches a pattern in this list. [More info][ref-onpushpull] and [filter pattern cheat
-sheet][ref-pattern-cheat-sheet]. This option is not defined by default.
-
-**Note**: `ignorePaths` does not apply to CodeQL workflow, it is exempt from this global
-setting because a workflow's `paths-ignore` option can prevent Code Scanning annotating
-new alerts in your pull requests.
 
 #### `githubWorkflow.ci`
 
@@ -381,7 +370,9 @@ using
 for the `test` job. The version for binaries can be specified using the
 `kubernetesEnvtest.version` field. By default `1.25.x!` is used as the version.
 
-`ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this particular workflow.
+`ignorePaths` specifies a list of filename patterns. Workflows will not trigger if a path
+name matches a pattern in this list. [More info][ref-onpushpull] and [filter pattern cheat
+sheet][ref-pattern-cheat-sheet]. This option is not defined by default.
 
 ### `githubWorkflow.pushContainerToGhcr`
 
@@ -423,7 +414,6 @@ license:
     - "**/*.go"
   ignorePatterns:
     - "vendor/**"
-  ignorePaths: []
 ```
 
 `patterns` specifies a list of file patterns to check. For convenience, the `globstar`
@@ -437,8 +427,6 @@ i.e. check all Go files.
 more info. Default value for this is `vendor/**`, i.e. exclude everything under `vendor`
 directory.
 
-`ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this particular workflow.
-
 **Hint**: you can also use `addlicense` to add license headers to all Go files excluding
 `vendor` directory by running `make license-headers`.
 
@@ -451,11 +439,7 @@ This workflow uses [`misspell`][misspell] to check your repo for spelling errors
 ```yaml
 spellCheck:
   enabled: true
-  ignorePaths: []
 ```
-
-`ignorePaths` is the same as `global.ignorePaths` and can be used to override it for this
-particular workflow.
 
 [codeql]: https://codeql.github.com/
 [coveralls]: https://coveralls.io

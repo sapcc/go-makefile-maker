@@ -23,12 +23,8 @@ import (
 
 func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bool) {
 	goVersion := cfg.Global.GoVersion
-	ignorePaths := cfg.Global.IgnorePaths
-	if cfg.CI.IgnorePaths != nil {
-		ignorePaths = cfg.CI.IgnorePaths
-	}
 
-	w := newWorkflow("CI", cfg.Global.DefaultBranch, ignorePaths)
+	w := newWorkflow("CI", cfg.Global.DefaultBranch, cfg.CI.IgnorePaths)
 	w.Jobs = make(map[string]job)
 
 	// 01. Lint codebase.

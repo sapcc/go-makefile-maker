@@ -110,8 +110,6 @@ type GithubWorkflowConfiguration struct {
 	// These global-level settings are applicable for all workflows. They are
 	// superseded by their workflow-level counterpart(s).
 	Global struct {
-		commonWorkflowConfigOpts `yaml:",inline"`
-
 		DefaultBranch string `yaml:"defaultBranch"`
 		GoVersion     string `yaml:"goVersion"`
 	} `yaml:"global"`
@@ -125,9 +123,8 @@ type GithubWorkflowConfiguration struct {
 
 // CIWorkflowConfig appears in type Configuration.
 type CIWorkflowConfig struct {
-	commonWorkflowConfigOpts `yaml:",inline"`
-
 	Enabled      bool     `yaml:"enabled"`
+	IgnorePaths  []string `yaml:"ignorePaths"`
 	RunnerOSList []string `yaml:"runOn"`
 	Coveralls    bool     `yaml:"coveralls"`
 	Postgres     struct {
@@ -142,8 +139,6 @@ type CIWorkflowConfig struct {
 
 // LicenseWorkflowConfig appears in type Configuration.
 type LicenseWorkflowConfig struct {
-	commonWorkflowConfigOpts `yaml:",inline"`
-
 	Enabled        bool     `yaml:"enabled"`
 	Patterns       []string `yaml:"patterns"`
 	IgnorePatterns []string `yaml:"ignorePatterns"`
@@ -155,20 +150,12 @@ type PushContainerToGhcrConfig struct {
 
 // SpellCheckWorkflowConfig appears in type Configuration.
 type SpellCheckWorkflowConfig struct {
-	commonWorkflowConfigOpts `yaml:",inline"`
-
 	Enabled bool `yaml:"enabled"`
 }
 
 // SecurityChecksWorkflowConfig appears in type Configuration.
 type SecurityChecksWorkflowConfig struct {
 	Enabled bool `yaml:"enabled"`
-}
-
-// commonWorkflowConfigOpts holds common configuration options that are applicable for all
-// workflows.
-type commonWorkflowConfigOpts struct {
-	IgnorePaths []string `yaml:"ignorePaths"`
 }
 
 // RenovateConfig appears in type Configuration.
