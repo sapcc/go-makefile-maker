@@ -31,7 +31,9 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 			Name: "Dependency Review",
 			Uses: dependencyReviewAction,
 			With: map[string]interface{}{
-				"fail-on-severity": "high",
+				"base-ref":         "${{ github.event.pull_request.base.sha || 'main' }}",
+				"head-ref":         "${{ github.event.pull_request.head.sha || github.ref }}",
+				"fail-on-severity": "moderate",
 				"deny-licenses":    "AGPL-1.0, AGPL-3.0, GPL-1.0, GPL-2.0, GPL-3.0, LGPL-2.0, LGPL-2.1, LGPL-3.0",
 			},
 		})
