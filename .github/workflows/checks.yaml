@@ -12,10 +12,11 @@ name: Checks
     branches:
       - '*'
 permissions:
+  checks: write
   contents: read
 jobs:
-  addlicense:
-    name: License header
+  checks:
+    name: Checks
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -24,19 +25,13 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: "1.20"
-      - name: Check if source code files have license header
-        run: |
-          shopt -s globstar
-          go install github.com/google/addlicense@latest
-          addlicense --check -ignore "vendor/**" -- **/*.go
-  misspell:
-    name: Spellcheck
-    permissions:
-      checks: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v3
+        with:
+          base-ref: ${{ github.event.pull_request.base.sha || 'main' }}
+          deny-licenses: AGPL-1.0, AGPL-3.0, GPL-1.0, GPL-2.0, GPL-3.0, LGPL-2.0, LGPL-2.1, LGPL-3.0
+          fail-on-severity: moderate
+          head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
       - name: Check for spelling errors
         uses: reviewdog/action-misspell@v1
         with:
@@ -45,16 +40,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           ignore: importas
           reporter: github-check
-  review:
-    name: Dependency Review
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-      - name: Dependency Review
-        uses: actions/dependency-review-action@v3
-        with:
-          base-ref: ${{ github.event.pull_request.base.sha || 'main' }}
-          deny-licenses: AGPL-1.0, AGPL-3.0, GPL-1.0, GPL-2.0, GPL-3.0, LGPL-2.0, LGPL-2.1, LGPL-3.0
-          fail-on-severity: moderate
-          head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
+      - name: Check if source code files have license header
+        run: |
+          shopt -s globstar
+          go install github.com/google/addlicense@latest
+          addlicense --check -ignore "vendor/**" -- **/*.go

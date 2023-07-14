@@ -23,10 +23,9 @@ import (
 // basically a collection of other linters and checks which run fast to reduce the amount of created githbu action workflows
 func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string) {
 	w := newWorkflow("Checks", cfg.Global.DefaultBranch, nil)
-	w.Jobs = make(map[string]job)
 
+	j := baseJobWithGo("Checks", cfg.Global.GoVersion)
 	if cfg.SecurityChecks.Enabled {
-		j := baseJob("Dependency Review")
 		j.addStep(jobStep{
 			Name: "Dependency Review",
 			Uses: dependencyReviewAction,
@@ -37,7 +36,6 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 				"deny-licenses":    "AGPL-1.0, AGPL-3.0, GPL-1.0, GPL-2.0, GPL-3.0, LGPL-2.0, LGPL-2.1, LGPL-3.0",
 			},
 		})
-		w.Jobs["review"] = j
 	}
 
 	if cfg.SpellCheck.Enabled {
@@ -52,14 +50,12 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 			with["ignore"] = fmt.Sprintf("%s,%s", with["ignore"], strings.Join(ignoreWords, ","))
 		}
 
-		j := baseJob("Spellcheck")
-		j.Permissions.Checks = tokenScopeWrite // for nicer output in pull request diffs
+		w.Permissions.Checks = tokenScopeWrite // for nicer output in pull request diffs
 		j.addStep(jobStep{
 			Name: "Check for spelling errors",
 			Uses: misspellAction,
 			With: with,
 		})
-		w.Jobs["misspell"] = j
 	}
 
 	if cfg.License.Enabled {
@@ -79,7 +75,6 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 			ignorePatterns[i] = fmt.Sprintf("-ignore %q", v)
 		}
 
-		j := baseJobWithGo("License header", cfg.Global.GoVersion)
 		j.addStep(jobStep{
 			Name: "Check if source code files have license header",
 			Run: makeMultilineYAMLString([]string{
@@ -91,8 +86,9 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 				),
 			}),
 		})
-		w.Jobs["addlicense"] = j
 	}
+
+	w.Jobs = map[string]job{"checks": j}
 
 	writeWorkflowToFile(w)
 }
