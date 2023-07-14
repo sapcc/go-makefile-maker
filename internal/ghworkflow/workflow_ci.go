@@ -27,16 +27,23 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 	w := newWorkflow("CI", cfg.Global.DefaultBranch, cfg.CI.IgnorePaths)
 	w.Jobs = make(map[string]job)
 
-	// 01. Lint codebase.
-	lintJob := baseJobWithGo("Lint", goVersion)
-	lintJob.addStep(jobStep{
+	buildAndLintJob := baseJobWithGo("Build & Lint", goVersion)
+	if hasBinaries {
+		buildAndLintJob.addStep(jobStep{
+			Name: "Build all binaries",
+			Run:  "make build-all",
+		})
+	}
+
+	buildAndLintJob.addStep(jobStep{
 		Name: "Run golangci-lint",
 		Uses: golangciLintAction,
 		With: map[string]interface{}{
 			"version": "latest",
 		},
 	})
-	w.Jobs["lint"] = lintJob
+
+	w.Jobs["buildAndLint"] = buildAndLintJob
 
 	buildTestOpts := buildTestJobOpts{
 		goVersion:    goVersion,
@@ -44,25 +51,9 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 		runnerOSList: cfg.CI.RunnerOSList,
 	}
 
-	// 02. Make build.
-	if hasBinaries {
-		buildTestOpts.name = "Build"
-		buildJob := buildOrTestBaseJob(buildTestOpts)
-		buildJob.Needs = []string{"lint"} // this is the <job_id> for the lint job
-		buildJob.addStep(jobStep{
-			Name: "Make build",
-			Run:  "make build-all",
-		})
-		w.Jobs["build"] = buildJob
-	}
-
-	// 03. Run tests and generate/upload test coverage.
 	buildTestOpts.name = "Test"
 	testJob := buildOrTestBaseJob(buildTestOpts)
-	testJob.Needs = []string{"lint"} // this is the <job_id> for the lint job
-	if hasBinaries {
-		testJob.Needs = []string{"build"} // this is the <job_id> for the build job
-	}
+	testJob.Needs = []string{"buildAndLint"}
 	if cfg.CI.Postgres.Enabled {
 		version := defaultPostgresVersion
 		if cfg.CI.Postgres.Version != "" {
