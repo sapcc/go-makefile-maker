@@ -385,7 +385,7 @@ pushContainerToGhcr:
 
 #### `githubWorkflow.securityChecks`
 
-If `securityChecks` is enabled then it will generate two workflows:
+If `securityChecks` is enabled then it will generate the following workflows:
 
 * [CodeQL] workflow will run [CodeQL], GitHub's industry-leading semantic code analysis
   engine, on your source code to find security vulnerabilities. You can see the security
@@ -394,8 +394,14 @@ If `securityChecks` is enabled then it will generate two workflows:
   In addition to running the workflow when new code is pushed, this workflow will also run
   on a weekly basis (every Monday at 07:00 AM) so that existing code can be checked for
   new vulnerabilities.
+
 * [dependency-review] workflow will scan your pull requests for dependency changes and
   will raise an error if any new dependencies have existing vulnerabilities.
+  It uses the [GitHub Advisory Database](https://github.com/advisories) as a source.
+
+* [govulncheck] workflow will scan your dependencies for vulnerarbilites and
+  will raise an error if any dependency has an existing vulnerability and the code path is in use.
+  It uses the [Go Vulnerability Database](https://pkg.go.dev/vuln/) as a source.
 
 ```yaml
 securityChecks:
@@ -445,6 +451,7 @@ spellCheck:
 [coveralls]: https://coveralls.io
 [docker-hub-postgres]: https://hub.docker.com/_/postgres/
 [doublestar-pattern]: https://github.com/bmatcuk/doublestar#patterns
+[govulncheck]: https://github.com/golang/vuln
 [misspell]: https://github.com/client9/misspell
 [postgres-service-container]: https://docs.github.com/en/actions/guides/creating-postgresql-service-containers#testing-the-postgresql-service-container
 [ref-onpushpull]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths

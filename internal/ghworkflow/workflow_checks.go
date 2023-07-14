@@ -36,6 +36,11 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 				"deny-licenses":    "AGPL-1.0, AGPL-3.0, GPL-1.0, GPL-2.0, GPL-3.0, LGPL-2.0, LGPL-2.1, LGPL-3.0",
 			},
 		})
+
+		j.addStep(jobStep{
+			Name: "Run govulncheck",
+			Uses: govulncheckAction,
+		})
 	}
 
 	if cfg.SpellCheck.Enabled {
