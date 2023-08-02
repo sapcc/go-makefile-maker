@@ -162,6 +162,7 @@ linters:
 		- govet
 		- ineffassign
 		- misspell
+		- noctx
 		- nolintlint
 		- nosprintfhostport
 		- rowserrcheck
