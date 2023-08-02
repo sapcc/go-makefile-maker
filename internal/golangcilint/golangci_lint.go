@@ -147,7 +147,6 @@ linters:
 	enable:
 		- bodyclose
 		- containedctx
-		- contextcheck
 		- depguard
 		- dupl
 		- dupword
