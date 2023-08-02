@@ -147,9 +147,11 @@ linters:
 	enable:
 		- bodyclose
 		- containedctx
+		- contextcheck
 		- depguard
 		- dupl
 		- dupword
+		- durationcheck
 		- errcheck
 		- errorlint
 		- exportloopref
