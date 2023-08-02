@@ -151,6 +151,7 @@ linters:
 		- dupl
 		- dupword
 		- errcheck
+		- errorlint
 		- exportloopref
 		- forbidigo
 		- gocheckcompilerdirectives
