@@ -56,7 +56,7 @@ func Scan() ScanResult {
 				hasBinInfo = true
 			}
 		}
-		if v.Mod.Path == "github.com/lib/pq" {
+		if v.Mod.Path == "github.com/lib/pq" && !v.Indirect {
 			usesPostgres = true
 		}
 	}
