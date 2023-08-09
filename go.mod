@@ -1,6 +1,6 @@
 module github.com/sapcc/go-makefile-maker
 
-go 1.20
+go 1.21
 
 require (
 	github.com/sapcc/go-bits v0.0.0-20230803125152-91a869119633
