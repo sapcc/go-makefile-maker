@@ -38,10 +38,11 @@ type ScanResult struct {
 	UsesPostgres         bool             // wether postgres is used
 }
 
+const ModFilename = "go.mod"
+
 func Scan() ScanResult {
-	modFilename := "go.mod"
-	modFileBytes := must.Return(os.ReadFile(modFilename))
-	modFile := must.Return(modfile.Parse(modFilename, modFileBytes, nil))
+	modFileBytes := must.Return(os.ReadFile(ModFilename))
+	modFile := must.Return(modfile.Parse(ModFilename, modFileBytes, nil))
 
 	var goDeps []module.Version
 	hasBinInfo := false

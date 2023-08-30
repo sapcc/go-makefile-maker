@@ -17,7 +17,6 @@ package dockerfile
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 
 	_ "embed"
@@ -28,11 +27,6 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-//go:embed Dockerfile.template
-var template []byte
-
-var argStatementRx = regexp.MustCompile(`^ARG\s*(\w+)\s*=\s*(.+?)\s*$`)
-
 func RenderConfig(cfg core.Configuration) {
 	if cfg.Dockerfile.User != "" {
 		if cfg.Dockerfile.User == "root" {
@@ -42,18 +36,9 @@ func RenderConfig(cfg core.Configuration) {
 		}
 	}
 
-	//read "ARG" statements from `Dockerfile.template`
-	buildArgs := make(map[string]string)
-	for _, line := range strings.Split(string(template), "\n") {
-		match := argStatementRx.FindStringSubmatch(line)
-		if match != nil {
-			buildArgs[match[1]] = match[2]
-		}
-	}
-
 	var goBuildflags, packages, userCommand, entrypoint, workingDir, addUserGroup string
 
-	if cfg.Vendoring.Enabled {
+	if cfg.Golang.EnableVendoring {
 		goBuildflags = ` GO_BUILDFLAGS='-mod vendor'`
 	}
 
@@ -114,7 +99,7 @@ LABEL source_repository="%[5]s" \
 
 %[7]s%[8]sWORKDIR %[9]s
 ENTRYPOINT [ %[10]s ]
-`, buildArgs["GOLANG_VERSION"], buildArgs["ALPINE_VERSION"], addUserGroup, goBuildflags, cfg.Metadata.URL, packages, extraDirectives, userCommand, workingDir, entrypoint)
+`, core.DefaultGolangImagePrefix, core.DefaultAlpineImage, addUserGroup, goBuildflags, cfg.Metadata.URL, packages, extraDirectives, userCommand, workingDir, entrypoint)
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 

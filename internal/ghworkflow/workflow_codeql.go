@@ -28,18 +28,18 @@ func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	j := baseJobWithGo("Analyze", cfg.Global.GoVersion)
 	j.addStep(jobStep{
 		Name: "Initialize CodeQL",
-		Uses: codeqlInitAction,
+		Uses: core.CodeqlInitAction,
 		With: map[string]interface{}{
 			"languages": "go",
 		},
 	})
 	j.addStep(jobStep{
 		Name: "Autobuild",
-		Uses: codeqlAutobuildAction,
+		Uses: core.CodeqlAutobuildAction,
 	})
 	j.addStep(jobStep{
 		Name: "Perform CodeQL Analysis",
-		Uses: codeqlAnalyzeAction,
+		Uses: core.CodeqlAnalyzeAction,
 	})
 	w.Jobs = map[string]job{"analyze": j}
 

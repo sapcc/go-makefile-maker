@@ -30,7 +30,7 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	j := baseJob("Push container to ghcr.io")
 	j.addStep(jobStep{
 		Name: "Log in to the Container registry",
-		Uses: dockerLoginAction,
+		Uses: core.DockerLoginAction,
 		With: map[string]interface{}{
 			"registry": registry,
 			"username": "${{ github.actor }}",
@@ -40,7 +40,7 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	j.addStep(jobStep{
 		Name: "Extract metadata (tags, labels) for Docker",
 		ID:   "meta",
-		Uses: dockerMetadataAction,
+		Uses: core.DockerMetadataAction,
 		With: map[string]interface{}{
 			"images": registry + "/${{ github.repository }}",
 			"tags": `# https://github.com/docker/metadata-action#latest-tag
@@ -53,7 +53,7 @@ type=semver,pattern=v{{major}}`,
 	})
 	j.addStep(jobStep{
 		Name: "Build and push Docker image",
-		Uses: dockerBuildPushAction,
+		Uses: core.DockerBuildPushAction,
 		With: map[string]interface{}{
 			"context": ".",
 			"push":    true,

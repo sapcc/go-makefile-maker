@@ -28,7 +28,7 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 	if cfg.SecurityChecks.Enabled {
 		j.addStep(jobStep{
 			Name: "Dependency Review",
-			Uses: dependencyReviewAction,
+			Uses: core.DependencyReviewAction,
 			With: map[string]interface{}{
 				"base-ref":         fmt.Sprintf("${{ github.event.pull_request.base.sha || '%s' }}", cfg.Global.DefaultBranch),
 				"head-ref":         "${{ github.event.pull_request.head.sha || github.ref }}",
@@ -39,7 +39,7 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 
 		j.addStep(jobStep{
 			Name: "Run govulncheck",
-			Uses: govulncheckAction,
+			Uses: core.GovulncheckAction,
 		})
 	}
 
@@ -58,7 +58,7 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 		w.Permissions.Checks = tokenScopeWrite // for nicer output in pull request diffs
 		j.addStep(jobStep{
 			Name: "Check for spelling errors",
-			Uses: misspellAction,
+			Uses: core.MisspellAction,
 			With: with,
 		})
 	}

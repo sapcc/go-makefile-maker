@@ -5,8 +5,9 @@ binaries:
     fromPackage: .
     installTo:   bin/
 
-vendoring:
-  enabled: true
+golang:
+  enableVendoring: true
+  setGoModVersion: true
 
 golangciLint:
   createConfig: true

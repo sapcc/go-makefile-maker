@@ -17,8 +17,47 @@ package ghworkflow
 import (
 	"strings"
 
+	"github.com/sapcc/go-makefile-maker/internal/core"
 	"gopkg.in/yaml.v3"
 )
+
+func pushAndPRTriggers(defaultBranch string, ignorePaths []string) eventTrigger {
+	return eventTrigger{
+		Push: pushAndPRTriggerOpts{
+			Branches:    []string{defaultBranch},
+			PathsIgnore: ignorePaths,
+		},
+		PullRequest: pushAndPRTriggerOpts{
+			Branches:    []string{"*"},
+			PathsIgnore: ignorePaths,
+		},
+	}
+}
+
+func baseJob(name string) job {
+	return job{
+		Name:   name,
+		RunsOn: core.DefaultRunnerOS,
+		Steps: []jobStep{{
+			Name: "Check out code",
+			Uses: core.CheckoutAction,
+		}},
+	}
+}
+
+func baseJobWithGo(name, goVersion string) job {
+	j := baseJob(name)
+	step := jobStep{
+		Name: "Set up Go",
+		Uses: core.SetupGoAction,
+		With: map[string]interface{}{
+			"go-version":   goVersion,
+			"check-latest": true,
+		},
+	}
+	j.addStep(step)
+	return j
+}
 
 // makeMultilineYAMLString adds \n to the strings and joins them.
 // yaml.Marshal() takes care of the rest.

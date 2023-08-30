@@ -20,6 +20,7 @@ package main
 
 import (
 	"os"
+	"regexp"
 
 	"gopkg.in/yaml.v3"
 
@@ -44,6 +45,13 @@ func main() {
 	must.Succeed(file.Close())
 	cfg.Validate()
 
+	if cfg.Golang.SetGoModVersion {
+		modFileBytes := must.Return(os.ReadFile(core.ModFilename))
+		rgx := regexp.MustCompile(`go \d\.\d\d`)
+		modFileBytesReplaced := rgx.ReplaceAll(modFileBytes, []byte("go "+core.DefaultGoVersion))
+		must.Succeed(os.WriteFile(core.ModFilename, modFileBytesReplaced, 0o666))
+	}
+
 	// Scan go.mod file for additional context information.
 	sr := core.Scan()
 
@@ -60,7 +68,7 @@ func main() {
 
 	// Render golangci-lint config file.
 	if cfg.GolangciLint.CreateConfig {
-		golangcilint.RenderConfig(cfg.GolangciLint, cfg.Vendoring.Enabled, sr.MustModulePath(), cfg.SpellCheck.IgnoreWords)
+		golangcilint.RenderConfig(cfg.GolangciLint, cfg.Golang.EnableVendoring, sr.MustModulePath(), cfg.SpellCheck.IgnoreWords)
 	}
 
 	// Render GitHub workflows.

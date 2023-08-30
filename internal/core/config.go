@@ -44,7 +44,7 @@ type Configuration struct {
 	Binaries       []BinaryConfiguration        `yaml:"binaries"`
 	Test           TestConfiguration            `yaml:"testPackages"`
 	Coverage       CoverageConfiguration        `yaml:"coverageTest"`
-	Vendoring      VendoringConfiguration       `yaml:"vendoring"`
+	Golang         GolangConfiguration          `yaml:"golang"`
 	GolangciLint   GolangciLintConfiguration    `yaml:"golangciLint"`
 	SpellCheck     SpellCheckConfiguration      `yaml:"spellCheck"`
 	GitHubWorkflow *GithubWorkflowConfiguration `yaml:"githubWorkflow"`
@@ -85,9 +85,10 @@ type CoverageConfiguration struct {
 	Except string `yaml:"except"`
 }
 
-// VendoringConfiguration appears in type Configuration.
-type VendoringConfiguration struct {
-	Enabled bool `yaml:"enabled"`
+// GolangConfiguration appears in type Configuration.
+type GolangConfiguration struct {
+	EnableVendoring bool `yaml:"enableVendoring"`
+	SetGoModVersion bool `yaml:"setGoModVersion"`
 }
 
 // GolangciLintConfiguration appears in type Configuration.

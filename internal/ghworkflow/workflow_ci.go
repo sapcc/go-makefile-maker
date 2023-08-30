@@ -37,7 +37,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 
 	buildAndLintJob.addStep(jobStep{
 		Name: "Run golangci-lint",
-		Uses: golangciLintAction,
+		Uses: core.GolangciLintAction,
 		With: map[string]interface{}{
 			"version": "latest",
 		},
@@ -55,7 +55,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 	testJob := buildOrTestBaseJob(buildTestOpts)
 	testJob.Needs = []string{"buildAndLint"}
 	if cfg.CI.Postgres.Enabled {
-		version := defaultPostgresVersion
+		version := core.DefaultPostgresVersion
 		if cfg.CI.Postgres.Version != "" {
 			version = cfg.CI.Postgres.Version
 		}
@@ -76,14 +76,14 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 		testJob.addStep(jobStep{
 			ID:   "cache-envtest",
 			Name: "Cache envtest binaries",
-			Uses: cacheAction,
+			Uses: core.CacheAction,
 			With: map[string]interface{}{
 				"path": "test/bin",
 				"key":  `${{ runner.os }}-envtest-${{ hashFiles('Makefile.maker.yaml') }}`,
 			},
 		})
 		// Download the envtest binaries, in case of cache miss.
-		envtestVersion := defaultK8sEnvtestVersion
+		envtestVersion := core.DefaultK8sEnvtestVersion
 		if cfg.CI.KubernetesEnvtest.Version != "" {
 			envtestVersion = cfg.CI.KubernetesEnvtest.Version
 		}

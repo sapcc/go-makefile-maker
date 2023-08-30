@@ -65,7 +65,7 @@ endif
 	build := category{name: "build"}
 
 	defaultBuildFlags := ""
-	if cfg.Vendoring.Enabled {
+	if cfg.Golang.EnableVendoring {
 		defaultBuildFlags = "-mod vendor"
 	}
 	build.addDefinition("GO_BUILDFLAGS =%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
@@ -191,7 +191,7 @@ endif
 	})
 
 	//add tidy-deps or vendor target
-	if cfg.Vendoring.Enabled {
+	if cfg.Golang.EnableVendoring {
 		dev.addRule(rule{
 			description: "Run go mod tidy, go mod verify, and go mod vendor.",
 			target:      "vendor",
