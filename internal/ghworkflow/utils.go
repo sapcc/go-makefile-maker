@@ -17,8 +17,9 @@ package ghworkflow
 import (
 	"strings"
 
-	"github.com/sapcc/go-makefile-maker/internal/core"
 	"gopkg.in/yaml.v3"
+
+	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
 func pushAndPRTriggers(defaultBranch string, ignorePaths []string) eventTrigger {
