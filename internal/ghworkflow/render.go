@@ -45,11 +45,14 @@ func Render(cfg *core.Configuration) {
 	if ghwCfg.CI.Enabled {
 		ciWorkflow(ghwCfg, cfg.Golang.EnableVendoring, len(cfg.Binaries) > 0)
 	}
-	if ghwCfg.SecurityChecks.Enabled {
-		codeQLWorkflow(ghwCfg)
-	}
 	if ghwCfg.PushContainerToGhcr.Enabled {
 		ghcrWorkflow(ghwCfg)
+	}
+	if ghwCfg.Release.Enabled {
+		releaseWorkflow(ghwCfg)
+	}
+	if ghwCfg.SecurityChecks.Enabled {
+		codeQLWorkflow(ghwCfg)
 	}
 }
 

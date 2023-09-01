@@ -31,6 +31,7 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/dockerfile"
 	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
 	"github.com/sapcc/go-makefile-maker/internal/golangcilint"
+	"github.com/sapcc/go-makefile-maker/internal/goreleaser"
 	"github.com/sapcc/go-makefile-maker/internal/makefile"
 	"github.com/sapcc/go-makefile-maker/internal/renovate"
 )
@@ -55,7 +56,7 @@ func main() {
 	// Scan go.mod file for additional context information.
 	sr := core.Scan()
 
-	// Render Makefile.
+	// Render Makefile
 	makefile.Render(&cfg, sr)
 
 	// Render Dockerfile
@@ -66,12 +67,17 @@ func main() {
 		dockerfile.RenderConfig(cfg)
 	}
 
-	// Render golangci-lint config file.
+	// Render golangci-lint config file
 	if cfg.GolangciLint.CreateConfig {
 		golangcilint.RenderConfig(cfg.GolangciLint, cfg.Golang.EnableVendoring, sr.MustModulePath(), cfg.SpellCheck.IgnoreWords)
 	}
 
-	// Render GitHub workflows.
+	// Render Goreleaser config file
+	if cfg.Goreleaser.Enabled {
+		goreleaser.RenderConfig(cfg)
+	}
+
+	// Render GitHub workflows
 	if cfg.GitHubWorkflow != nil {
 		if cfg.GitHubWorkflow.Global.GoVersion == "" {
 			if sr.GoVersion == "" {
@@ -82,7 +88,7 @@ func main() {
 		ghworkflow.Render(&cfg)
 	}
 
-	// Render Renovate config.
+	// Render Renovate config
 	if cfg.Renovate.Enabled {
 		if cfg.Renovate.GoVersion == "" {
 			if sr.GoVersion == "" {

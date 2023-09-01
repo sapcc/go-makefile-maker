@@ -37,7 +37,7 @@ const (
 	CodeqlAutobuildAction = "github/codeql-action/autobuild@v2"
 
 	GolangciLintAction = "golangci/golangci-lint-action@v3"
+	GoreleaserAction   = "goreleaser/goreleaser-action@v4"
 	GovulncheckAction  = "golang/govulncheck-action@v1"
-
-	MisspellAction = "reviewdog/action-misspell@v1"
+	MisspellAction     = "reviewdog/action-misspell@v1"
 )

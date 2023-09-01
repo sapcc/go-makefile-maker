@@ -46,6 +46,7 @@ type Configuration struct {
 	Coverage       CoverageConfiguration        `yaml:"coverageTest"`
 	Golang         GolangConfiguration          `yaml:"golang"`
 	GolangciLint   GolangciLintConfiguration    `yaml:"golangciLint"`
+	Goreleaser     GoreleaserConfiguration      `yaml:"goreleaser"`
 	SpellCheck     SpellCheckConfiguration      `yaml:"spellCheck"`
 	GitHubWorkflow *GithubWorkflowConfiguration `yaml:"githubWorkflow"`
 	Renovate       RenovateConfig               `yaml:"renovate"`
@@ -98,6 +99,10 @@ type GolangciLintConfiguration struct {
 	SkipDirs         []string `yaml:"skipDirs"`
 }
 
+type GoreleaserConfiguration struct {
+	Enabled bool `yaml:"enabled"`
+}
+
 // SpellCheckConfiguration appears in type Configuration.
 type SpellCheckConfiguration struct {
 	IgnoreWords []string `yaml:"ignoreWords"`
@@ -118,6 +123,7 @@ type GithubWorkflowConfiguration struct {
 	CI                  CIWorkflowConfig             `yaml:"ci"`
 	License             LicenseWorkflowConfig        `yaml:"license"`
 	PushContainerToGhcr PushContainerToGhcrConfig    `yaml:"pushContainerToGhcr"`
+	Release             ReleaseWorkflowConfig        `yaml:"release`
 	SpellCheck          SpellCheckWorkflowConfig     `yaml:"spellCheck"`
 	SecurityChecks      SecurityChecksWorkflowConfig `yaml:"securityChecks"`
 }
@@ -146,6 +152,10 @@ type LicenseWorkflowConfig struct {
 }
 
 type PushContainerToGhcrConfig struct {
+	Enabled bool `yaml:"enabled"`
+}
+
+type ReleaseWorkflowConfig struct {
 	Enabled bool `yaml:"enabled"`
 }
 
