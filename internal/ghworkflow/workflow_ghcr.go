@@ -31,7 +31,7 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	j.addStep(jobStep{
 		Name: "Log in to the Container registry",
 		Uses: core.DockerLoginAction,
-		With: map[string]interface{}{
+		With: map[string]any{
 			"registry": registry,
 			"username": "${{ github.actor }}",
 			"password": "${{ secrets.GITHUB_TOKEN }}",
@@ -41,7 +41,7 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 		Name: "Extract metadata (tags, labels) for Docker",
 		ID:   "meta",
 		Uses: core.DockerMetadataAction,
-		With: map[string]interface{}{
+		With: map[string]any{
 			"images": registry + "/${{ github.repository }}",
 			"tags": `# https://github.com/docker/metadata-action#latest-tag
 type=raw,value=latest,enable={{is_default_branch}}
@@ -54,7 +54,7 @@ type=semver,pattern=v{{major}}`,
 	j.addStep(jobStep{
 		Name: "Build and push Docker image",
 		Uses: core.DockerBuildPushAction,
-		With: map[string]interface{}{
+		With: map[string]any{
 			"context": ".",
 			"push":    true,
 			"tags":    "${{ steps.meta.outputs.tags }}",

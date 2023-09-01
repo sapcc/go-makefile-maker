@@ -38,7 +38,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 	buildAndLintJob.addStep(jobStep{
 		Name: "Run golangci-lint",
 		Uses: core.GolangciLintAction,
-		With: map[string]interface{}{
+		With: map[string]any{
 			"version": "latest",
 		},
 	})
@@ -77,7 +77,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 			ID:   "cache-envtest",
 			Name: "Cache envtest binaries",
 			Uses: core.CacheAction,
-			With: map[string]interface{}{
+			With: map[string]any{
 				"path": "test/bin",
 				"key":  `${{ runner.os }}-envtest-${{ hashFiles('Makefile.maker.yaml') }}`,
 			},

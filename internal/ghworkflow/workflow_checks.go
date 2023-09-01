@@ -29,7 +29,7 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 		j.addStep(jobStep{
 			Name: "Dependency Review",
 			Uses: core.DependencyReviewAction,
-			With: map[string]interface{}{
+			With: map[string]any{
 				"base-ref":         fmt.Sprintf("${{ github.event.pull_request.base.sha || '%s' }}", cfg.Global.DefaultBranch),
 				"head-ref":         "${{ github.event.pull_request.head.sha || github.ref }}",
 				"fail-on-severity": "moderate",
@@ -44,7 +44,7 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 	}
 
 	if cfg.SpellCheck.Enabled {
-		with := map[string]interface{}{
+		with := map[string]any{
 			"exclude":       "./vendor/*",
 			"reporter":      "github-check",
 			"fail_on_error": true,

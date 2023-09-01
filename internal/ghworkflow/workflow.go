@@ -166,7 +166,7 @@ type jobStep struct {
 	// parameter is a key/value pair. Input parameters are set as environment
 	// variables. The variable is prefixed with INPUT_ and converted to upper
 	// case.
-	With map[string]interface{} `yaml:"with,omitempty"`
+	With map[string]any `yaml:"with,omitempty"`
 
 	// A map of environment variables for steps to use.
 	Env map[string]string `yaml:"env,omitempty"`

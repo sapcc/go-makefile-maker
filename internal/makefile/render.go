@@ -185,7 +185,7 @@ type category struct {
 	rules       []rule
 }
 
-func (c *category) addDefinition(def string, args ...interface{}) {
+func (c *category) addDefinition(def string, args ...any) {
 	if len(args) > 0 {
 		def = fmt.Sprintf(def, args...)
 	}
@@ -211,14 +211,14 @@ type rule struct {
 	orderOnlyPrerequisites []string
 }
 
-func (r *rule) addDefinition(def string, args ...interface{}) {
+func (r *rule) addDefinition(def string, args ...any) {
 	if len(args) > 0 {
 		def = fmt.Sprintf(def, args...)
 	}
 	r.definitions = append(r.definitions, def)
 }
 
-func (r *rule) addRecipe(rec string, args ...interface{}) {
+func (r *rule) addRecipe(rec string, args ...any) {
 	if len(args) > 0 {
 		rec = fmt.Sprintf(rec, args...)
 	}

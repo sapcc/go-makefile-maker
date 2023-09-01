@@ -29,7 +29,7 @@ func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	j.addStep(jobStep{
 		Name: "Initialize CodeQL",
 		Uses: core.CodeqlInitAction,
-		With: map[string]interface{}{
+		With: map[string]any{
 			"languages": "go",
 		},
 	})

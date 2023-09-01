@@ -51,7 +51,7 @@ func baseJobWithGo(name, goVersion string) job {
 	step := jobStep{
 		Name: "Set up Go",
 		Uses: core.SetupGoAction,
-		With: map[string]interface{}{
+		With: map[string]any{
 			"go-version":   goVersion,
 			"check-latest": true,
 		},
@@ -76,7 +76,7 @@ func makeMultilineYAMLString(in []string) string {
 type quotedString string
 
 // MarshalYAML implements the yaml.Marshaler interface.
-func (qs quotedString) MarshalYAML() (interface{}, error) {
+func (qs quotedString) MarshalYAML() (any, error) {
 	return yaml.Node{
 		Kind:  yaml.ScalarNode,
 		Style: yaml.SingleQuotedStyle,
