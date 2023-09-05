@@ -23,9 +23,9 @@ import (
 // basically a collection of other linters and checks which run fast to reduce the amount of created githbu action workflows
 func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string) {
 	w := newWorkflow("Checks", cfg.Global.DefaultBranch, nil)
-
 	j := baseJobWithGo("Checks", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
-	if cfg.SecurityChecks.Enabled {
+
+	if cfg.SecurityChecks.Enabled && !cfg.IsSelfHostedRunner {
 		j.addStep(jobStep{
 			Name: "Dependency Review",
 			Uses: core.DependencyReviewAction,

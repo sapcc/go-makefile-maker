@@ -98,7 +98,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
 		Name: "Run tests and generate coverage report",
 		Run:  "make build/cover.out",
 	})
-	if cfg.CI.Coveralls {
+	if cfg.CI.Coveralls && !cfg.IsSelfHostedRunner {
 		multipleOS := len(cfg.CI.RunnerType) > 1
 		env := map[string]string{
 			"GIT_BRANCH":      "${{ github.head_ref }}",
