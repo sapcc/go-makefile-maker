@@ -28,7 +28,7 @@ var DefaultGitHubEnterpriseRunnerType = [...]string{"self-hosted", "Linux", "X64
 
 const (
 	CacheAction            = "actions/cache@v3"
-	CheckoutAction         = "actions/checkout@v3"
+	CheckoutAction         = "actions/checkout@v4"
 	SetupGoAction          = "actions/setup-go@v4"
 	DependencyReviewAction = "actions/dependency-review-action@v3"
 
