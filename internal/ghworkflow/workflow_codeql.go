@@ -25,7 +25,7 @@ func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	w.On.PullRequest.Branches = []string{cfg.Global.DefaultBranch}
 	w.On.Schedule = []cronExpr{{Cron: "00 07 * * 1"}} // every Monday at 07:00 AM
 
-	j := baseJobWithGo("Analyze", cfg.Global.GoVersion)
+	j := baseJobWithGo("Analyze", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
 	j.addStep(jobStep{
 		Name: "Initialize CodeQL",
 		Uses: core.CodeqlInitAction,

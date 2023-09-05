@@ -21,6 +21,7 @@ package main
 import (
 	"os"
 	"regexp"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -45,6 +46,10 @@ func main() {
 	must.Succeed(dec.Decode(&cfg))
 	must.Succeed(file.Close())
 	cfg.Validate()
+
+	if !strings.HasPrefix(cfg.Metadata.URL, "https://github.com") {
+		cfg.GitHubWorkflow.IsSelfHostedRunner = true
+	}
 
 	if cfg.Golang.SetGoModVersion {
 		modFileBytes := must.Return(os.ReadFile(core.ModFilename))

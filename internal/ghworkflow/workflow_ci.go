@@ -21,13 +21,13 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bool) {
+func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
 	goVersion := cfg.Global.GoVersion
 
 	w := newWorkflow("CI", cfg.Global.DefaultBranch, cfg.CI.IgnorePaths)
 	w.Jobs = make(map[string]job)
 
-	buildAndLintJob := baseJobWithGo("Build & Lint", goVersion)
+	buildAndLintJob := baseJobWithGo("Build & Lint", cfg.IsSelfHostedRunner, goVersion)
 	if hasBinaries {
 		buildAndLintJob.addStep(jobStep{
 			Name: "Build all binaries",
@@ -45,14 +45,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 
 	w.Jobs["buildAndLint"] = buildAndLintJob
 
-	buildTestOpts := buildTestJobOpts{
-		goVersion:    goVersion,
-		vendoring:    vendoring,
-		runnerOSList: cfg.CI.RunnerOSList,
-	}
-
-	buildTestOpts.name = "Test"
-	testJob := buildOrTestBaseJob(buildTestOpts)
+	testJob := buildOrTestBaseJob("Test", cfg.IsSelfHostedRunner, cfg.CI.RunnerType, goVersion)
 	testJob.Needs = []string{"buildAndLint"}
 	if cfg.CI.Postgres.Enabled {
 		version := core.DefaultPostgresVersion
@@ -102,7 +95,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 		Run:  "make build/cover.out",
 	})
 	if cfg.CI.Coveralls {
-		multipleOS := len(cfg.CI.RunnerOSList) > 1
+		multipleOS := len(cfg.CI.RunnerType) > 1
 		env := map[string]string{
 			"GIT_BRANCH":      "${{ github.head_ref }}",
 			"COVERALLS_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
@@ -120,7 +113,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 
 		if multipleOS {
 			// 04. Tell Coveralls to merge coverage results.
-			finishJob := baseJobWithGo("Finish", goVersion)
+			finishJob := baseJobWithGo("Finish", cfg.IsSelfHostedRunner, goVersion)
 			finishJob.Needs = []string{"test"} // this is the <job_id> for the test job
 			finishJob.addStep(jobStep{
 				Name: "Coveralls post build webhook",
@@ -135,23 +128,16 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, vendoring, hasBinaries bo
 	writeWorkflowToFile(w)
 }
 
-type buildTestJobOpts struct {
-	name         string
-	goVersion    string
-	vendoring    bool
-	runnerOSList []string
-}
-
-func buildOrTestBaseJob(opts buildTestJobOpts) job {
-	j := baseJobWithGo(opts.name, opts.goVersion)
-	switch len(opts.runnerOSList) {
+func buildOrTestBaseJob(name string, isSelfHostedRunner bool, runsOnList []string, goVersion string) job {
+	j := baseJobWithGo(name, isSelfHostedRunner, goVersion)
+	switch len(runsOnList) {
 	case 0:
-		// baseJobWithGo() will set j.RunsOn to defaultRunnerOS.
+		// baseJobWithGo() will set j.RunsOn to DefaultGitHubComRunnerType.
 	case 1:
-		j.RunsOn = opts.runnerOSList[0]
+		j.RunsOn = runsOnList[0]
 	default:
 		j.RunsOn = "${{ matrix.os }}"
-		j.Strategy.Matrix.OS = opts.runnerOSList
+		j.Strategy.Matrix.OS = runsOnList
 	}
 	return j
 }

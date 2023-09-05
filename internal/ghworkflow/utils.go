@@ -35,10 +35,18 @@ func pushAndPRTriggers(defaultBranch string, ignorePaths []string) eventTrigger 
 	}
 }
 
-func baseJob(name string) job {
+func baseJob(name string, isSelfHostedRunner bool) job {
+	var runnerType any
+
+	if isSelfHostedRunner {
+		runnerType = core.DefaultGitHubEnterpriseRunnerType
+	} else {
+		runnerType = core.DefaultGitHubComRunnerType
+	}
+
 	return job{
 		Name:   name,
-		RunsOn: core.DefaultRunnerOS,
+		RunsOn: runnerType,
 		Steps: []jobStep{{
 			Name: "Check out code",
 			Uses: core.CheckoutAction,
@@ -46,8 +54,8 @@ func baseJob(name string) job {
 	}
 }
 
-func baseJobWithGo(name, goVersion string) job {
-	j := baseJob(name)
+func baseJobWithGo(name string, isSelfHostedRunner bool, goVersion string) job {
+	j := baseJob(name, isSelfHostedRunner)
 	step := jobStep{
 		Name: "Set up Go",
 		Uses: core.SetupGoAction,

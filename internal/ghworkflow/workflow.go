@@ -94,7 +94,7 @@ type job struct {
 
 	// The type of machine to run the job on.
 	// Ref: https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
-	RunsOn string `yaml:"runs-on"`
+	RunsOn any `yaml:"runs-on,flow"`
 
 	// A map of environment variables that are available to all steps in the job.
 	Env map[string]string `yaml:"env,omitempty"`

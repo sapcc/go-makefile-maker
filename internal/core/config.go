@@ -121,20 +121,21 @@ type GithubWorkflowConfiguration struct {
 	} `yaml:"global"`
 
 	CI                  CIWorkflowConfig             `yaml:"ci"`
+	IsSelfHostedRunner  bool                         `yaml:"omit"`
 	License             LicenseWorkflowConfig        `yaml:"license"`
 	PushContainerToGhcr PushContainerToGhcrConfig    `yaml:"pushContainerToGhcr"`
-	Release             ReleaseWorkflowConfig        `yaml:"release`
+	Release             ReleaseWorkflowConfig        `yaml:"release"`
 	SpellCheck          SpellCheckWorkflowConfig     `yaml:"spellCheck"`
 	SecurityChecks      SecurityChecksWorkflowConfig `yaml:"securityChecks"`
 }
 
 // CIWorkflowConfig appears in type Configuration.
 type CIWorkflowConfig struct {
-	Enabled      bool     `yaml:"enabled"`
-	IgnorePaths  []string `yaml:"ignorePaths"`
-	RunnerOSList []string `yaml:"runOn"`
-	Coveralls    bool     `yaml:"coveralls"`
-	Postgres     struct {
+	Enabled     bool     `yaml:"enabled"`
+	IgnorePaths []string `yaml:"ignorePaths"`
+	RunnerType  []string `yaml:"runOn"`
+	Coveralls   bool     `yaml:"coveralls"`
+	Postgres    struct {
 		Enabled bool   `yaml:"enabled"`
 		Version string `yaml:"version"`
 	} `yaml:"postgres"`
@@ -198,18 +199,22 @@ type Metadata struct {
 func (c *Configuration) Validate() {
 	if c.Dockerfile.Enabled {
 		if c.Metadata.URL == "" {
-			logg.Fatal("metadata.url needs to be set when docker.enabled is true")
+			logg.Fatal("metadata.url must be set when docker.enabled is true")
 		}
 	}
 
 	// Validate GolangciLintConfiguration.
 	if len(c.GolangciLint.ErrcheckExcludes) > 0 && !c.GolangciLint.CreateConfig {
-		logg.Fatal("golangciLint.createConfig needs to be set to 'true' if golangciLint.errcheckExcludes is defined")
+		logg.Fatal("golangciLint.createConfig must be set to 'true' if golangciLint.errcheckExcludes is defined")
 	}
 
 	// Validate GithubWorkflowConfiguration.
 	ghwCfg := c.GitHubWorkflow
 	if ghwCfg != nil {
+		if c.Metadata.URL == "" {
+			logg.Fatal("metadata.url must be set when any github workflow is configured otherwise it cannot be determined which github runner type should be used")
+		}
+
 		// Validate global options.
 		if ghwCfg.Global.DefaultBranch == "" {
 			errMsg := "could not find default branch using git, you can define manually be setting 'githubWorkflow.global.defaultBranch' in config"
@@ -229,10 +234,10 @@ func (c *Configuration) Validate() {
 		// Validate CI workflow configuration.
 		if ghwCfg.CI.Postgres.Enabled || ghwCfg.CI.KubernetesEnvtest.Enabled {
 			if !ghwCfg.CI.Enabled {
-				logg.Fatal("githubWorkflow.ci.enabled needs to be set to 'true' when githubWorkflow.ci.postgres or githubWorkflow.ci.kubernetesEnvtest is enabled")
+				logg.Fatal("githubWorkflow.ci.enabled must be set to 'true' when githubWorkflow.ci.postgres or githubWorkflow.ci.kubernetesEnvtest is enabled")
 			}
-			if len(ghwCfg.CI.RunnerOSList) > 0 {
-				if len(ghwCfg.CI.RunnerOSList) > 1 || !strings.HasPrefix(ghwCfg.CI.RunnerOSList[0], "ubuntu") {
+			if len(ghwCfg.CI.RunnerType) > 0 {
+				if len(ghwCfg.CI.RunnerType) > 1 || !strings.HasPrefix(ghwCfg.CI.RunnerType[0], "ubuntu") {
 					logg.Fatal("githubWorkflow.ci.runOn must only define a single Ubuntu based runner when githubWorkflow.ci.postgres or githubWorkflow.ci.kubernetesEnvtest is enabled")
 				}
 			}

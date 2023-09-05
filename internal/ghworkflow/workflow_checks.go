@@ -24,7 +24,7 @@ import (
 func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string) {
 	w := newWorkflow("Checks", cfg.Global.DefaultBranch, nil)
 
-	j := baseJobWithGo("Checks", cfg.Global.GoVersion)
+	j := baseJobWithGo("Checks", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
 	if cfg.SecurityChecks.Enabled {
 		j.addStep(jobStep{
 			Name: "Dependency Review",

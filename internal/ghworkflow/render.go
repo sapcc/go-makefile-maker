@@ -43,7 +43,7 @@ func Render(cfg *core.Configuration) {
 	checksWorkflow(ghwCfg, cfg.SpellCheck.IgnoreWords)
 
 	if ghwCfg.CI.Enabled {
-		ciWorkflow(ghwCfg, cfg.Golang.EnableVendoring, len(cfg.Binaries) > 0)
+		ciWorkflow(ghwCfg, len(cfg.Binaries) > 0)
 	}
 	if ghwCfg.PushContainerToGhcr.Enabled {
 		ghcrWorkflow(ghwCfg)

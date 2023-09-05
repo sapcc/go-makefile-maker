@@ -18,11 +18,15 @@ const (
 	DefaultAlpineImage       = "3.18"
 	DefaultGolangImagePrefix = "1.21.0-alpine"
 
-	DefaultGoVersion         = "1.21"
-	DefaultPostgresVersion   = "12"
-	DefaultK8sEnvtestVersion = "1.26.x!"
-	DefaultRunnerOS          = "ubuntu-latest"
+	DefaultGoVersion           = "1.21"
+	DefaultPostgresVersion     = "12"
+	DefaultK8sEnvtestVersion   = "1.26.x!"
+	DefaultGitHubComRunnerType = "ubuntu-latest"
+)
 
+var DefaultGitHubEnterpriseRunnerType = [...]string{"self-hosted", "Linux", "X64"}
+
+const (
 	CacheAction            = "actions/cache@v3"
 	CheckoutAction         = "actions/checkout@v3"
 	SetupGoAction          = "actions/setup-go@v4"

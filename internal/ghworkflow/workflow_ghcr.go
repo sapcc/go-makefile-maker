@@ -27,7 +27,7 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 
 	registry := "ghcr.io"
 
-	j := baseJob("Push container to ghcr.io")
+	j := baseJob("Push container to ghcr.io", cfg.IsSelfHostedRunner)
 	j.addStep(jobStep{
 		Name: "Log in to the Container registry",
 		Uses: core.DockerLoginAction,

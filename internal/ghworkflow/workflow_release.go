@@ -25,7 +25,7 @@ func releaseWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	w.On.PullRequest.Branches = nil
 	w.On.Push.Tags = []string{"v[0-9]+.[0-9]+.[0-9]+"}
 
-	j := baseJobWithGo("goreleaser", cfg.Global.GoVersion)
+	j := baseJobWithGo("goreleaser", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
 	// TODO: is this required when using --release-notes ?
 	// j.Steps[0].With = map[string]any{
 	// 	"fetch-depth": 0,
