@@ -196,6 +196,12 @@ type Metadata struct {
 // Helper functions
 
 func (c *Configuration) Validate() {
+	if c.Dockerfile.Enabled {
+		if c.Metadata.URL == "" {
+			logg.Fatal("metadata.url needs to be set when docker.enabled is true")
+		}
+	}
+
 	// Validate GolangciLintConfiguration.
 	if len(c.GolangciLint.ErrcheckExcludes) > 0 && !c.GolangciLint.CreateConfig {
 		logg.Fatal("golangciLint.createConfig needs to be set to 'true' if golangciLint.errcheckExcludes is defined")

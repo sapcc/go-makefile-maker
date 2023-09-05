@@ -61,9 +61,6 @@ func main() {
 
 	// Render Dockerfile
 	if cfg.Dockerfile.Enabled {
-		if cfg.Metadata.URL == "" {
-			logg.Fatal("metadata.url needs to be set when docker.enabled is true")
-		}
 		dockerfile.RenderConfig(cfg)
 	}
 
