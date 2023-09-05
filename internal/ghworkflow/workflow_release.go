@@ -18,6 +18,11 @@ import "github.com/sapcc/go-makefile-maker/internal/core"
 func releaseWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	// https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#publishing-a-package-using-an-action
 	w := newWorkflow("goreleaser", cfg.Global.DefaultBranch, nil)
+
+	if w.deleteIf(cfg.Release.Enabled) {
+		return
+	}
+
 	w.Permissions.Contents = tokenScopeRead
 	w.Permissions.Packages = tokenScopeWrite
 

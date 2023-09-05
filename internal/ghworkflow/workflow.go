@@ -14,6 +14,14 @@
 
 package ghworkflow
 
+import (
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/sapcc/go-bits/must"
+)
+
 func newWorkflow(name, defaultBranch string, ignorePaths []string) *workflow {
 	return &workflow{
 		Name: name,
@@ -33,6 +41,20 @@ type workflow struct {
 	Permissions permissions `yaml:"permissions"`
 	// A map of <job_id> to their configuration(s).
 	Jobs map[string]job `yaml:"jobs"`
+}
+
+func (w workflow) getPath() string {
+	fileName := strings.ToLower(strings.ReplaceAll(w.Name, " ", "-"))
+	return filepath.Join(workflowDir, fileName+".yaml")
+}
+
+func (w workflow) deleteIf(condition bool) bool {
+	if !condition {
+		must.Succeed(os.RemoveAll(w.getPath()))
+		return true
+	}
+
+	return false
 }
 
 type githubTokenScope string

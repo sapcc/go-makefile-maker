@@ -13,10 +13,17 @@
 
 package ghworkflow
 
-import "github.com/sapcc/go-makefile-maker/internal/core"
+import (
+	"github.com/sapcc/go-makefile-maker/internal/core"
+)
 
 func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	w := newWorkflow("CodeQL", cfg.Global.DefaultBranch, nil)
+
+	if w.deleteIf(cfg.SecurityChecks.Enabled && !cfg.IsSelfHostedRunner) {
+		return
+	}
+
 	w.Permissions.Actions = tokenScopeRead         // for github/codeql-action/init to get workflow details
 	w.Permissions.SecurityEvents = tokenScopeWrite // for github/codeql-action/analyze to upload SARIF results
 

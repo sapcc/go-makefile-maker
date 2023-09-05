@@ -22,10 +22,14 @@ import (
 )
 
 func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
-	goVersion := cfg.Global.GoVersion
-
 	w := newWorkflow("CI", cfg.Global.DefaultBranch, cfg.CI.IgnorePaths)
+
+	if w.deleteIf(cfg.CI.Enabled) {
+		return
+	}
+
 	w.Jobs = make(map[string]job)
+	goVersion := cfg.Global.GoVersion
 
 	buildAndLintJob := baseJobWithGo("Build & Lint", cfg.IsSelfHostedRunner, goVersion)
 	if hasBinaries {

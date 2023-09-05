@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -42,24 +41,14 @@ func Render(cfg *core.Configuration) {
 
 	checksWorkflow(ghwCfg, cfg.SpellCheck.IgnoreWords)
 
-	if ghwCfg.CI.Enabled {
-		ciWorkflow(ghwCfg, len(cfg.Binaries) > 0)
-	}
-	if ghwCfg.PushContainerToGhcr.Enabled {
-		ghcrWorkflow(ghwCfg)
-	}
-	if ghwCfg.Release.Enabled {
-		releaseWorkflow(ghwCfg)
-	}
-	if ghwCfg.SecurityChecks.Enabled {
-		codeQLWorkflow(ghwCfg)
-	}
+	ciWorkflow(ghwCfg, len(cfg.Binaries) > 0)
+	ghcrWorkflow(ghwCfg)
+	releaseWorkflow(ghwCfg)
+	codeQLWorkflow(ghwCfg)
 }
 
 func writeWorkflowToFile(w *workflow) {
-	name := strings.ToLower(strings.ReplaceAll(w.Name, " ", "-"))
-	path := filepath.Join(workflowDir, name+".yaml")
-	f := must.Return(os.Create(path))
+	f := must.Return(os.Create(w.getPath()))
 	defer f.Close()
 
 	encoder := yaml.NewEncoder(f)
