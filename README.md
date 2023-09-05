@@ -49,8 +49,9 @@ The config file has the following sections:
 * [coverageTest](#coveragetest)
 * [dockerfile](#dockerfile)
 * [variables](#variables)
-* [vendoring](#vendoring)
+* [golang](#golang)
 * [golangciLint](#golangcilint)
+* [Goreleaser](#goreleaser)
 * [spellCheck](#spellcheck)
 * [renovate](#renovate)
 * [verbatim](#verbatim)
@@ -58,6 +59,7 @@ The config file has the following sections:
   * [githubWorkflow\.global](#githubworkflowglobal)
   * [githubWorkflow\.ci](#githubworkflowci)
   * [githubWorkflow\.pushContainerToGhcr](#githubworkflowpushcontainertoghcr)
+  * [githubWorkflow\.release](#githubworkflowrelease)
   * [githubWorkflow\.securityChecks](#githubworkflowsecuritychecks)
   * [githubWorkflow\.license](#githubworkflowlicense)
   * [githubWorkflow\.spellCheck](#githubworkflowspellcheck)
@@ -177,20 +179,23 @@ variables:
   GO_TESTENV: 'POSTGRES_HOST=localhost POSTGRES_DATABASE=unittestdb'
 ```
 
-### `vendoring`
+### `golang`
 
 ```yaml
-vendoring:
-  enabled: false
+golang:
+  enableVendoring: true
+  setGoModVersion: true
 ```
 
-Set `vendoring.enabled` to `true` if you vendor all dependencies in your repository. With vendoring enabled:
+Set `golang.enableVendoring` to `true` if you vendor all dependencies in your repository. With vendoring enabled:
 
 1. The default for `GO_BUILDFLAGS` is set to `-mod vendor`, so that build targets default to using vendored dependencies.
    This means that building binaries does not require a network connection.
 2. The `make tidy-deps` target is replaced by a `make vendor` target that runs `go mod tidy && go mod verify` just like `make tidy-deps`, but also runs `go
    mod vendor`.
    This target can be used to get the vendor directory up-to-date before commits.
+
+If `golang.setGoModVersion` is set to `true` then `go.mod` will be automatically updated to the latest version.
 
 ### `golangciLint`
 
@@ -219,6 +224,15 @@ Refer to [`errcheck`'s README](https://github.com/kisielk/errcheck#excluding-fun
 for function signatures that `errcheck` accepts.
 
 Take a look at `go-makefile-maker`'s own [`golangci-lint` config file](./.golangci.yaml) for an up-to-date example of what the generated config would look like.
+
+### `goreleaser`
+
+```yaml
+goreleaser:
+  enabled: true
+```
+
+If `goreleaser.enabled` is set to true a config file for goreleaser will be generated based on the metadata of the repository.
 
 ### `spellCheck`
 
@@ -382,6 +396,12 @@ If `enabled` is set to true, the generated `Dockerfile` is build and pushed to r
 pushContainerToGhcr:
   enabled: true
 ```
+
+### `githubWorkflow.release`
+
+If `release` is enabled a workflow is generated which creates a new GitHub release using goreleaser when a git tag is pushed.
+
+`goreleaser.enabled` must be enabled when using this workflow.
 
 #### `githubWorkflow.securityChecks`
 
