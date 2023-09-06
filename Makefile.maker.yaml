@@ -1,5 +1,8 @@
 # Configuration file for <https://github.com/sapcc/go-makefile-maker>
 
+metadata:
+  url: https://github.com/sapcc/go-makefile-maker
+
 binaries:
   - name:        go-makefile-maker
     fromPackage: .
