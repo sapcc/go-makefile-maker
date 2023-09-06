@@ -47,7 +47,7 @@ func main() {
 	must.Succeed(file.Close())
 	cfg.Validate()
 
-	if !strings.HasPrefix(cfg.Metadata.URL, "https://github.com") {
+	if cfg.GitHubWorkflow != nil && !strings.HasPrefix(cfg.Metadata.URL, "https://github.com") {
 		cfg.GitHubWorkflow.IsSelfHostedRunner = true
 	}
 
