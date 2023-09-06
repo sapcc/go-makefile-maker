@@ -43,7 +43,7 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 		})
 	}
 
-	if cfg.SpellCheck.Enabled && !cfg.IsSelfHostedRunner {
+	if cfg.SpellCheck.Enabled {
 		with := map[string]any{
 			"exclude":       "./vendor/*",
 			"reporter":      "github-check",
