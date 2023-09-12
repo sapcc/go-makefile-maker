@@ -32,16 +32,16 @@ const (
 	SetupGoAction          = "actions/setup-go@v4"
 	DependencyReviewAction = "actions/dependency-review-action@v3"
 
-	DockerLoginAction     = "docker/login-action@v2"
-	DockerMetadataAction  = "docker/metadata-action@v4"
-	DockerBuildPushAction = "docker/build-push-action@v4"
+	DockerLoginAction     = "docker/login-action@v3"
+	DockerMetadataAction  = "docker/metadata-action@v5"
+	DockerBuildPushAction = "docker/build-push-action@v5"
 
 	CodeqlInitAction      = "github/codeql-action/init@v2"
 	CodeqlAnalyzeAction   = "github/codeql-action/analyze@v2"
 	CodeqlAutobuildAction = "github/codeql-action/autobuild@v2"
 
 	GolangciLintAction = "golangci/golangci-lint-action@v3"
-	GoreleaserAction   = "goreleaser/goreleaser-action@v4"
+	GoreleaserAction   = "goreleaser/goreleaser-action@v5"
 	GovulncheckAction  = "golang/govulncheck-action@v1"
 	MisspellAction     = "reviewdog/action-misspell@v1"
 )
