@@ -62,7 +62,9 @@ func main() {
 	sr := core.Scan()
 
 	// Render Makefile
-	makefile.Render(&cfg, sr)
+	if cfg.Makefile.Enabled == nil || *cfg.Makefile.Enabled {
+		makefile.Render(&cfg, sr)
+	}
 
 	// Render Dockerfile
 	if cfg.Dockerfile.Enabled {

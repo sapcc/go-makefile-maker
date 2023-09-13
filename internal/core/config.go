@@ -49,6 +49,7 @@ type Configuration struct {
 	Goreleaser     GoreleaserConfiguration      `yaml:"goreleaser"`
 	SpellCheck     SpellCheckConfiguration      `yaml:"spellCheck"`
 	GitHubWorkflow *GithubWorkflowConfiguration `yaml:"githubWorkflow"`
+	Makefile       MakefileConfig               `yaml:"makefile"`
 	Renovate       RenovateConfig               `yaml:"renovate"`
 	Dockerfile     DockerfileConfig             `yaml:"dockerfile"`
 	Metadata       Metadata                     `yaml:"metadata"`
@@ -187,6 +188,10 @@ type DockerfileConfig struct {
 	ExtraPackages   []string `yaml:"extraPackages"`
 	RunAsRoot       bool     `yaml:"runAsRoot"`
 	User            string   `yaml:"user"` //obsolete; will produce an error when used
+}
+
+type MakefileConfig struct {
+	Enabled *bool `yaml:"enabled"` // this is a pointer to bool to treat an absence as true for backwards compatibility
 }
 
 type Metadata struct {

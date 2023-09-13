@@ -44,6 +44,7 @@ Take a look at `go-makefile-maker`'s [own config file](./Makefile.maker.yaml) fo
 The config file has the following sections:
 
 * [metadata](#metadata)
+* [makefile](#makefile)
 * [binaries](#binaries)
 * [testPackages](#testpackages)
 * [coverageTest](#coveragetest)
@@ -74,6 +75,19 @@ metadata:
 `metadata` contains information about the project which cannot be guessed consistently:
 
 - `url` is the repository's remote URL.
+
+### `makefile`
+
+```yaml
+makefile:
+  enabled: false
+```
+
+`makefile` contains settings related to the higher level `Makefile` generation.
+
+`enabled` is an optional setting to disable the `Makefile` generation completely.
+If not specified, the setting is treated as being set to true to maintain backwards compability with older configs.
+
 
 ### `binaries`
 
