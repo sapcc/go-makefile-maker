@@ -86,7 +86,7 @@ makefile:
 `makefile` contains settings related to the higher level `Makefile` generation.
 
 `enabled` is an optional setting to disable the `Makefile` generation completely.
-If not specified, the setting is treated as being set to true to maintain backwards compability with older configs.
+If not specified, the setting is treated as being set to true to maintain backwards compatibility with older configs.
 
 
 ### `binaries`
