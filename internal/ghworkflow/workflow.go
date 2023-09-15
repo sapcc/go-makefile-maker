@@ -90,7 +90,7 @@ type cronExpr struct {
 }
 
 type pushAndPRTriggerOpts struct {
-	Branches    []string `yaml:"branches"`
+	Branches    []string `yaml:"branches,omitempty"`
 	Paths       []string `yaml:"paths,omitempty"`
 	PathsIgnore []string `yaml:"paths-ignore,omitempty"`
 	Tags        []string `yaml:"tags,omitempty"`
