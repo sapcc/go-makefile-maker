@@ -122,9 +122,13 @@ linters-settings:
 			- {{ . }}
 			{{- end }}
 	{{- end }}
+	stylecheck:
+		dot-import-whitelist:
+			- github.com/onsi/ginkgo/v2
+			- github.com/onsi/gomega
 	usestdlibvars:
-    constant-kind: true
-    crypto-hash: true
+		constant-kind: true
+		crypto-hash: true
 		default-rpc-path: true
 		http-method: true
 		http-status-code: true
@@ -152,6 +156,7 @@ linters:
 		- errorlint
 		- exportloopref
 		- forbidigo
+		- ginkgolinter
 		- gocheckcompilerdirectives
 		- gocritic
 		- gofmt
