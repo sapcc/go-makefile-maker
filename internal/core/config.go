@@ -95,9 +95,11 @@ type GolangConfiguration struct {
 
 // GolangciLintConfiguration appears in type Configuration.
 type GolangciLintConfiguration struct {
-	CreateConfig     bool     `yaml:"createConfig"`
-	ErrcheckExcludes []string `yaml:"errcheckExcludes"`
-	SkipDirs         []string `yaml:"skipDirs"`
+	CreateConfig       bool     `yaml:"createConfig"`
+	ErrcheckExcludes   []string `yaml:"errcheckExcludes"`
+	SkipDirs           []string `yaml:"skipDirs"`
+	AdditionalLinters  []string `yaml:"additionalLinters"`
+	DotImportWhitelist []string `yaml:"dotImportWhitelist"`
 }
 
 type GoreleaserConfiguration struct {

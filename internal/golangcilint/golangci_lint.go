@@ -101,6 +101,15 @@ linters-settings:
 			- unnecessaryDefer
 			- weakCond
 			- yodaStyleExpr
+{{- if .DotImportWhitelist }}
+  stylecheck:
+  {{- if .DotImportWhitelist }}
+    dot-import-whitelist:
+    {{- range .DotImportWhitelist }}
+      - {{ . }}
+    {{- end }}
+  {{- end }}
+{{- end }}
 	goimports:
 		# Put local imports after 3rd-party packages.
 		local-prefixes: {{ .ModulePath }}
@@ -175,6 +184,11 @@ linters:
 		- unused
 		- usestdlibvars
 		- whitespace
+{{- if .AdditionalLinters }}
+  {{- range .AdditionalLinters }}
+    - {{ . }}
+  {{- end }}
+{{- end }}
 `, "\t", "  "))))
 
 type configTmplData struct {
@@ -183,6 +197,8 @@ type configTmplData struct {
 	MisspellIgnoreWords []string
 	ErrcheckExcludes    []string
 	SkipDirs            []string
+	DotImportWhitelist  []string
+	AdditionalLinters   []string
 }
 
 func RenderConfig(cfg core.GolangciLintConfiguration, vendoring bool, modulePath string, misspellIgnoreWords []string) {
@@ -199,6 +215,8 @@ func RenderConfig(cfg core.GolangciLintConfiguration, vendoring bool, modulePath
 		MisspellIgnoreWords: misspellIgnoreWords,
 		ErrcheckExcludes:    cfg.ErrcheckExcludes,
 		SkipDirs:            cfg.SkipDirs,
+		DotImportWhitelist:  cfg.DotImportWhitelist,
+		AdditionalLinters:   cfg.AdditionalLinters,
 	}))
 	fmt.Fprintln(f) // empty line at end
 

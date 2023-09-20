@@ -223,6 +223,10 @@ golangciLint:
     - (*net/http.Client).Do
   skipDirs:
     - easypg/migrate/*
+  additionalLinters:
+    - ginkgolinter
+  dotImportWhitelist:
+    - github.com/onsi/ginkgo/v2
 ```
 
 The `make check` and `make static-check` targets use [`golangci-lint`](https://golangci-lint.run) to lint your code.
@@ -236,6 +240,10 @@ Additionally, if `createConfig` is `true`, you can specify a list of files skipp
 and a list of functions to be excluded from `errcheck` linter in `errcheckExcludes` field.
 Refer to [`errcheck`'s README](https://github.com/kisielk/errcheck#excluding-functions) for info on the format
 for function signatures that `errcheck` accepts.
+
+With `additionalLinters` you can add a list of extra linters to be enabled in the generated config file. The list of available linters can be found [here](https://golangci-lint.run/usage/linters/).
+
+With `dotImportWhitelist` it is possible to exclude libraries that are usually dot imported such as Ginkgo and Gomega from the `stylecheck` linter. The list expects the full import path of the library.
 
 Take a look at `go-makefile-maker`'s own [`golangci-lint` config file](./.golangci.yaml) for an up-to-date example of what the generated config would look like.
 
