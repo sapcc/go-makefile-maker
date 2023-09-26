@@ -36,7 +36,7 @@ func RenderConfig(cfg core.Configuration) {
 		}
 	}
 
-	var goBuildflags, packages, userCommand, entrypoint, workingDir, addUserGroup string
+	var goBuildflags, packages, userCommand, entrypoint, workingDir, addUserGroup, extraCommands string
 
 	if cfg.Golang.EnableVendoring {
 		goBuildflags = ` GO_BUILDFLAGS='-mod vendor'`
@@ -58,13 +58,25 @@ func RenderConfig(cfg core.Configuration) {
 		workingDir = "/home/appuser"
 		addUserGroup = `RUN addgroup -g 4200 appgroup \
   && adduser -h /home/appuser -s /sbin/nologin -G appgroup -D -u 4200 appuser
+
 `
 	}
 
+	// if there is an entrypoint configured use that otherwise fallback to the binary name
 	if len(cfg.Dockerfile.Entrypoint) > 0 {
 		entrypoint = fmt.Sprintf(`"%s"`, strings.Join(cfg.Dockerfile.Entrypoint, `", "`))
 	} else {
 		entrypoint = fmt.Sprintf(`"/usr/bin/%s"`, cfg.Binaries[0].Name)
+	}
+
+	if cfg.Dockerfile.WithLinkerdAwait {
+		extraCommands = fmt.Sprintf(`
+RUN wget -qO /usr/bin/linkerd-await https://github.com/linkerd/linkerd-await/releases/download/release%%2Fv%[1]s/linkerd-await-v%[1]s-amd64 \
+  && chmod 755 /usr/bin/linkerd-await
+`, core.DefaultLinkerdAwaitVersion)
+
+		// add linkrd-await after the fallback for entrypoint has been set
+		entrypoint = `"/usr/bin/linkerd-await", "--shutdown", "--", ` + entrypoint
 	}
 
 	extraDirectives := strings.Join(cfg.Dockerfile.ExtraDirectives, "\n")
@@ -79,27 +91,28 @@ RUN apk add --no-cache --no-progress gcc git make musl-dev
 
 COPY . /src
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION # provided to 'make install'
-RUN make -C /src install PREFIX=/pkg GOTOOLCHAIN=local%[4]s
+RUN make -C /src install PREFIX=/pkg GOTOOLCHAIN=local%[3]s
 
 ################################################################################
 
 FROM alpine:%[2]s
 
-%[3]s# upgrade all installed packages to fix potential CVEs in advance
+%[4]s# upgrade all installed packages to fix potential CVEs in advance
 RUN apk upgrade --no-cache --no-progress \
-  && apk add --no-cache --no-progress%[6]s
+  && apk add --no-cache --no-progress%[5]s
+%[6]s
 COPY --from=builder /pkg/ /usr/
 
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
-LABEL source_repository="%[5]s" \
-  org.opencontainers.image.url="%[5]s" \
+LABEL source_repository="%[7]s" \
+  org.opencontainers.image.url="%[7]s" \
   org.opencontainers.image.created=${BININFO_BUILD_DATE} \
   org.opencontainers.image.revision=${BININFO_COMMIT_HASH} \
   org.opencontainers.image.version=${BININFO_VERSION}
 
-%[7]s%[8]sWORKDIR %[9]s
-ENTRYPOINT [ %[10]s ]
-`, core.DefaultGolangImagePrefix, core.DefaultAlpineImage, addUserGroup, goBuildflags, cfg.Metadata.URL, packages, extraDirectives, userCommand, workingDir, entrypoint)
+%[8]s%[9]sWORKDIR %[10]s
+ENTRYPOINT [ %[11]s ]
+`, core.DefaultGolangImagePrefix, core.DefaultAlpineImage, goBuildflags, addUserGroup, packages, extraCommands, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 

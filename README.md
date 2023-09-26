@@ -148,6 +148,7 @@ dockerfile:
     - curl
     - openssl
   user: root
+  withLinkerdAwait: true
 ```
 
 When `enabled`, go-makefile-maker will generate a `Dockerfile` and a `.dockerignore` file.
@@ -160,6 +161,7 @@ This user account is intended for use with all payloads that do not require a ro
 * `extraIgnores` appends entries in `.dockerignore` to the default ones.
 * `extraPackages` installs extra Alpine packages in the final Docker layer. `ca-certificates` is always installed.
 * `runAsRoot` skips the privilege drop in the Dockerfile, i.e. the `USER appuser:appgroup` command is not added.
+* `withLinkerdAwait` wether to download the binary and prepend linkerd-await to the entrypoint. For more details see <https://github.com/linkerd/linkerd-await>.
 
 ### `variables`
 

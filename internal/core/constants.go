@@ -20,6 +20,7 @@ const (
 
 	DefaultGoVersion           = "1.21"
 	DefaultPostgresVersion     = "12"
+	DefaultLinkerdAwaitVersion = "0.2.7"
 	DefaultK8sEnvtestVersion   = "1.26.x!"
 	DefaultGitHubComRunnerType = "ubuntu-latest"
 )

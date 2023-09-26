@@ -181,13 +181,14 @@ type RenovateConfig struct {
 
 // DockerfileConfig appears in type Configuration.
 type DockerfileConfig struct {
-	Enabled         bool     `yaml:"enabled"`
-	Entrypoint      []string `yaml:"entrypoint"`
-	ExtraDirectives []string `yaml:"extraDirectives"`
-	ExtraIgnores    []string `yaml:"extraIgnores"`
-	ExtraPackages   []string `yaml:"extraPackages"`
-	RunAsRoot       bool     `yaml:"runAsRoot"`
-	User            string   `yaml:"user"` //obsolete; will produce an error when used
+	Enabled          bool     `yaml:"enabled"`
+	Entrypoint       []string `yaml:"entrypoint"`
+	ExtraDirectives  []string `yaml:"extraDirectives"`
+	ExtraIgnores     []string `yaml:"extraIgnores"`
+	ExtraPackages    []string `yaml:"extraPackages"`
+	RunAsRoot        bool     `yaml:"runAsRoot"`
+	User             string   `yaml:"user"` //obsolete; will produce an error when used
+	WithLinkerdAwait bool     `yaml:"withLinkerdAwait"`
 }
 
 type MakefileConfig struct {
