@@ -44,7 +44,7 @@ func releaseWorkflow(cfg *core.GithubWorkflowConfiguration) {
 		Uses: core.GoreleaserAction,
 		With: map[string]any{
 			"version": "latest",
-			"args":    "release --rm-dist --release-notes=./build/release-info",
+			"args":    "release --clean --release-notes=./build/release-info",
 		},
 		Env: map[string]string{
 			"GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}",

@@ -78,7 +78,7 @@ archives:
       - completions/*
 
 brews:
-  - tap:
+  - repository:
       owner: %[3]s
       name: %[4]s
     folder: HomebrewFormula
