@@ -23,7 +23,7 @@ func releaseWorkflow(cfg *core.GithubWorkflowConfiguration) {
 		return
 	}
 
-	w.Permissions.Contents = tokenScopeRead
+	w.Permissions.Contents = tokenScopeWrite
 	w.Permissions.Packages = tokenScopeWrite
 
 	w.On.Push.Branches = nil
