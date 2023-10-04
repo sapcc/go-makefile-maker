@@ -31,10 +31,10 @@ func releaseWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	w.On.Push.Tags = []string{"v[0-9]+.[0-9]+.[0-9]+"}
 
 	j := baseJobWithGo("goreleaser", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
-	// TODO: is this required when using --release-notes ?
-	// j.Steps[0].With = map[string]any{
-	// 	"fetch-depth": 0,
-	// }
+	// This is needed because: https://goreleaser.com/ci/actions/#fetch-depthness
+	j.Steps[0].With = map[string]any{
+		"fetch-depth": 0,
+	}
 	j.addStep(jobStep{
 		Name: "Generate release info",
 		Run:  "make build/release-info",
