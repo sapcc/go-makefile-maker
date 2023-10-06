@@ -20,10 +20,7 @@ package goreleaser
 
 import (
 	"fmt"
-	"net/url"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 
@@ -34,11 +31,6 @@ import (
 const goreleaserTemplate = `before:
   hooks:
     - go mod tidy
-    - rm -rf completions
-    - mkdir completions
-    - go run main.go completion bash >"completions/%[1]s.bash"
-    - go run main.go completion fish >"completions/%[1]s.fish"
-    - go run main.go completion zsh >"completions/%[1]s.zsh"
 
 builds:
   - env:
@@ -55,8 +47,7 @@ builds:
       - -X github.com/sapcc/go-api-declarations/bininfo.binName=%[1]s
       - -X github.com/sapcc/go-api-declarations/bininfo.version={{ .Version }}
       - -X github.com/sapcc/go-api-declarations/bininfo.commit={{ .FullCommit  }}
-      # Use CommitDate instead of Date for reproducibility.
-      - -X github.com/sapcc/go-api-declarations/bininfo.buildDate={{ .CommitDate }}
+      - -X github.com/sapcc/go-api-declarations/bininfo.buildDate={{ .CommitDate }} # use CommitDate instead of Date for reproducibility
     # Set the modified timestamp on the output binary to ensure that builds are reproducible.
     mod_timestamp: "{{ .CommitTimestamp }}"
 
@@ -75,24 +66,6 @@ archives:
       - CHANGELOG.md
       - LICENSE
       - README.md
-      - completions/*
-
-brews:
-  - repository:
-      owner: %[3]s
-      name: %[4]s
-    folder: HomebrewFormula
-    homepage: %[2]s
-    description: Command-line interface for Limes
-    license: Apache-2.0
-    install: |-
-      bin.install "%[1]s"
-      bash_completion.install "completions/%[1]s.bash" => "%[1]s"
-      fish_completion.install "completions/%[1]s.fish"
-      zsh_completion.install "completions/%[1]s.zsh" => "_%[1]s"
-    test: |
-      system "#{bin}/%[1]s --version"
-    commit_msg_template: "Homebrew: update formula to {{ .Tag }}"
 `
 
 func RenderConfig(cfg core.Configuration) {
@@ -103,10 +76,9 @@ func RenderConfig(cfg core.Configuration) {
 		logg.Fatal("Goreleasre requires metadata.url to be configured!")
 	}
 
-	metadataurl := must.Return(url.Parse(cfg.Metadata.URL))
-	githubOrg, githubRepo := filepath.Split(metadataurl.Path)
+	goreleaserFile := fmt.Sprintf(goreleaserTemplate, cfg.Binaries[0].Name)
 
-	goreleaserFile := fmt.Sprintf(goreleaserTemplate, cfg.Binaries[0].Name, cfg.Metadata.URL, strings.ReplaceAll(githubOrg, "/", ""), githubRepo)
-
-	must.Succeed(os.WriteFile(".goreleaser.yml", []byte(goreleaserFile), 0666))
+	// Remove renamed file
+	must.Succeed(os.RemoveAll(".goreleaser.yml"))
+	must.Succeed(os.WriteFile(".goreleaser.yaml", []byte(goreleaserFile), 0666))
 }
