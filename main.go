@@ -77,7 +77,7 @@ func main() {
 	}
 
 	// Render Goreleaser config file
-	if cfg.Goreleaser.Enabled {
+	if cfg.GoReleaser.CreateConfig {
 		goreleaser.RenderConfig(cfg)
 	}
 

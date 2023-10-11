@@ -46,7 +46,7 @@ type Configuration struct {
 	Coverage       CoverageConfiguration        `yaml:"coverageTest"`
 	Golang         GolangConfiguration          `yaml:"golang"`
 	GolangciLint   GolangciLintConfiguration    `yaml:"golangciLint"`
-	Goreleaser     GoreleaserConfiguration      `yaml:"goreleaser"`
+	GoReleaser     GoReleaserConfiguration      `yaml:"goReleaser"`
 	SpellCheck     SpellCheckConfiguration      `yaml:"spellCheck"`
 	GitHubWorkflow *GithubWorkflowConfiguration `yaml:"githubWorkflow"`
 	Makefile       MakefileConfig               `yaml:"makefile"`
@@ -100,8 +100,8 @@ type GolangciLintConfiguration struct {
 	SkipDirs         []string `yaml:"skipDirs"`
 }
 
-type GoreleaserConfiguration struct {
-	Enabled bool `yaml:"enabled"`
+type GoReleaserConfiguration struct {
+	CreateConfig bool `yaml:"createConfig"`
 }
 
 // SpellCheckConfiguration appears in type Configuration.
