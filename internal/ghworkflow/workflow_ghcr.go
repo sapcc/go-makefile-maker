@@ -26,7 +26,7 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	w.Permissions.Contents = tokenScopeRead
 	w.Permissions.Packages = tokenScopeWrite
 
-	w.On.Push.Branches = []string{cfg.Global.DefaultBranch}
+	w.On.Push.Branches = nil
 	w.On.Push.Tags = []string{"*"}
 	w.On.PullRequest.Branches = nil
 
