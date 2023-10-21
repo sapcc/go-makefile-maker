@@ -169,6 +169,7 @@ linters:
 		- noctx
 		- nolintlint
 		- nosprintfhostport
+		- perfsprint
 		- rowserrcheck
 		- sqlclosecheck
 		- staticcheck
