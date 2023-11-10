@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	"github.com/sapcc/go-bits/must"
-	"golang.org/x/mod/module"
+	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
 type constraints struct {
@@ -29,39 +29,24 @@ type constraints struct {
 }
 
 type config struct {
-	Extends             []string      `json:"extends"`
-	Assignees           []string      `json:"assignees,omitempty"`
-	CommitMessageAction string        `json:"commitMessageAction"`
-	Constraints         constraints   `json:"constraints"`
-	PostUpdateOptions   []string      `json:"postUpdateOptions"`
-	PackageRules        []PackageRule `json:"packageRules,omitempty"`
-	PrHourlyLimit       int           `json:"prHourlyLimit"`
-	Schedule            []string      `json:"schedule"`
-	SemanticCommits     string        `json:"semanticCommits,omitempty"`
+	Extends             []string           `json:"extends"`
+	Assignees           []string           `json:"assignees,omitempty"`
+	CommitMessageAction string             `json:"commitMessageAction"`
+	Constraints         constraints        `json:"constraints"`
+	PostUpdateOptions   []string           `json:"postUpdateOptions"`
+	PackageRules        []core.PackageRule `json:"packageRules,omitempty"`
+	PrHourlyLimit       int                `json:"prHourlyLimit"`
+	Schedule            []string           `json:"schedule"`
+	SemanticCommits     string             `json:"semanticCommits,omitempty"`
 }
 
-type PackageRule struct {
-	ExcludePackagePatterns []string `yaml:"excludePackagePatterns" json:"excludePackagePatterns,omitempty"`
-	MatchPackageNames      []string `yaml:"matchPackageNames" json:"matchPackageNames,omitempty"`
-	MatchPackagePatterns   []string `yaml:"matchPackagePatterns" json:"matchPackagePatterns,omitempty"`
-	MatchPackagePrefixes   []string `yaml:"matchPackagePrefixes" json:"matchPackagePrefixes,omitempty"`
-	MatchUpdateTypes       []string `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
-	MatchDepTypes          []string `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
-	MatchFiles             []string `yaml:"matchFiles" json:"matchFiles,omitempty"`
-	AllowedVersions        string   `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
-	AutoMerge              bool     `yaml:"automerge" json:"automerge,omitempty"`
-	EnableRenovate         *bool    `yaml:"enabled" json:"enabled,omitempty"`
-	GroupName              string   `yaml:"groupName" json:"groupName,omitempty"`
-}
-
-func (c *config) addPackageRule(rule PackageRule) {
+func (c *config) addPackageRule(rule core.PackageRule) {
 	c.PackageRules = append(c.PackageRules, rule)
 }
 
-func RenderConfig(
-	assignees []string, customPackageRules []PackageRule,
-	goVersion string, goDeps []module.Version,
-	isGoMakefileMakerRepo, isApplicationRepo bool) {
+func RenderConfig(cfgRenovate core.RenovateConfig, scanResult core.ScanResult, url string, isApplicationRepo bool) {
+	isGoMakefileMakerRepo := scanResult.MustModulePath() == "github.com/sapcc/go-makefile-maker"
+	isInternalRenovate := strings.HasPrefix(url, "https://github.wdf.sap.corp")
 
 	// Our default rule is to have Renovate send us PRs once a week. (More
 	// frequent PRs become too overwhelming with the sheer amount of repos that
@@ -82,14 +67,14 @@ func RenderConfig(
 			"default:pinDigestsDisabled",
 			"github>whitesource/merge-confidence:beta",
 		},
-		Assignees: assignees,
+		Assignees: cfgRenovate.Assignees,
 		// CommitMessageAction is the verb that appears at the start of Renovate's
 		// commit messages (and therefore, PR titles). The default value is "Update".
 		// We choose something more specific because some of us have filter rules
 		// in their mail client to separate Renovate PRs from other PRs.
 		CommitMessageAction: "Renovate: Update",
 		Constraints: constraints{
-			Go: goVersion,
+			Go: cfgRenovate.GoVersion,
 		},
 		PostUpdateOptions: []string{
 			"gomodUpdateImportPaths",
@@ -98,7 +83,7 @@ func RenderConfig(
 		Schedule:        []string{schedule},
 		SemanticCommits: "disabled",
 	}
-	if goVersion == "1.17" {
+	if cfgRenovate.GoVersion == "1.17" {
 		cfg.PostUpdateOptions = append([]string{"gomodTidy1.17"}, cfg.PostUpdateOptions...)
 	} else {
 		cfg.PostUpdateOptions = append([]string{"gomodTidy"}, cfg.PostUpdateOptions...)
@@ -108,20 +93,20 @@ func RenderConfig(
 	//
 	// NOTE: When changing this list, please also adjust the documentation for
 	// default package rules in the README.
-	cfg.addPackageRule(PackageRule{
+	cfg.addPackageRule(core.PackageRule{
 		MatchPackageNames: []string{"golang"},
-		AllowedVersions:   fmt.Sprintf("%s.x", goVersion),
+		AllowedVersions:   fmt.Sprintf("%s.x", cfgRenovate.GoVersion),
 	})
 
 	// combine and automerge all dependencies under github.com/sapcc/
-	cfg.addPackageRule(PackageRule{
+	cfg.addPackageRule(core.PackageRule{
 		MatchPackagePatterns: []string{`^github\.com\/sapcc\/.*`},
 		GroupName:            "github.com/sapcc",
 		AutoMerge:            true,
 	})
 
 	// combine all dependencies not under github.com/sapcc/
-	cfg.addPackageRule(PackageRule{
+	cfg.addPackageRule(core.PackageRule{
 		MatchPackagePatterns:   []string{`.*`},
 		ExcludePackagePatterns: []string{`^github\.com\/sapcc\/.*`},
 		GroupName:              "External dependencies",
@@ -135,14 +120,14 @@ func RenderConfig(
 		cfg.Extends = append(cfg.Extends, "docker:disable")
 	}
 	hasK8sIOPkgs := false
-	for _, v := range goDeps {
+	for _, v := range scanResult.GoDirectDependencies {
 		switch dep := v.Path; {
 		case strings.HasPrefix(dep, "k8s.io/"):
 			hasK8sIOPkgs = true
 		}
 	}
 	if hasK8sIOPkgs {
-		cfg.addPackageRule(PackageRule{
+		cfg.addPackageRule(core.PackageRule{
 			MatchPackagePrefixes: []string{"k8s.io/"},
 			// Since our clusters use k8s v1.26 and k8s has a support policy of -/+ 1 minor version we set the allowedVersions to `0.27.x`.
 			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.x instead of 1.x.
@@ -156,7 +141,7 @@ func RenderConfig(
 	// Renovate will evaluate all packageRules and not stop once it gets a first match
 	// therefore the packageRules should be in the order of importance so that user
 	// defined rules can override settings from earlier rules.
-	for _, rule := range customPackageRules {
+	for _, rule := range cfgRenovate.PackageRules {
 		cfg.addPackageRule(rule)
 	}
 

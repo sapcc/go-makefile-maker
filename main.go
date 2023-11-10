@@ -100,8 +100,7 @@ func main() {
 			}
 			cfg.Renovate.GoVersion = sr.GoVersion
 		}
-		isGoMakefileMakerRepo := sr.MustModulePath() == "github.com/sapcc/go-makefile-maker"
 		isApplicationRepo := len(cfg.Binaries) > 0
-		renovate.RenderConfig(cfg.Renovate.Assignees, cfg.Renovate.PackageRules, cfg.Renovate.GoVersion, sr.GoDirectDependencies, isGoMakefileMakerRepo, isApplicationRepo)
+		renovate.RenderConfig(cfg.Renovate, sr, cfg.Metadata.URL, isApplicationRepo)
 	}
 }
