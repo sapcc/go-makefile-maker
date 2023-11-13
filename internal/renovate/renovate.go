@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	"github.com/sapcc/go-bits/must"
+
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
@@ -55,7 +56,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult core.ScanResult, u
 	// when we deploy these updates on Monday.
 	schedule := "before 8am on Friday"
 	if isInternalRenovate {
-		schedule = "on Friday" //nolint:usestdlibvars //false positive
+		schedule = "on Friday"
 	}
 	// However, for pure library repos, we do the PRs on Thursday instead, so
 	// that the dependency updates in these library repos trickle down into the
@@ -63,7 +64,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult core.ScanResult, u
 	if !isApplicationRepo {
 		schedule = "before 8am on Thursday"
 		if isInternalRenovate {
-			schedule = "on Thursday" //nolint:usestdlibvars //false positive
+			schedule = "on Thursday"
 		}
 	}
 
