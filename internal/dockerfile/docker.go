@@ -98,8 +98,10 @@ RUN make -C /src install PREFIX=/pkg GOTOOLCHAIN=local%[3]s
 FROM alpine:%[2]s
 
 %[4]s# upgrade all installed packages to fix potential CVEs in advance
+# also remove apk package manager to hopefully remove dependecy on openssl 🤞
 RUN apk upgrade --no-cache --no-progress \
-  && apk add --no-cache --no-progress%[5]s
+  && apk add --no-cache --no-progress%[5]s \
+  && apk del --no-cache --no-progress apk-tools alpine-keys
 %[6]s
 COPY --from=builder /pkg/ /usr/
 
