@@ -135,7 +135,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult core.ScanResult, u
 			// Since our clusters use k8s v1.26 and k8s has a support policy of -/+ 1 minor version we set the allowedVersions to `0.27.x`.
 			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.x instead of 1.x.
 			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
-			AllowedVersions: "0.27.x",
+			AllowedVersions: "0.28.x",
 		})
 	}
 
