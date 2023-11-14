@@ -105,6 +105,7 @@ FROM alpine:%[2]s
 %[4]s# upgrade all installed packages to fix potential CVEs in advance
 # also remove apk package manager to hopefully remove dependecy on openssl 🤞
 RUN %[5]s
+
 COPY --from=builder /pkg/ /usr/
 
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
