@@ -90,11 +90,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult core.ScanResult, u
 		Schedule:        []string{schedule},
 		SemanticCommits: "disabled",
 	}
-	if cfgRenovate.GoVersion == "1.17" {
-		cfg.PostUpdateOptions = append([]string{"gomodTidy1.17"}, cfg.PostUpdateOptions...)
-	} else {
-		cfg.PostUpdateOptions = append([]string{"gomodTidy"}, cfg.PostUpdateOptions...)
-	}
+	cfg.PostUpdateOptions = append([]string{"gomodTidy"}, cfg.PostUpdateOptions...)
 
 	// Default package rules.
 	//
