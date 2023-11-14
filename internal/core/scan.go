@@ -32,7 +32,7 @@ import (
 // in the repository. At the moment, only `go.mod` is scanned.
 type ScanResult struct {
 	ModulePath           string           // from "module" directive in go.mod, e.g. "github.com/foo/bar"
-	GoVersion            string           // from "go" directive in go.mod, e.g. "1.17"
+	GoVersion            string           // from "go" directive in go.mod, e.g. "1.21"
 	GoDirectDependencies []module.Version // from "require" directive(s) in go.mod without the "// indirect" comment
 	HasBinInfo           bool             // whether we can produce linker instructions for "github.com/sapcc/go-api-declarations/bininfo"
 	UsesPostgres         bool             // wether postgres is used

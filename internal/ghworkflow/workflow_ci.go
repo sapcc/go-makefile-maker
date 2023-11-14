@@ -29,9 +29,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
 	}
 
 	w.Jobs = make(map[string]job)
-	goVersion := cfg.Global.GoVersion
-
-	buildAndLintJob := baseJobWithGo("Build & Lint", cfg.IsSelfHostedRunner, goVersion)
+	buildAndLintJob := baseJobWithGo("Build & Lint", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
 	if hasBinaries {
 		buildAndLintJob.addStep(jobStep{
 			Name: "Build all binaries",
@@ -49,7 +47,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
 
 	w.Jobs["buildAndLint"] = buildAndLintJob
 
-	testJob := buildOrTestBaseJob("Test", cfg.IsSelfHostedRunner, cfg.CI.RunnerType, goVersion)
+	testJob := buildOrTestBaseJob("Test", cfg.IsSelfHostedRunner, cfg.CI.RunnerType, cfg.Global.GoVersion)
 	testJob.Needs = []string{"buildAndLint"}
 	if cfg.CI.Postgres.Enabled {
 		version := core.DefaultPostgresVersion
@@ -117,7 +115,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
 
 		if multipleOS {
 			// 04. Tell Coveralls to merge coverage results.
-			finishJob := baseJobWithGo("Finish", cfg.IsSelfHostedRunner, goVersion)
+			finishJob := baseJobWithGo("Finish", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
 			finishJob.Needs = []string{"test"} // this is the <job_id> for the test job
 			finishJob.addStep(jobStep{
 				Name: "Coveralls post build webhook",
