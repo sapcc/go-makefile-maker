@@ -56,15 +56,30 @@ type=semver,pattern=v{{major}}.{{minor}}
 type=semver,pattern=v{{major}}`,
 		},
 	})
+
+	buildPushWith := map[string]any{
+		"context": ".",
+		"push":    true,
+		"tags":    "${{ steps.meta.outputs.tags }}",
+		"labels":  "${{ steps.meta.outputs.labels }}",
+	}
+
+	if cfg.PushContainerToGhcr.Platforms != "" {
+		j.addStep(jobStep{
+			Name: "Set up QEMU",
+			Uses: core.DockerQemuAction,
+		})
+		j.addStep(jobStep{
+			Name: "Set up Docker Buildx",
+			Uses: core.DockerBuildxAction,
+		})
+		buildPushWith["platforms"] = cfg.PushContainerToGhcr.Platforms
+	}
+
 	j.addStep(jobStep{
 		Name: "Build and push Docker image",
 		Uses: core.DockerBuildPushAction,
-		With: map[string]any{
-			"context": ".",
-			"push":    true,
-			"tags":    "${{ steps.meta.outputs.tags }}",
-			"labels":  "${{ steps.meta.outputs.labels }}",
-		},
+		With: buildPushWith,
 	})
 	w.Jobs = map[string]job{"build-and-push-image": j}
 
