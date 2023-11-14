@@ -199,7 +199,6 @@ type DockerfileConfig struct {
 	ExtraIgnores     []string `yaml:"extraIgnores"`
 	ExtraPackages    []string `yaml:"extraPackages"`
 	RunAsRoot        bool     `yaml:"runAsRoot"`
-	User             string   `yaml:"user"` //obsolete; will produce an error when used
 	WithLinkerdAwait bool     `yaml:"withLinkerdAwait"`
 }
 

@@ -21,21 +21,12 @@ import (
 
 	_ "embed"
 
-	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
 func RenderConfig(cfg core.Configuration) {
-	if cfg.Dockerfile.User != "" {
-		if cfg.Dockerfile.User == "root" {
-			logg.Fatal("the `dockerfile.user` config option has been removed; set `dockerfile.runAsRoot` if you need to run as root")
-		} else {
-			logg.Fatal("the `dockerfile.user` config option has been removed; commands now run as user `appuser` (ID 4200) in group `appgroup` (ID 4200)")
-		}
-	}
-
 	var goBuildflags, packages, userCommand, entrypoint, workingDir, addUserGroup, extraCommands string
 
 	if cfg.Golang.EnableVendoring {
