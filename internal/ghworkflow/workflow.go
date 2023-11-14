@@ -108,9 +108,6 @@ type job struct {
 	// The name of the job displayed on GitHub.
 	Name string `yaml:"name,omitempty"`
 
-	// This will override the global permissions for this specific job.
-	Permissions permissions `yaml:"permissions,omitempty"`
-
 	// List of <job_id> that must complete successfully before this job will run.
 	Needs []string `yaml:"needs,omitempty"`
 
@@ -120,9 +117,6 @@ type job struct {
 
 	// A map of environment variables that are available to all steps in the job.
 	Env map[string]string `yaml:"env,omitempty"`
-
-	// You can use the if conditional to prevent a step from running unless a condition is met.
-	If string `yaml:"if,omitempty"`
 
 	// Steps can run commands, run setup tasks, or run an action. Not all steps
 	// run actions, but all actions run as a step. Each step runs in its own
