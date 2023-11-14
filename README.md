@@ -147,7 +147,7 @@ dockerfile:
   extraPackages:
     - curl
     - openssl
-  user: root
+  runAsRoot: true
   withLinkerdAwait: true
 ```
 
