@@ -406,14 +406,11 @@ sheet][ref-pattern-cheat-sheet]. This option is not defined by default.
 
 ### `githubWorkflow.pushContainerToGhcr`
 
-If `enabled` is set to true, the generated `Dockerfile` is build and pushed to repository path under `ghcr.io`.
-
-To build for more or other platforms than the default (linux/amd64), you can set the `platforms` field to a list of platforms to build for. The format is the same as for the `--platform` flag of `docker buildx build`.
+If `enabled` is set to true, the generated `Dockerfile` is built for the platforms `linux/amd64` and `linux/arm64` and pushed to the repository path under `ghcr.io`.
 
 ```yaml
 pushContainerToGhcr:
   enabled: true
-  platforms: linux/amd64,linux/arm64
 ```
 
 ### `githubWorkflow.release`
