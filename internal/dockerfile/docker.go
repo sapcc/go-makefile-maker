@@ -27,14 +27,13 @@ import (
 )
 
 func RenderConfig(cfg core.Configuration) {
-	var goBuildflags, packages, userCommand, entrypoint, workingDir, addUserGroup, extraCommands string
+	var (
+		goBuildflags, packages, userCommand, entrypoint, workingDir, addUserGroup string
+		extraCommands                                                             []string
+	)
 
 	if cfg.Golang.EnableVendoring {
 		goBuildflags = ` GO_BUILDFLAGS='-mod vendor'`
-	}
-
-	for _, v := range append([]string{"ca-certificates"}, cfg.Dockerfile.ExtraPackages...) {
-		packages += fmt.Sprintf(" %s", v)
 	}
 
 	if cfg.Dockerfile.RunAsRoot {
@@ -61,11 +60,13 @@ func RenderConfig(cfg core.Configuration) {
 	}
 
 	if cfg.Dockerfile.WithLinkerdAwait {
-		extraCommands = fmt.Sprintf(`
-RUN wget -qO /usr/bin/linkerd-await https://github.com/linkerd/linkerd-await/releases/download/release%%2Fv%[1]s/linkerd-await-v%[1]s-amd64 \
-  && chmod 755 /usr/bin/linkerd-await
-`, core.DefaultLinkerdAwaitVersion)
-
+		extraCommands = []string{
+			fmt.Sprintf(
+				"wget -qO /usr/bin/linkerd-await https://github.com/linkerd/linkerd-await/releases/download/release%%2Fv%[1]s/linkerd-await-v%[1]s-amd64",
+				core.DefaultLinkerdAwaitVersion,
+			),
+			"chmod 755 /usr/bin/linkerd-await",
+		}
 		// add linkrd-await after the fallback for entrypoint has been set
 		entrypoint = `"/usr/bin/linkerd-await", "--shutdown", "--", ` + entrypoint
 	}
@@ -74,6 +75,19 @@ RUN wget -qO /usr/bin/linkerd-await https://github.com/linkerd/linkerd-await/rel
 	if extraDirectives != "" {
 		extraDirectives += "\n"
 	}
+
+	for _, v := range append([]string{"ca-certificates"}, cfg.Dockerfile.ExtraPackages...) {
+		packages += fmt.Sprintf(" %s", v)
+	}
+
+	commands := []string{
+		"apk upgrade --no-cache --no-progress",
+		fmt.Sprintf("apk add --no-cache --no-progress%s", packages),
+	}
+	commands = append(commands, extraCommands...)
+	commands = append(commands, "apk del --no-cache --no-progress apk-tools alpine-keys")
+
+	runCommands := strings.Join(commands, " \\\n  && ")
 
 	dockerfile := fmt.Sprintf(
 		`FROM golang:%[1]s%[2]s as builder
@@ -90,22 +104,19 @@ FROM alpine:%[2]s
 
 %[4]s# upgrade all installed packages to fix potential CVEs in advance
 # also remove apk package manager to hopefully remove dependecy on openssl 🤞
-RUN apk upgrade --no-cache --no-progress \
-  && apk add --no-cache --no-progress%[5]s \
-  && apk del --no-cache --no-progress apk-tools alpine-keys
-%[6]s
+RUN %[5]s
 COPY --from=builder /pkg/ /usr/
 
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
-LABEL source_repository="%[7]s" \
-  org.opencontainers.image.url="%[7]s" \
+LABEL source_repository="%[6]s" \
+  org.opencontainers.image.url="%[6]s" \
   org.opencontainers.image.created=${BININFO_BUILD_DATE} \
   org.opencontainers.image.revision=${BININFO_COMMIT_HASH} \
   org.opencontainers.image.version=${BININFO_VERSION}
 
-%[8]s%[9]sWORKDIR %[10]s
-ENTRYPOINT [ %[11]s ]
-`, core.DefaultGolangImagePrefix, core.DefaultAlpineImage, goBuildflags, addUserGroup, packages, extraCommands, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
+%[7]s%[8]sWORKDIR %[9]s
+ENTRYPOINT [ %[10]s ]
+`, core.DefaultGolangImagePrefix, core.DefaultAlpineImage, goBuildflags, addUserGroup, runCommands, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 
