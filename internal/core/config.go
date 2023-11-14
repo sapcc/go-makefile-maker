@@ -124,7 +124,6 @@ type GithubWorkflowConfiguration struct {
 	License             LicenseWorkflowConfig        `yaml:"license"`
 	PushContainerToGhcr PushContainerToGhcrConfig    `yaml:"pushContainerToGhcr"`
 	Release             ReleaseWorkflowConfig        `yaml:"release"`
-	SpellCheck          SpellCheckWorkflowConfig     `yaml:"spellCheck"`
 	SecurityChecks      SecurityChecksWorkflowConfig `yaml:"securityChecks"`
 }
 
@@ -156,11 +155,6 @@ type PushContainerToGhcrConfig struct {
 }
 
 type ReleaseWorkflowConfig struct {
-	Enabled bool `yaml:"enabled"`
-}
-
-// SpellCheckWorkflowConfig appears in type Configuration.
-type SpellCheckWorkflowConfig struct {
 	Enabled bool `yaml:"enabled"`
 }
 

@@ -472,17 +472,6 @@ directory.
 **Hint**: you can also use `addlicense` to add license headers to all Go files excluding
 `vendor` directory by running `make license-headers`.
 
-#### `githubWorkflow.spellCheck`
-
-This workflow uses [`misspell`][misspell] to check your repo for spelling errors. Unlike
-`golangci-lint` that only runs `misspell` on `.go` files, this workflow will run
-`misspell` on your entire repo.
-
-```yaml
-spellCheck:
-  enabled: true
-```
-
 [codeql]: https://codeql.github.com/
 [coveralls]: https://coveralls.io
 [docker-hub-postgres]: https://hub.docker.com/_/postgres/
