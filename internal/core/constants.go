@@ -39,9 +39,9 @@ const (
 	DockerQemuAction      = "docker/setup-qemu-action@v3"
 	DockerBuildPushAction = "docker/build-push-action@v5"
 
-	CodeqlInitAction      = "github/codeql-action/init@v2"
-	CodeqlAnalyzeAction   = "github/codeql-action/analyze@v2"
-	CodeqlAutobuildAction = "github/codeql-action/autobuild@v2"
+	CodeqlInitAction      = "github/codeql-action/init@v3"
+	CodeqlAnalyzeAction   = "github/codeql-action/analyze@v3"
+	CodeqlAutobuildAction = "github/codeql-action/autobuild@v3"
 
 	GolangciLintAction = "golangci/golangci-lint-action@v3"
 	GoreleaserAction   = "goreleaser/goreleaser-action@v5"
