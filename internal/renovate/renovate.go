@@ -105,7 +105,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult core.ScanResult, u
 	cfg.addPackageRule(core.PackageRule{
 		MatchPackagePatterns: []string{`^github\.com\/sapcc\/.*`},
 		GroupName:            "github.com/sapcc",
-		AutoMerge:            true,
+		AutoMerge:            false, //NOTE: disabled for the Christmas break, TODO: reenable afterwards
 	})
 
 	// combine all dependencies not under github.com/sapcc/
