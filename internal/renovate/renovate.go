@@ -72,7 +72,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult core.ScanResult, u
 		Extends: []string{
 			"config:base",
 			"default:pinDigestsDisabled",
-			"github>whitesource/merge-confidence:beta",
+			"mergeConfidence:all-badges",
 		},
 		Assignees: cfgRenovate.Assignees,
 		// CommitMessageAction is the verb that appears at the start of Renovate's
