@@ -15,7 +15,7 @@
 package core
 
 const (
-	DefaultAlpineImage       = "3.18"
+	DefaultAlpineImage       = "3.19"
 	DefaultGolangImagePrefix = "1.21.5-alpine"
 
 	DefaultGoVersion           = "1.21"
