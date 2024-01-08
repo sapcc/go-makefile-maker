@@ -288,7 +288,7 @@ endif
 			recipe: []string{
 				`@printf "\e[1;36m>> go-licence-detector\e[0m\n"`,
 				`@if ! hash go-licence-detector 2>/dev/null; then printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n"; go install go.elastic.co/go-licence-detector@latest; fi`,
-				fmt.Sprintf(`@go list -m -mod=mod -json all | go-licence-detector -includeIndirect -rules %s -overrides %s`,
+				fmt.Sprintf(`@go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules %s -overrides %s`,
 					licenseRulesFile, scanOverridesFile),
 			},
 		})
