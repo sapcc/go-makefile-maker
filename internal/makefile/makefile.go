@@ -19,13 +19,23 @@
 package makefile
 
 import (
+	_ "embed"
 	"fmt"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
+	"github.com/sapcc/go-bits/must"
+
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
+
+//go:embed license-scan-rules.json
+var licenseRules []byte
+
+//go:embed license-scan-overrides.jsonl
+var scanOverrides []byte
 
 // newMakefile defines the structure of the Makefile. Order is important as categories,
 // rules, and definitions will appear in the exact order as they are defined.
@@ -257,12 +267,30 @@ endif
 			target:        "check-license-headers",
 			phony:         true,
 			prerequisites: []string{"prepare-addlicense"},
-			recipe: []string{fmt.Sprintf(
+			recipe: []string{
 				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
-				`@bash -c 'shopt -s globstar; addlicense --check %s -- %s'`,
-				strings.Join(ignorePatterns, " "),
-				strings.Join(patterns, " "),
-			)},
+				fmt.Sprintf(`@bash -c 'shopt -s globstar; addlicense --check %s -- %s'`,
+					strings.Join(ignorePatterns, " "),
+					strings.Join(patterns, " "),
+				)},
+		})
+
+		licenseRulesFile := ".license-scan-rules.json"
+		must.Succeed(os.WriteFile(licenseRulesFile, licenseRules, 0666))
+
+		scanOverridesFile := ".license-scan-overrides.jsonl"
+		must.Succeed(os.WriteFile(scanOverridesFile, scanOverrides, 0666))
+
+		dev.addRule(rule{
+			description: "Check all dependency licenses using go-licence-detector.",
+			target:      "check-dependency-licenses",
+			phony:       true,
+			recipe: []string{
+				`@printf "\e[1;36m>> go-licence-detector\e[0m\n"`,
+				`@if ! hash go-licence-detector 2>/dev/null; then printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n"; go install go.elastic.co/go-licence-detector@latest; fi`,
+				fmt.Sprintf(`@go list -m -mod=mod -json all | go-licence-detector -includeIndirect -rules %s -overrides %s`,
+					licenseRulesFile, scanOverridesFile),
+			},
 		})
 	}
 

@@ -27,14 +27,8 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 
 	if cfg.SecurityChecks.Enabled && !cfg.IsSelfHostedRunner {
 		j.addStep(jobStep{
-			Name: "Dependency Review",
-			Uses: core.DependencyReviewAction,
-			With: map[string]any{
-				"base-ref":         fmt.Sprintf("${{ github.event.pull_request.base.sha || '%s' }}", cfg.Global.DefaultBranch),
-				"head-ref":         "${{ github.event.pull_request.head.sha || github.ref }}",
-				"fail-on-severity": "moderate",
-				"deny-licenses":    "AGPL-1.0, AGPL-3.0, GPL-1.0, GPL-2.0, GPL-3.0, LGPL-2.0, LGPL-2.1, LGPL-3.0, BUSL-1.1",
-			},
+			Name: "Dependency Licenses Review",
+			Run:  "make check-dependency-licenses",
 		})
 
 		j.addStep(jobStep{
