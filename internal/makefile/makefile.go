@@ -116,11 +116,9 @@ endif
 	test.addDefinition(`comma := ,`)
 
 	//add main testing target
-	var checkPrerequisites []string
+	checkPrerequisites := []string{"static-check", "build/cover.html"}
 	if hasBinaries {
-		checkPrerequisites = []string{"build-all", "static-check", "build/cover.html"}
-	} else {
-		checkPrerequisites = []string{"static-check", "build/cover.html"}
+		checkPrerequisites = append(checkPrerequisites, "build-all")
 	}
 	test.addRule(rule{
 		description:   "Run the test suite (unit tests and golangci-lint).",
@@ -132,24 +130,14 @@ endif
 
 	//add target for installing dependencies for `make check`
 	test.addRule(rule{
-		description: "Install golangci-lint. This is used in CI, you should probably install golangci-lint using your package manager.",
+		description: "Install and run golangci-lint. Installing is used in CI, but you should probably install golangci-lint using your package manager.",
 		phony:       true,
-		target:      "prepare-static-check",
+		target:      "run-golangci-lint",
 		recipe: []string{
+			`@printf "\e[1;36m>> golangci-lint\e[0m\n"`,
 			`@if ! hash golangci-lint 2>/dev/null;` +
 				` then printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n";` +
 				` go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi`,
-		},
-	})
-
-	//add target for static code checks
-	test.addRule(rule{
-		description:   "Run golangci-lint.",
-		phony:         true,
-		target:        "static-check",
-		prerequisites: []string{"prepare-static-check"},
-		recipe: []string{
-			`@printf "\e[1;36m>> golangci-lint\e[0m\n"`,
 			`@golangci-lint run`,
 		},
 	})
@@ -224,22 +212,71 @@ endif
 		})
 	}
 
-	if strings.HasPrefix(sr.ModulePath, "github.com/sapcc") || strings.HasPrefix(sr.ModulePath, "github.wdf.sap.corp") || strings.HasPrefix(sr.ModulePath, "github.tools.sap") {
-		var pruneFlags string
-		for _, pattern := range cfg.GitHubWorkflow.License.IgnorePatterns {
-			pruneFlags += fmt.Sprintf(`\( -wholename %s -prune \) -o `, pattern)
+	isSAPCC := strings.HasPrefix(sr.ModulePath, "github.com/sapcc") || strings.HasPrefix(sr.ModulePath, "github.wdf.sap.corp") || strings.HasPrefix(sr.ModulePath, "github.tools.sap")
+
+	if isSAPCC {
+		// Default behavior is to check all Go files excluding the vendor directory.
+		patterns := []string{"**/*.go"}
+		if len(cfg.GitHubWorkflow.License.Patterns) > 0 {
+			patterns = cfg.GitHubWorkflow.License.Patterns
+		}
+
+		ignorePatterns := []string{"vendor/**"}
+		if len(cfg.GitHubWorkflow.License.IgnorePatterns) > 0 {
+			ignorePatterns = append(ignorePatterns, cfg.GitHubWorkflow.License.IgnorePatterns...)
+		}
+		// Each ignore pattern is quoted to avoid glob expansion and prefixed with the `-ignore` flag.
+		for i, v := range ignorePatterns {
+			ignorePatterns[i] = fmt.Sprintf("-ignore %q", v)
 		}
 
 		dev.addRule(rule{
-			description: "Add license headers to all .go files excluding the vendor directory.",
-			target:      "license-headers",
+			description: "Install addlicense",
+			target:      "prepare-addlicense",
 			phony:       true,
 			recipe: []string{
 				`@if ! hash addlicense 2>/dev/null; then printf "\e[1;36m>> Installing addlicense...\e[0m\n"; go install github.com/google/addlicense@latest; fi`,
-				fmt.Sprintf(`find * \( -name vendor -type d -prune \) -o %[1]s\( -name \*.go -exec addlicense -c "SAP SE" -- {} + \)`, pruneFlags),
 			},
 		})
+
+		dev.addRule(rule{
+			description:   "Add license headers to all .go files excluding the vendor directory.",
+			target:        "license-headers",
+			phony:         true,
+			prerequisites: []string{"prepare-addlicense"},
+			recipe: []string{
+				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
+				fmt.Sprintf(`@addlicense -c "SAP SE" %s -- %s`,
+					strings.Join(ignorePatterns, " "),
+					strings.Join(patterns, " "),
+				)},
+		})
+
+		dev.addRule(rule{
+			description:   "Check license headers in all .go files excluding the vendor directory.",
+			target:        "check-license-headers",
+			phony:         true,
+			prerequisites: []string{"prepare-addlicense"},
+			recipe: []string{fmt.Sprintf(
+				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
+				`@bash -c 'shopt -s globstar; addlicense --check %s -- %s'`,
+				strings.Join(ignorePatterns, " "),
+				strings.Join(patterns, " "),
+			)},
+		})
 	}
+
+	//add target for static code checks
+	staticCheckPrerequisites := []string{"run-golangci-lint"}
+	if isSAPCC {
+		staticCheckPrerequisites = append(staticCheckPrerequisites, "check-license-headers")
+	}
+	test.addRule(rule{
+		description:   "Run static code checks",
+		phony:         true,
+		target:        "static-check",
+		prerequisites: staticCheckPrerequisites,
+	})
 
 	//add cleaning target
 	dev.addRule(rule{

@@ -63,7 +63,6 @@ The config file has the following sections:
   * [githubWorkflow\.release](#githubworkflowrelease)
   * [githubWorkflow\.securityChecks](#githubworkflowsecuritychecks)
   * [githubWorkflow\.license](#githubworkflowlicense)
-  * [githubWorkflow\.spellCheck](#githubworkflowspellcheck)
 
 ### `metadata`
 

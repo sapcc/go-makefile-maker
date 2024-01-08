@@ -44,7 +44,4 @@ jobs:
           ignore: importas
           reporter: github-check
       - name: Check if source code files have license header
-        run: |
-          shopt -s globstar
-          go install github.com/google/addlicense@latest
-          addlicense --check -ignore "vendor/**" -- **/*.go
+        run: make check-license-headers
