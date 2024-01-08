@@ -125,6 +125,8 @@ endif
 	test.addDefinition(`space := $(null) $(null)`)
 	test.addDefinition(`comma := ,`)
 
+	isSAPCC := strings.HasPrefix(sr.ModulePath, "github.com/sapcc") || strings.HasPrefix(sr.ModulePath, "github.wdf.sap.corp") || strings.HasPrefix(sr.ModulePath, "github.tools.sap")
+
 	//add main testing target
 	checkPrerequisites := []string{"static-check", "build/cover.html"}
 	if hasBinaries {
@@ -139,15 +141,36 @@ endif
 	})
 
 	//add target for installing dependencies for `make check`
+	prepareStaticRecipe := []string{
+		`@if ! hash golangci-lint 2>/dev/null; then` +
+			` printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n";` +
+			` go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi`,
+	}
+	if isSAPCC {
+		prepareStaticRecipe = append(prepareStaticRecipe, []string{
+			`@if ! hash go-licence-detector 2>/dev/null; then` +
+				` printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n";` +
+				` go install go.elastic.co/go-licence-detector@latest; fi`,
+			`@if ! hash addlicense 2>/dev/null; then ` +
+				` printf "\e[1;36m>> Installing addlicense...\e[0m\n"; ` +
+				` go install github.com/google/addlicense@latest; fi`,
+		}...)
+	}
 	test.addRule(rule{
-		description: "Install and run golangci-lint. Installing is used in CI, but you should probably install golangci-lint using your package manager.",
+		description: "Install any tools required by static-check. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
 		phony:       true,
-		target:      "run-golangci-lint",
+		target:      "prepare-static-check",
+		recipe:      prepareStaticRecipe,
+	})
+
+	// add target to run golangci-lint
+	test.addRule(rule{
+		description:   "Install and run golangci-lint. Installing is used in CI, but you should probably install golangci-lint using your package manager.",
+		phony:         true,
+		target:        "run-golangci-lint",
+		prerequisites: []string{"prepare-static-check"},
 		recipe: []string{
 			`@printf "\e[1;36m>> golangci-lint\e[0m\n"`,
-			`@if ! hash golangci-lint 2>/dev/null;` +
-				` then printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n";` +
-				` go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi`,
 			`@golangci-lint run`,
 		},
 	})
@@ -222,8 +245,6 @@ endif
 		})
 	}
 
-	isSAPCC := strings.HasPrefix(sr.ModulePath, "github.com/sapcc") || strings.HasPrefix(sr.ModulePath, "github.wdf.sap.corp") || strings.HasPrefix(sr.ModulePath, "github.tools.sap")
-
 	if isSAPCC {
 		// Default behavior is to check all Go files excluding the vendor directory.
 		patterns := []string{"**/*.go"}
@@ -241,19 +262,10 @@ endif
 		}
 
 		dev.addRule(rule{
-			description: "Install addlicense",
-			target:      "prepare-addlicense",
-			phony:       true,
-			recipe: []string{
-				`@if ! hash addlicense 2>/dev/null; then printf "\e[1;36m>> Installing addlicense...\e[0m\n"; go install github.com/google/addlicense@latest; fi`,
-			},
-		})
-
-		dev.addRule(rule{
 			description:   "Add license headers to all .go files excluding the vendor directory.",
 			target:        "license-headers",
 			phony:         true,
-			prerequisites: []string{"prepare-addlicense"},
+			prerequisites: []string{"prepare-static-check"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
 				fmt.Sprintf(`@addlicense -c "SAP SE" %s -- %s`,
@@ -266,7 +278,7 @@ endif
 			description:   "Check license headers in all .go files excluding the vendor directory.",
 			target:        "check-license-headers",
 			phony:         true,
-			prerequisites: []string{"prepare-addlicense"},
+			prerequisites: []string{"prepare-static-check"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
 				fmt.Sprintf(`@bash -c 'shopt -s globstar; addlicense --check %s -- %s'`,
@@ -282,11 +294,12 @@ endif
 		must.Succeed(os.WriteFile(scanOverridesFile, scanOverrides, 0666))
 
 		dev.addRule(rule{
-			description: "Check all dependency licenses using go-licence-detector.",
-			target:      "check-dependency-licenses",
-			phony:       true,
+			description:   "Check all dependency licenses using go-licence-detector.",
+			target:        "check-dependency-licenses",
+			phony:         true,
+			prerequisites: []string{"prepare-static-check"},
 			recipe: []string{
-				`@if ! hash go-licence-detector 2>/dev/null; then printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n"; go install go.elastic.co/go-licence-detector@latest; fi`,
+
 				`@printf "\e[1;36m>> go-licence-detector\e[0m\n"`,
 				fmt.Sprintf(`@go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules %s -overrides %s`,
 					licenseRulesFile, scanOverridesFile),
@@ -297,7 +310,7 @@ endif
 	//add target for static code checks
 	staticCheckPrerequisites := []string{"run-golangci-lint"}
 	if isSAPCC {
-		staticCheckPrerequisites = append(staticCheckPrerequisites, "check-license-headers")
+		staticCheckPrerequisites = append(staticCheckPrerequisites, "check-dependency-licenses", "check-license-headers")
 	}
 	test.addRule(rule{
 		description:   "Run static code checks",
@@ -366,8 +379,7 @@ func makeDefaultLinkerFlags(binaryName string, sr core.ScanResult) string {
 	return flags
 }
 
-// installTarget also returns a bool that tells whether the install target was requested
-// in the config.
+// installTarget also returns a bool that tells whether the install target was requested in the config.
 func installTarget(binaries []core.BinaryConfiguration) (rule, bool) {
 	r := rule{
 		description: "Install all binaries. " +
