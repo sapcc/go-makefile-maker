@@ -146,7 +146,6 @@ type CIWorkflowConfig struct {
 // LicenseWorkflowConfig appears in type Configuration.
 type LicenseWorkflowConfig struct {
 	Enabled        bool     `yaml:"enabled"`
-	Patterns       []string `yaml:"patterns"`
 	IgnorePatterns []string `yaml:"ignorePatterns"`
 }
 

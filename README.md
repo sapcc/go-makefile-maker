@@ -445,31 +445,20 @@ securityChecks:
 
 #### `githubWorkflow.license`
 
-This workflow ensures that all your source code files have a license header. It
-uses [`addlicense`][addlicense] for this.
+This workflow uses [`addlicense`][addlicense`] to ensure that all your Go source code files have a license header.
+If vendoring is enabled, the `vendor/` directory is always entirely ignored by this workflow.
 
 ```yaml
 license:
   enabled: true
-  patterns:
-    - "**/*.go"
   ignorePatterns:
     - "vendor/**"
 ```
 
-`patterns` specifies a list of file patterns to check. For convenience, the `globstar`
-option is enabled for the workflow's shell session therefore you can use `**` in your file
-patterns. Additionally, `addlicense` will scan directory patterns recursively. See
-`addlicense`'s [README][addlicense] for more info. Default value for this is `**/*.go`,
-i.e. check all Go files.
-
 `ignorePatterns` specifies a list of file patterns to check. You can use any pattern
-[supported by doublestar][doublestar-pattern]. See `addlicense`'s [README][addlicense] for
-more info. Default value for this is `vendor/**`, i.e. exclude everything under `vendor`
-directory.
+[supported by doublestar][doublestar-pattern]. See `addlicense`'s [README][addlicense] for more info.
 
-**Hint**: you can also use `addlicense` to add license headers to all Go files excluding
-`vendor` directory by running `make license-headers`.
+**Hint**: You can also use `addlicense` to add license headers to all unignored Go files by running `make license-headers`.
 
 [codeql]: https://codeql.github.com/
 [coveralls]: https://coveralls.io

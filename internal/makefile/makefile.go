@@ -246,44 +246,37 @@ endif
 	}
 
 	if isSAPCC {
-		// Default behavior is to check all Go files excluding the vendor directory.
-		patterns := []string{"**/*.go"}
-		if len(cfg.GitHubWorkflow.License.Patterns) > 0 {
-			patterns = cfg.GitHubWorkflow.License.Patterns
-		}
+		allGoFilesExpr := `$(patsubst $(shell go list .)%,.%/*.go,$(shell go list ./...))`
 
-		ignorePatterns := []string{"vendor/**"}
-		if len(cfg.GitHubWorkflow.License.IgnorePatterns) > 0 {
-			ignorePatterns = append(ignorePatterns, cfg.GitHubWorkflow.License.IgnorePatterns...)
-		}
-		// Each ignore pattern is quoted to avoid glob expansion and prefixed with the `-ignore` flag.
-		for i, v := range ignorePatterns {
-			ignorePatterns[i] = fmt.Sprintf("-ignore %q", v)
+		ignoreOptions := make([]string, len(cfg.GitHubWorkflow.License.IgnorePatterns))
+		for idx, pattern := range cfg.GitHubWorkflow.License.IgnorePatterns {
+			//quoting avoids glob expansion
+			ignoreOptions[idx] = fmt.Sprintf("-ignore %q", pattern)
 		}
 
 		dev.addRule(rule{
-			description:   "Add license headers to all .go files excluding the vendor directory.",
+			description:   "Add license headers to all non-vendored .go files.",
 			target:        "license-headers",
 			phony:         true,
 			prerequisites: []string{"prepare-static-check"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
 				fmt.Sprintf(`@addlicense -c "SAP SE" %s -- %s`,
-					strings.Join(ignorePatterns, " "),
-					strings.Join(patterns, " "),
+					strings.Join(ignoreOptions, " "),
+					allGoFilesExpr,
 				)},
 		})
 
 		dev.addRule(rule{
-			description:   "Check license headers in all .go files excluding the vendor directory.",
+			description:   "Check license headers in all non-vendored .go files.",
 			target:        "check-license-headers",
 			phony:         true,
 			prerequisites: []string{"prepare-static-check"},
 			recipe: []string{
-				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
-				fmt.Sprintf(`@bash -c 'shopt -s globstar; addlicense --check %s -- %s'`,
-					strings.Join(ignorePatterns, " "),
-					strings.Join(patterns, " "),
+				`@printf "\e[1;36m>> addlicense --check\e[0m\n"`,
+				fmt.Sprintf(`@addlicense --check %s -- %s`,
+					strings.Join(ignoreOptions, " "),
+					allGoFilesExpr,
 				)},
 		})
 
