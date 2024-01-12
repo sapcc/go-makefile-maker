@@ -27,7 +27,7 @@ import (
 
 var configTmpl = template.Must(template.New("golangci").Parse(strings.TrimSpace(strings.ReplaceAll(`
 run:
-	deadline: 3m # 1m by default
+	timeout: 3m # 1m by default
 	modules-download-mode: {{ .ModDownloadMode }}
 	{{- if .SkipDirs }}
 	skip-dirs:
@@ -133,7 +133,6 @@ linters-settings:
 		http-method: true
 		http-status-code: true
 		os-dev-null: true
-		rpc-default-path: true
 		time-weekday: true
 		time-month: true
 		time-layout: true
