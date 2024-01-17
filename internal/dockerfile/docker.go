@@ -76,13 +76,15 @@ func RenderConfig(cfg core.Configuration) {
 		extraDirectives += "\n"
 	}
 
-	for _, v := range append([]string{"ca-certificates"}, cfg.Dockerfile.ExtraPackages...) {
+	for _, v := range cfg.Dockerfile.ExtraPackages {
 		packages += fmt.Sprintf(" %s", v)
 	}
 
 	commands := []string{
 		"apk upgrade --no-cache --no-progress",
-		fmt.Sprintf("apk add --no-cache --no-progress%s", packages),
+	}
+	if len(packages) > 0 {
+		commands = append(commands, fmt.Sprintf("apk add --no-cache --no-progress%s", packages))
 	}
 	commands = append(commands, extraCommands...)
 	commands = append(commands, "apk del --no-cache --no-progress apk-tools alpine-keys")
@@ -92,7 +94,7 @@ func RenderConfig(cfg core.Configuration) {
 	dockerfile := fmt.Sprintf(
 		`FROM golang:%[1]s%[2]s as builder
 
-RUN apk add --no-cache --no-progress gcc git make musl-dev
+RUN apk add --no-cache --no-progress ca-certificates gcc git make musl-dev
 
 COPY . /src
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION # provided to 'make install'
@@ -102,8 +104,10 @@ RUN make -C /src install PREFIX=/pkg GOTOOLCHAIN=local%[3]s
 
 FROM alpine:%[2]s
 
-%[4]s# upgrade all installed packages to fix potential CVEs in advance
-# also remove apk package manager to hopefully remove dependecy on openssl 🤞
+%[4]sCOPY --from=builder /etc/ssl/certs/ /etc/ssl/certs/
+
+# upgrade all installed packages to fix potential CVEs in advance
+# also remove apk package manager to hopefully remove dependency on OpenSSL 🤞
 RUN %[5]s
 
 COPY --from=builder /pkg/ /usr/
