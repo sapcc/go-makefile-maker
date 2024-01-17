@@ -104,13 +104,12 @@ RUN make -C /src install PREFIX=/pkg GOTOOLCHAIN=local%[3]s
 
 FROM alpine:%[2]s
 
-%[4]sCOPY --from=builder /etc/ssl/certs/ /etc/ssl/certs/
-COPY --from=builder /etc/ssl/cert.pem /etc/ssl/cert.pem
-
-# upgrade all installed packages to fix potential CVEs in advance
+%[4]s# upgrade all installed packages to fix potential CVEs in advance
 # also remove apk package manager to hopefully remove dependency on OpenSSL 🤞
 RUN %[5]s
 
+COPY --from=builder /etc/ssl/certs/ /etc/ssl/certs/
+COPY --from=builder /etc/ssl/cert.pem /etc/ssl/cert.pem
 COPY --from=builder /pkg/ /usr/
 
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
