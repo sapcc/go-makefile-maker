@@ -52,7 +52,7 @@ The config file has the following sections:
 * [variables](#variables)
 * [golang](#golang)
 * [golangciLint](#golangcilint)
-* [Goreleaser](#goreleaser)
+* [GoReleaser](#goreleaser)
 * [spellCheck](#spellcheck)
 * [renovate](#renovate)
 * [verbatim](#verbatim)
@@ -245,9 +245,16 @@ Take a look at `go-makefile-maker`'s own [`golangci-lint` config file](./.golang
 ```yaml
 goreleaser:
   enabled: true
+  binaryName: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+  format: .tar.gz
+  nameTemplate: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 ```
 
 If `goreleaser.enabled` is set to true a config file for goreleaser will be generated based on the metadata of the repository.
+The `format` option can be used to only upload binaries. It corresponds to the upstream archives[].format option. See <https://goreleaser.com/customization/archive/> for more details.
+The `binaryName` option can be used to change the name of the compiled binaries. It corresponds to the upstream builds[].binary option. This is only really useful when format is set to binary. It defaults to name of the first entry in the binaries option.
+The `nameTemplate` option can be used to change the name of uploaded release artefacts. It corresponds to the upstream archives[].name_template option.
+The `files` option can be used to add extra files. For backwards compatibility it defaults to `[ CHANGELOG.md, LICENSE, README.md ]`.
 
 ### `spellCheck`
 

@@ -20,7 +20,9 @@ package goreleaser
 
 import (
 	"fmt"
+	"net/url"
 	"os"
+	"strings"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 
@@ -28,12 +30,23 @@ import (
 	"github.com/sapcc/go-bits/must"
 )
 
-const goreleaserTemplate = `before:
+const goreleaserTemplate = `archives:
+  - name_template: '%[1]s'%[2]s
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:%[3]s
+
+before:
   hooks:
     - go mod tidy
 
+checksum:
+  name_template: "checksums.txt"
+
 builds:
-  - env:
+  - binary: '%[4]s'
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -44,39 +57,73 @@ builds:
       - arm64
     ldflags:
       - -s -w
-      - -X github.com/sapcc/go-api-declarations/bininfo.binName=%[1]s
+      - -X github.com/sapcc/go-api-declarations/bininfo.binName=%[5]s
       - -X github.com/sapcc/go-api-declarations/bininfo.version={{ .Version }}
       - -X github.com/sapcc/go-api-declarations/bininfo.commit={{ .FullCommit  }}
       - -X github.com/sapcc/go-api-declarations/bininfo.buildDate={{ .CommitDate }} # use CommitDate instead of Date for reproducibility
+    main: %[6]s
     # Set the modified timestamp on the output binary to ensure that builds are reproducible.
     mod_timestamp: "{{ .CommitTimestamp }}"
 
+release:
+  prerelease: auto
+%[7]s
 snapshot:
   name_template: "{{ .Tag }}-next"
-
-checksum:
-  name_template: "checksums.txt"
-
-archives:
-  - name_template: '{{ .ProjectName }}-{{ replace .Version "v" "" }}-{{ .Os }}-{{ .Arch }}'
-    format_overrides:
-      - goos: windows
-        format: zip
-    files:
-      - CHANGELOG.md
-      - LICENSE
-      - README.md
 `
 
 func RenderConfig(cfg core.Configuration) {
 	if len(cfg.Binaries) < 1 {
-		logg.Fatal("Goreleaser requires at least 1 binary to be configured in binaries!")
+		logg.Fatal("GoReleaser requires at least 1 binary to be configured in binaries!")
 	}
 	if cfg.Metadata.URL == "" {
-		logg.Fatal("Goreleasre requires metadata.url to be configured!")
+		logg.Fatal("GoReleaser requires metadata.url to be configured!")
 	}
 
-	goreleaserFile := fmt.Sprintf(goreleaserTemplate, cfg.Binaries[0].Name)
+	var nameTemplate, format, githubURLs string
+
+	nameTemplate = `{{ .ProjectName }}-{{ replace .Version "v" "" }}-{{ .Os }}-{{ .Arch }}`
+	if cfg.GoReleaser.NameTemplate != "" {
+		nameTemplate = cfg.GoReleaser.NameTemplate
+	}
+
+	if cfg.GoReleaser.Format != "" {
+		format = `
+    format: ` + cfg.GoReleaser.Format
+	}
+
+	var files string
+	if cfg.GoReleaser.Files == nil {
+		files = `
+      - CHANGELOG.md
+      - LICENSE
+      - README.md`
+	} else {
+		for _, file := range *cfg.GoReleaser.Files {
+			files += "      - " + file
+		}
+	}
+
+	binaryName := cfg.Binaries[0].Name
+	if cfg.GoReleaser.BinaryName != "" {
+		binaryName = cfg.GoReleaser.BinaryName
+	}
+
+	if !strings.HasPrefix(cfg.Metadata.URL, "https://github.com/") {
+		metadataURL, err := url.Parse(cfg.Metadata.URL)
+		if err != nil {
+			logg.Fatal("Metadata.URL is not a parsable URL: %w", err)
+		}
+
+		githubURLs = fmt.Sprintf(`
+github_urls:
+  api: https://%[1]s/api/v3/
+  upload: https://%[1]s/api/uploads/
+  download: https://%[1]s/
+`, metadataURL.Host)
+	}
+
+	goreleaserFile := fmt.Sprintf(goreleaserTemplate, nameTemplate, format, files, binaryName, cfg.Binaries[0].Name, cfg.Binaries[0].FromPackage, githubURLs)
 
 	// Remove renamed file
 	must.Succeed(os.RemoveAll(".goreleaser.yml"))
