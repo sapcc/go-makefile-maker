@@ -24,6 +24,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/sapcc/go-bits/must"
@@ -81,7 +82,14 @@ endif
 	}
 
 	if len(cfg.Golang.LdFlags) > 0 {
-		for name, value := range cfg.Golang.LdFlags {
+		var names []string
+		for key := range cfg.Golang.LdFlags {
+			names = append(names, key)
+		}
+		sort.Strings(names)
+
+		for _, name := range names {
+			value := cfg.Golang.LdFlags[name]
 			defaultLdFlags += fmt.Sprintf("%s=$(%s) ", name, value)
 		}
 	}
