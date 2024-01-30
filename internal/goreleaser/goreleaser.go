@@ -38,10 +38,6 @@ const goreleaserTemplate = `archives:
         format: zip
     files:%[3]s
 
-before:
-  hooks:
-    - go mod tidy
-
 checksum:
   name_template: "checksums.txt"
 
