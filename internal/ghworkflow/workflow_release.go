@@ -28,7 +28,7 @@ func releaseWorkflow(cfg *core.GithubWorkflowConfiguration) {
 
 	w.On.Push.Branches = nil
 	w.On.PullRequest.Branches = nil
-	w.On.Push.Tags = []string{"v[0-9]+.[0-9]+.[0-9]+"}
+	w.On.Push.Tags = []string{"*"} // goreleaser uses semver to decide if this is a prerelease or not
 
 	j := baseJobWithGo("goreleaser", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
 	// This is needed because: https://goreleaser.com/ci/actions/#fetch-depthness
