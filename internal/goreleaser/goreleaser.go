@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
@@ -110,7 +111,15 @@ func RenderConfig(cfg core.Configuration) {
 	}
 
 	if len(cfg.Golang.LdFlags) > 0 {
-		for name, value := range cfg.Golang.LdFlags {
+		var names []string
+		for key := range cfg.Golang.LdFlags {
+			names = append(names, key)
+		}
+		sort.Strings(names)
+
+		for _, name := range names {
+			value := cfg.Golang.LdFlags[name]
+
 			ldflags += fmt.Sprintf(`
       - %s={{.Env.%s}}`, name, value)
 		}
