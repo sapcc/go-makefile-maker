@@ -82,12 +82,12 @@ endif
 
 	if len(cfg.Golang.LdFlags) > 0 {
 		for name, value := range cfg.Golang.LdFlags {
-			defaultLdFlags += fmt.Sprintf("%s=$(%s)", name, value)
+			defaultLdFlags += fmt.Sprintf("%s=$(%s) ", name, value)
 		}
 	}
 
 	build.addDefinition("GO_BUILDFLAGS =%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
-	build.addDefinition("GO_LDFLAGS =%s", cfg.Variable("GO_LDFLAGS", defaultLdFlags))
+	build.addDefinition("GO_LDFLAGS =%s", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
 	build.addDefinition("GO_TESTENV =%s", cfg.Variable("GO_TESTENV", ""))
 	if sr.HasBinInfo {
 		build.addDefinition("")
