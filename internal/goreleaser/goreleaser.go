@@ -60,14 +60,14 @@ builds:
       - -X github.com/sapcc/go-api-declarations/bininfo.binName=%[5]s
       - -X github.com/sapcc/go-api-declarations/bininfo.version={{ .Version }}
       - -X github.com/sapcc/go-api-declarations/bininfo.commit={{ .FullCommit  }}
-      - -X github.com/sapcc/go-api-declarations/bininfo.buildDate={{ .CommitDate }} # use CommitDate instead of Date for reproducibility
-    main: %[6]s
+      - -X github.com/sapcc/go-api-declarations/bininfo.buildDate={{ .CommitDate }} # use CommitDate instead of Date for reproducibility%[6]s
+    main: %[7]s
     # Set the modified timestamp on the output binary to ensure that builds are reproducible.
     mod_timestamp: "{{ .CommitTimestamp }}"
 
 release:
   prerelease: auto
-%[7]s
+%[8]s
 snapshot:
   name_template: "{{ .Tag }}-next"
 `
@@ -80,7 +80,7 @@ func RenderConfig(cfg core.Configuration) {
 		logg.Fatal("GoReleaser requires metadata.url to be configured!")
 	}
 
-	var nameTemplate, format, githubURLs string
+	var nameTemplate, format, ldflags, githubURLs string
 
 	nameTemplate = `{{ .ProjectName }}-{{ replace .Version "v" "" }}-{{ .Os }}-{{ .Arch }}`
 	if cfg.GoReleaser.NameTemplate != "" {
@@ -109,6 +109,13 @@ func RenderConfig(cfg core.Configuration) {
 		binaryName = cfg.GoReleaser.BinaryName
 	}
 
+	if len(cfg.Golang.LdFlags) > 0 {
+		for name, value := range cfg.Golang.LdFlags {
+			ldflags += fmt.Sprintf(`
+      - %s={{.Env.%s}}`, name, value)
+		}
+	}
+
 	if !strings.HasPrefix(cfg.Metadata.URL, "https://github.com/") {
 		metadataURL, err := url.Parse(cfg.Metadata.URL)
 		if err != nil {
@@ -123,7 +130,7 @@ github_urls:
 `, metadataURL.Host)
 	}
 
-	goreleaserFile := fmt.Sprintf(goreleaserTemplate, nameTemplate, format, files, binaryName, cfg.Binaries[0].Name, cfg.Binaries[0].FromPackage, githubURLs)
+	goreleaserFile := fmt.Sprintf(goreleaserTemplate, nameTemplate, format, files, binaryName, cfg.Binaries[0].Name, ldflags, cfg.Binaries[0].FromPackage, githubURLs)
 
 	// Remove renamed file
 	must.Succeed(os.RemoveAll(".goreleaser.yml"))

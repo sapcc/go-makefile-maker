@@ -199,6 +199,7 @@ variables:
 ```yaml
 golang:
   enableVendoring: true
+  ldflags: -X "main.goversion={{.Env.GOVERSION}}"
   setGoModVersion: true
 ```
 
@@ -211,6 +212,7 @@ Set `golang.enableVendoring` to `true` if you vendor all dependencies in your re
    This target can be used to get the vendor directory up-to-date before commits.
 
 If `golang.setGoModVersion` is set to `true` then `go.mod` will be automatically updated to the latest version.
+The `ldflags` option can be used to share flags between the Makefile and GoReleaser.
 
 ### `golangciLint`
 

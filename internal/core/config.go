@@ -87,8 +87,9 @@ type CoverageConfiguration struct {
 
 // GolangConfiguration appears in type Configuration.
 type GolangConfiguration struct {
-	EnableVendoring bool `yaml:"enableVendoring"`
-	SetGoModVersion bool `yaml:"setGoModVersion"`
+	EnableVendoring bool              `yaml:"enableVendoring"`
+	LdFlags         map[string]string `yaml:"ldflags"`
+	SetGoModVersion bool              `yaml:"setGoModVersion"`
 }
 
 // GolangciLintConfiguration appears in type Configuration.
