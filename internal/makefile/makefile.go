@@ -262,7 +262,9 @@ endif
 	}
 
 	if isSAPCC {
-		allGoFilesExpr := `$(patsubst $(shell go list .)%,.%/*.go,$(shell go list ./...))`
+		// `go list .` does not work to get the package name because it requires a go file in the current directory
+		// but some packages like concourse-swift-resource or gatekeeper-addons only have subpackages
+		allGoFilesExpr := `$(patsubst $(shell awk '$$1 == "module" {print $$2}' go.mod)%,.%/*.go,$(shell go list ./...))`
 
 		ignoreOptions := make([]string, len(cfg.GitHubWorkflow.License.IgnorePatterns))
 		for idx, pattern := range cfg.GitHubWorkflow.License.IgnorePatterns {
