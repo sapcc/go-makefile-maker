@@ -112,18 +112,18 @@ COPY --from=builder /etc/ssl/certs/ /etc/ssl/certs/
 COPY --from=builder /etc/ssl/cert.pem /etc/ssl/cert.pem
 COPY --from=builder /pkg/ /usr/
 # make sure the binary can be executed
-RUN %[10]s --version 2>/dev/null
+RUN %[6]s --version 2>/dev/null
 
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
-LABEL source_repository="%[6]s" \
-  org.opencontainers.image.url="%[6]s" \
+LABEL source_repository="%[7]s" \
+  org.opencontainers.image.url="%[7]s" \
   org.opencontainers.image.created=${BININFO_BUILD_DATE} \
   org.opencontainers.image.revision=${BININFO_COMMIT_HASH} \
   org.opencontainers.image.version=${BININFO_VERSION}
 
-%[7]s%[8]sWORKDIR %[9]s
-ENTRYPOINT [ %[10]s ]
-`, core.DefaultGolangImagePrefix, core.DefaultAlpineImage, goBuildflags, addUserGroup, runCommands, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
+%[8]s%[9]sWORKDIR %[10]s
+ENTRYPOINT [ %[11]s ]
+`, core.DefaultGolangImagePrefix, core.DefaultAlpineImage, goBuildflags, addUserGroup, runCommands, cfg.Binaries[0].Name, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 
