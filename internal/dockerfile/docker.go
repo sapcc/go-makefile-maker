@@ -71,6 +71,12 @@ func RenderConfig(cfg core.Configuration) {
 		entrypoint = `"/usr/bin/linkerd-await", "--shutdown", "--", ` + entrypoint
 	}
 
+	var runVersionArg string
+	for _, binary := range cfg.Binaries {
+		runVersionArg += fmt.Sprintf(`
+RUN %s --version 2>/dev/null`, binary.Name)
+	}
+
 	extraDirectives := strings.Join(cfg.Dockerfile.ExtraDirectives, "\n")
 	if extraDirectives != "" {
 		extraDirectives += "\n"
@@ -111,8 +117,7 @@ RUN %[5]s
 COPY --from=builder /etc/ssl/certs/ /etc/ssl/certs/
 COPY --from=builder /etc/ssl/cert.pem /etc/ssl/cert.pem
 COPY --from=builder /pkg/ /usr/
-# make sure the binary can be executed
-RUN %[6]s --version 2>/dev/null
+# make sure all binaries can be executed%[6]s
 
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
 LABEL source_repository="%[7]s" \
@@ -123,7 +128,7 @@ LABEL source_repository="%[7]s" \
 
 %[8]s%[9]sWORKDIR %[10]s
 ENTRYPOINT [ %[11]s ]
-`, core.DefaultGolangImagePrefix, core.DefaultAlpineImage, goBuildflags, addUserGroup, runCommands, cfg.Binaries[0].Name, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
+`, core.DefaultGolangImagePrefix, core.DefaultAlpineImage, goBuildflags, addUserGroup, runCommands, runVersionArg, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 
