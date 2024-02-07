@@ -16,9 +16,9 @@ package core
 
 const (
 	DefaultAlpineImage       = "3.19"
-	DefaultGolangImagePrefix = "1.21.6-alpine"
+	DefaultGolangImagePrefix = "1.22.0-alpine"
 
-	DefaultGoVersion           = "1.21"
+	DefaultGoVersion           = "1.22"
 	DefaultPostgresVersion     = "12"
 	DefaultLinkerdAwaitVersion = "0.2.7"
 	DefaultK8sEnvtestVersion   = "1.26.x!"
