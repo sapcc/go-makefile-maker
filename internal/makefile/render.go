@@ -241,10 +241,10 @@ func (r *rule) render(w io.Writer) {
 		hdr += " FORCE"
 	}
 	if len(r.prerequisites) > 0 {
-		hdr += fmt.Sprintf(" %s", strings.Join(r.prerequisites, " "))
+		hdr += " " + strings.Join(r.prerequisites, " ")
 	}
 	if len(r.orderOnlyPrerequisites) > 0 {
-		hdr += fmt.Sprintf(" | %s", strings.Join(r.orderOnlyPrerequisites, " "))
+		hdr += " | " + strings.Join(r.orderOnlyPrerequisites, " ")
 	}
 	fmt.Fprintln(w, hdr)
 

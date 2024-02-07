@@ -16,7 +16,6 @@ package renovate
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"strings"
 
@@ -98,7 +97,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult core.ScanResult, u
 	// default package rules in the README.
 	cfg.addPackageRule(core.PackageRule{
 		MatchPackageNames: []string{"golang"},
-		AllowedVersions:   fmt.Sprintf("%s.x", cfgRenovate.GoVersion),
+		AllowedVersions:   cfgRenovate.GoVersion + ".x",
 	})
 
 	// combine and automerge all dependencies under github.com/sapcc/

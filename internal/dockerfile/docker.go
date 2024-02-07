@@ -87,14 +87,14 @@ RUN %s --version 2>/dev/null`, binary.Name)
 	}
 
 	for _, v := range cfg.Dockerfile.ExtraPackages {
-		packages += fmt.Sprintf(" %s", v)
+		packages += " " + v
 	}
 
 	commands := []string{
 		"apk upgrade --no-cache --no-progress",
 	}
-	if len(packages) > 0 {
-		commands = append(commands, fmt.Sprintf("apk add --no-cache --no-progress%s", packages))
+	if packages != "" {
+		commands = append(commands, "apk add --no-cache --no-progress"+packages)
 	}
 	commands = append(commands, extraCommands...)
 	commands = append(commands, "apk del --no-cache --no-progress apk-tools alpine-keys")

@@ -100,7 +100,7 @@ endif
 	if sr.HasBinInfo {
 		build.addDefinition("")
 		build.addDefinition("# These definitions are overridable, e.g. to provide fixed version/commit values when")
-		build.addDefinition("# no .git directory is present or to provide a fixed build date for reproducability.")
+		build.addDefinition("# no .git directory is present or to provide a fixed build date for reproducibility.")
 		build.addDefinition(`BININFO_VERSION     ?= $(shell git describe --tags --always --abbrev=7)`)
 		build.addDefinition(`BININFO_COMMIT_HASH ?= $(shell git rev-parse --verify HEAD)`)
 		build.addDefinition(`BININFO_BUILD_DATE  ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")`)
@@ -361,7 +361,7 @@ func buildTargets(binaries []core.BinaryConfiguration, sr core.ScanResult) []rul
 		r := rule{
 			description: fmt.Sprintf("Build %s.", bin.Name),
 			phony:       true,
-			target:      fmt.Sprintf("build/%s", bin.Name),
+			target:      "build/" + bin.Name,
 			recipe: []string{fmt.Sprintf(
 				"go build $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -o build/%s %s",
 				makeDefaultLinkerFlags(bin.Name, sr),
@@ -409,7 +409,7 @@ endif
 
 	for _, bin := range binaries {
 		if bin.InstallTo != "" {
-			r.prerequisites = append(r.prerequisites, fmt.Sprintf("build/%s", bin.Name))
+			r.prerequisites = append(r.prerequisites, "build/"+bin.Name)
 			// stupid MacOS does not have -D
 			r.recipe = append(r.recipe, fmt.Sprintf(
 				`install -d -m 0755 "$(DESTDIR)$(PREFIX)/%s"`, filepath.Clean(bin.InstallTo),

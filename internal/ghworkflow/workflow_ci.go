@@ -15,7 +15,6 @@
 package ghworkflow
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
@@ -88,7 +87,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
 			Run: makeMultilineYAMLString([]string{
 				"go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest",
 				"mkdir -p test/bin", // create dir if it doesn't exist already
-				fmt.Sprintf("setup-envtest --bin-dir test/bin use %s", envtestVersion),
+				"setup-envtest --bin-dir test/bin use " + envtestVersion,
 			}),
 		})
 	}
