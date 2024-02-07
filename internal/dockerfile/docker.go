@@ -73,6 +73,10 @@ func RenderConfig(cfg core.Configuration) {
 
 	var runVersionArg string
 	for _, binary := range cfg.Binaries {
+		if binary.InstallTo == "" {
+			continue
+		}
+
 		runVersionArg += fmt.Sprintf(`
 RUN %s --version 2>/dev/null`, binary.Name)
 	}
