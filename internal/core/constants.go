@@ -25,7 +25,7 @@ const (
 	DefaultGitHubComRunnerType = "ubuntu-latest"
 )
 
-var DefaultGitHubEnterpriseRunnerType = [...]string{"self-hosted", "Linux", "X64"}
+var DefaultGitHubEnterpriseRunnerType = [...]string{"self-hosted"}
 
 const (
 	CacheAction    = "actions/cache@v4"
