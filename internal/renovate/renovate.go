@@ -29,15 +29,17 @@ type constraints struct {
 }
 
 type config struct {
-	Extends             []string           `json:"extends"`
-	Assignees           []string           `json:"assignees,omitempty"`
-	CommitMessageAction string             `json:"commitMessageAction"`
-	Constraints         constraints        `json:"constraints"`
-	PostUpdateOptions   []string           `json:"postUpdateOptions"`
-	PackageRules        []core.PackageRule `json:"packageRules,omitempty"`
-	PrHourlyLimit       int                `json:"prHourlyLimit"`
-	Schedule            []string           `json:"schedule"`
-	SemanticCommits     string             `json:"semanticCommits,omitempty"`
+	Extends                                    []string           `json:"extends"`
+	Assignees                                  []string           `json:"assignees,omitempty"`
+	CommitMessageAction                        string             `json:"commitMessageAction"`
+	Constraints                                constraints        `json:"constraints"`
+	DependencyDashboardOSVVulnerabilitySummary string             `json:"dependencyDashboardOSVVulnerabilitySummary"`
+	OsvVulnerabilityAlerts                     bool               `json:"osvVulnerabilityAlerts"`
+	PostUpdateOptions                          []string           `json:"postUpdateOptions"`
+	PackageRules                               []core.PackageRule `json:"packageRules,omitempty"`
+	PrHourlyLimit                              int                `json:"prHourlyLimit"`
+	Schedule                                   []string           `json:"schedule"`
+	SemanticCommits                            string             `json:"semanticCommits,omitempty"`
 }
 
 func (c *config) addPackageRule(rule core.PackageRule) {
@@ -82,6 +84,8 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult core.ScanResult, u
 		Constraints: constraints{
 			Go: cfgRenovate.GoVersion,
 		},
+		DependencyDashboardOSVVulnerabilitySummary: "all",
+		OsvVulnerabilityAlerts:                     true,
 		PostUpdateOptions: []string{
 			"gomodUpdateImportPaths",
 		},
