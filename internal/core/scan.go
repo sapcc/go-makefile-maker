@@ -20,6 +20,7 @@ package core
 
 import (
 	"os"
+	"strings"
 
 	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
@@ -35,7 +36,9 @@ type ScanResult struct {
 	GoVersion            string           // from "go" directive in go.mod, e.g. "1.21"
 	GoDirectDependencies []module.Version // from "require" directive(s) in go.mod without the "// indirect" comment
 	HasBinInfo           bool             // whether we can produce linker instructions for "github.com/sapcc/go-api-declarations/bininfo"
-	UsesPostgres         bool             // wether postgres is used
+	UsesPostgres         bool             // whether postgres is used
+	KubernetesController bool             // whether the repository contains a Kubernetes controller
+	KubernetesVersion    string           // version of kubernetes to use, derived from k8s.io/api
 }
 
 const ModFilename = "go.mod"
@@ -44,9 +47,13 @@ func Scan() ScanResult {
 	modFileBytes := must.Return(os.ReadFile(ModFilename))
 	modFile := must.Return(modfile.Parse(ModFilename, modFileBytes, nil))
 
-	var goDeps []module.Version
-	hasBinInfo := false
-	usesPostgres := false
+	var (
+		goDeps               []module.Version
+		hasBinInfo           bool
+		kubernetesController bool
+		kubernetesVersion    string
+		usesPostgres         bool
+	)
 
 	for _, v := range modFile.Require {
 		if !v.Indirect {
@@ -60,6 +67,12 @@ func Scan() ScanResult {
 		if v.Mod.Path == "github.com/lib/pq" {
 			usesPostgres = true
 		}
+		if v.Mod.Path == "k8s.io/api" {
+			kubernetesVersion = strings.ReplaceAll(v.Mod.Version, "v0", "1")
+		}
+		if v.Mod.Path == "sigs.k8s.io/controller-runtime" {
+			kubernetesController = true
+		}
 	}
 
 	return ScanResult{
@@ -68,6 +81,8 @@ func Scan() ScanResult {
 		GoDirectDependencies: goDeps,
 		HasBinInfo:           hasBinInfo,
 		UsesPostgres:         usesPostgres,
+		KubernetesController: kubernetesController,
+		KubernetesVersion:    kubernetesVersion,
 	}
 }
 
