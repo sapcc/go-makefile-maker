@@ -43,6 +43,8 @@ var scanOverrides []byte
 func newMakefile(cfg *core.Configuration, sr core.ScanResult) *makefile {
 	hasBinaries := len(cfg.Binaries) > 0
 
+	isSAPCC := strings.HasPrefix(sr.ModulePath, "github.com/sapcc") || strings.HasPrefix(sr.ModulePath, "github.wdf.sap.corp") || strings.HasPrefix(sr.ModulePath, "github.tools.sap")
+
 	///////////////////////////////////////////////////////////////////////////
 	// General
 	general := category{name: "general"}
@@ -72,6 +74,56 @@ endif
 	}
 
 	///////////////////////////////////////////////////////////////////////////
+	// Prepare
+	prepare := category{name: "prepare"}
+
+	//add target for installing dependencies for `make check`
+	prepareStaticRecipe := []string{
+		`@if ! hash golangci-lint 2>/dev/null; then` +
+			` printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n";` +
+			` go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi`,
+	}
+	prepareStaticPrerequisites := []string{}
+	if isSAPCC {
+		prepareStaticRecipe = append(prepareStaticRecipe, []string{
+			`@if ! hash go-licence-detector 2>/dev/null; then` +
+				` printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n";` +
+				` go install go.elastic.co/go-licence-detector@latest; fi`,
+			`@if ! hash addlicense 2>/dev/null; then ` +
+				` printf "\e[1;36m>> Installing addlicense...\e[0m\n"; ` +
+				` go install github.com/google/addlicense@latest; fi`,
+		}...)
+	}
+	if sr.KubernetesController {
+		prepareStaticRecipe = append(prepareStaticRecipe, []string{
+			`@if ! hash setup-envtest 2>/dev/null; then` +
+				` printf "\e[1;36m>> Installing setup-envtest...\e[0m\n";` +
+				` go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest; fi`,
+		}...)
+		prepareStaticPrerequisites = append(prepareStaticPrerequisites, "install-controller-gen")
+	}
+	prepare.addRule(rule{
+		description:   "Install any tools required by static-check. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
+		phony:         true,
+		target:        "prepare-static-check",
+		recipe:        prepareStaticRecipe,
+		prerequisites: prepareStaticPrerequisites,
+	})
+
+	if sr.KubernetesController {
+		prepare.addRule(rule{
+			description: "Install controller-gen required by static-check and build-all. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
+			phony:       true,
+			recipe: []string{
+				`@if ! hash controller-gen 2>/dev/null; then` +
+					` printf "\e[1;36m>> Installing controller-gen...\e[0m\n";` +
+					` go install sigs.k8s.io/controller-tools/cmd/controller-gen@latest; fi`,
+			},
+			target: "install-controller-gen",
+		})
+	}
+
+	///////////////////////////////////////////////////////////////////////////
 	// Build
 	build := category{name: "build"}
 
@@ -97,6 +149,9 @@ endif
 	build.addDefinition("GO_BUILDFLAGS =%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
 	build.addDefinition("GO_LDFLAGS =%s", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
 	build.addDefinition("GO_TESTENV =%s", cfg.Variable("GO_TESTENV", ""))
+	if sr.KubernetesController {
+		build.addDefinition("TESTBIN=$(shell pwd)/testbin")
+	}
 	if sr.HasBinInfo {
 		build.addDefinition("")
 		build.addDefinition("# These definitions are overridable, e.g. to provide fixed version/commit values when")
@@ -141,8 +196,6 @@ endif
 	test.addDefinition(`space := $(null) $(null)`)
 	test.addDefinition(`comma := ,`)
 
-	isSAPCC := strings.HasPrefix(sr.ModulePath, "github.com/sapcc") || strings.HasPrefix(sr.ModulePath, "github.wdf.sap.corp") || strings.HasPrefix(sr.ModulePath, "github.tools.sap")
-
 	//add main testing target
 	checkPrerequisites := []string{"static-check", "build/cover.html"}
 	if hasBinaries {
@@ -156,28 +209,20 @@ endif
 		recipe:        []string{`@printf "\e[1;32m>> All checks successful.\e[0m\n"`},
 	})
 
-	//add target for installing dependencies for `make check`
-	prepareStaticRecipe := []string{
-		`@if ! hash golangci-lint 2>/dev/null; then` +
-			` printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n";` +
-			` go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi`,
+	if sr.KubernetesController {
+		components := strings.Split(sr.ModulePath, "/")
+		roleName := components[len(components)-1]
+		test.addRule(rule{
+			description: "Generate code for Kubernetes CRDs and deepcopy.",
+			target:      "generate",
+			recipe: []string{
+				`@printf "\e[1;36m>> controller-gen\e[0m\n"`,
+				fmt.Sprintf(`@controller-gen crd rbac:roleName=%s paths="./..." output:crd:artifacts:config=crd`, roleName),
+				`@controller-gen object paths=./...`,
+			},
+			prerequisites: []string{"install-controller-gen"},
+		})
 	}
-	if isSAPCC {
-		prepareStaticRecipe = append(prepareStaticRecipe, []string{
-			`@if ! hash go-licence-detector 2>/dev/null; then` +
-				` printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n";` +
-				` go install go.elastic.co/go-licence-detector@latest; fi`,
-			`@if ! hash addlicense 2>/dev/null; then ` +
-				` printf "\e[1;36m>> Installing addlicense...\e[0m\n"; ` +
-				` go install github.com/google/addlicense@latest; fi`,
-		}...)
-	}
-	test.addRule(rule{
-		description: "Install any tools required by static-check. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
-		phony:       true,
-		target:      "prepare-static-check",
-		recipe:      prepareStaticRecipe,
-	})
 
 	// add target to run golangci-lint
 	test.addRule(rule{
@@ -192,7 +237,7 @@ endif
 	})
 
 	//add targets for `go test` incl. coverage report
-	test.addRule(rule{
+	testRule := rule{
 		description: "Run tests and generate coverage report.",
 		phony:       true,
 		target:      "build/cover.out",
@@ -200,12 +245,18 @@ endif
 		orderOnlyPrerequisites: []string{"build"},
 		recipe: []string{
 			`@printf "\e[1;36m>> go test\e[0m\n"`,
-			fmt.Sprintf(
-				`@env $(GO_TESTENV) go test $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -shuffle=on -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
-				makeDefaultLinkerFlags(path.Base(sr.MustModulePath()), sr),
-			),
 		},
-	})
+	}
+	goTest := fmt.Sprintf(`go test $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -shuffle=on -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
+		makeDefaultLinkerFlags(path.Base(sr.MustModulePath()), sr))
+	if sr.KubernetesController {
+		testRule.prerequisites = append(testRule.prerequisites, "generate")
+		testRule.recipe = append(testRule.recipe, fmt.Sprintf(`KUBEBUILDER_ASSETS="$(shell setup-envtest use %s --bin-dir $(TESTBIN) -p path)" %s`, sr.KubernetesVersion, goTest))
+	} else {
+		testRule.recipe = append(testRule.recipe, `@env $(GO_TESTENV) `+goTest)
+	}
+
+	test.addRule(testRule)
 
 	test.addRule(rule{
 		description:   "Generate an HTML file with source code annotations from the coverage report.",
@@ -261,7 +312,7 @@ endif
 		})
 	}
 
-	if isSAPCC {
+	if isSAPCC && cfg.GitHubWorkflow != nil {
 		// `go list .` does not work to get the package name because it requires a go file in the current directory
 		// but some packages like concourse-swift-resource or gatekeeper-addons only have subpackages
 		allGoFilesExpr := `$(patsubst $(shell awk '$$1 == "module" {print $$2}' go.mod)%,.%/*.go,$(shell go list ./...))`
@@ -341,6 +392,7 @@ endif
 	return &makefile{
 		categories: []category{
 			general,
+			prepare,
 			build,
 			test,
 			dev,
@@ -350,11 +402,14 @@ endif
 
 func buildTargets(binaries []core.BinaryConfiguration, sr core.ScanResult) []rule {
 	result := make([]rule, 0, len(binaries)+1)
-	bAllRule := rule{
+	buildAllRule := rule{
 		description: "Build all binaries.",
 		target:      "build-all",
 	}
-	result = append(result, bAllRule)
+	if sr.KubernetesController {
+		buildAllRule.prerequisites = []string{"install-controller-gen"}
+	}
+	result = append(result, buildAllRule)
 
 	allPrerequisites := make([]string, 0, len(binaries))
 	for _, bin := range binaries {
@@ -367,6 +422,10 @@ func buildTargets(binaries []core.BinaryConfiguration, sr core.ScanResult) []rul
 				makeDefaultLinkerFlags(bin.Name, sr),
 				bin.Name, bin.FromPackage,
 			)},
+		}
+
+		if sr.KubernetesController {
+			r.prerequisites = append(r.prerequisites, "generate")
 		}
 
 		result = append(result, r)

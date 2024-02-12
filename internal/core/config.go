@@ -142,10 +142,6 @@ type CIWorkflowConfig struct {
 		Enabled bool   `yaml:"enabled"`
 		Version string `yaml:"version"`
 	} `yaml:"postgres"`
-	KubernetesEnvtest struct {
-		Enabled bool   `yaml:"enabled"`
-		Version string `yaml:"version"`
-	} `yaml:"kubernetesEnvtest"`
 }
 
 // LicenseWorkflowConfig appears in type Configuration.
@@ -247,14 +243,12 @@ func (c *Configuration) Validate() {
 		}
 
 		// Validate CI workflow configuration.
-		if ghwCfg.CI.Postgres.Enabled || ghwCfg.CI.KubernetesEnvtest.Enabled {
+		if ghwCfg.CI.Postgres.Enabled {
 			if !ghwCfg.CI.Enabled {
-				logg.Fatal("githubWorkflow.ci.enabled must be set to 'true' when githubWorkflow.ci.postgres or githubWorkflow.ci.kubernetesEnvtest is enabled")
+				logg.Fatal("githubWorkflow.ci.enabled must be set to 'true' when githubWorkflow.ci.postgres is enabled")
 			}
-			if len(ghwCfg.CI.RunnerType) > 0 {
-				if len(ghwCfg.CI.RunnerType) > 1 || !strings.HasPrefix(ghwCfg.CI.RunnerType[0], "ubuntu") {
-					logg.Fatal("githubWorkflow.ci.runOn must only define a single Ubuntu based runner when githubWorkflow.ci.postgres or githubWorkflow.ci.kubernetesEnvtest is enabled")
-				}
+			if len(ghwCfg.CI.RunnerType) > 1 || !strings.HasPrefix(ghwCfg.CI.RunnerType[0], "ubuntu") {
+				logg.Fatal("githubWorkflow.ci.runOn must only define a single Ubuntu based runner when githubWorkflow.ci.postgres is enabled")
 			}
 		}
 	}
