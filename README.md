@@ -382,9 +382,6 @@ ci:
   postgres:
     enabled: true
     version: 12
-  kubernetesEnvtest:
-    enabled: true
-    version: 1.25.x!
   ignorePaths: []
 ```
 
@@ -400,13 +397,6 @@ If `postgres.enabled` is `true` then a PostgreSQL service container will be adde
 `postgres.version` specifies the Docker Hub image tag for the [`postgres`
 image][docker-hub-postgres] that is used for this container. By default `12` is used as
 image tag.
-
-If `kubernetesEnvtest.enabled` is `true` then
-[Envtest](https://book.kubebuilder.io/reference/envtest.html) binaries will be downloaded
-using
-[`setup-envtest`](https://pkg.go.dev/sigs.k8s.io/controller-runtime/tools/setup-envtest)
-for the `test` job. The version for binaries can be specified using the
-`kubernetesEnvtest.version` field. By default `1.25.x!` is used as the version.
 
 `ignorePaths` specifies a list of filename patterns. Workflows will not trigger if a path
 name matches a pattern in this list. [More info][ref-onpushpull] and [filter pattern cheat

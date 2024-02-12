@@ -66,31 +66,6 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
 			}, " "),
 		}}
 	}
-	if cfg.CI.KubernetesEnvtest.Enabled {
-		testJob.addStep(jobStep{
-			ID:   "cache-envtest",
-			Name: "Cache envtest binaries",
-			Uses: core.CacheAction,
-			With: map[string]any{
-				"path": "test/bin",
-				"key":  `${{ runner.os }}-envtest-${{ hashFiles('Makefile.maker.yaml') }}`,
-			},
-		})
-		// Download the envtest binaries, in case of cache miss.
-		envtestVersion := core.DefaultK8sEnvtestVersion
-		if cfg.CI.KubernetesEnvtest.Version != "" {
-			envtestVersion = cfg.CI.KubernetesEnvtest.Version
-		}
-		testJob.addStep(jobStep{
-			Name: "Download envtest binaries",
-			If:   "steps.cache-envtest.outputs.cache-hit != 'true'",
-			Run: makeMultilineYAMLString([]string{
-				"go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest",
-				"mkdir -p test/bin", // create dir if it doesn't exist already
-				"setup-envtest --bin-dir test/bin use " + envtestVersion,
-			}),
-		})
-	}
 	testJob.addStep(jobStep{
 		Name: "Run tests and generate coverage report",
 		Run:  "make build/cover.out",
