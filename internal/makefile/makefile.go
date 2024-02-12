@@ -123,6 +123,19 @@ endif
 		})
 	}
 
+	if sr.UseGinkgo {
+		prepare.addRule(rule{
+			description: "Install ginkgo required when using it as test runner. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
+			phony:       true,
+			recipe: []string{
+				`@if ! hash ginkgo 2>/dev/null; then` +
+					` printf "\e[1;36m>> Installing ginkgo...\e[0m\n";` +
+					` go install github.com/onsi/ginkgo/v2/ginkgo; fi`,
+			},
+			target: "install-ginkgo",
+		})
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 	// Build
 	build := category{name: "build"}
@@ -172,7 +185,7 @@ endif
 	// Test
 	test := category{name: "test"}
 
-	test.addDefinition(`# which packages to test with "go test"`)
+	test.addDefinition(`# which packages to test with test runner`)
 	testPkgGreps := ""
 	if cfg.Test.Only != "" {
 		testPkgGreps += fmt.Sprintf(" | grep -E '%s'", cfg.Test.Only)
@@ -180,7 +193,12 @@ endif
 	if cfg.Test.Except != "" {
 		testPkgGreps += fmt.Sprintf(" | grep -Ev '%s'", cfg.Test.Except)
 	}
-	test.addDefinition(`GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./...%s)`, testPkgGreps)
+	pathVar := "ImportPath"
+	// ginkgo only understands relative names eg ./config or config but not example.com/package/config
+	if sr.UseGinkgo {
+		pathVar = "Dir"
+	}
+	test.addDefinition(`GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.%s}}{{end}}' ./...%s)`, pathVar, testPkgGreps)
 
 	test.addDefinition(`# which packages to measure coverage for`)
 	coverPkgGreps := ""
@@ -236,7 +254,7 @@ endif
 		},
 	})
 
-	//add targets for `go test` incl. coverage report
+	//add targets for test runner incl. coverage report
 	testRule := rule{
 		description: "Run tests and generate coverage report.",
 		phony:       true,
@@ -244,11 +262,17 @@ endif
 		// We use order only prerequisite because this target is used in CI.
 		orderOnlyPrerequisites: []string{"build"},
 		recipe: []string{
-			`@printf "\e[1;36m>> go test\e[0m\n"`,
+			`@printf "\e[1;36m>> Running tests\e[0m\n"`,
 		},
 	}
-	goTest := fmt.Sprintf(`go test $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -shuffle=on -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
-		makeDefaultLinkerFlags(path.Base(sr.MustModulePath()), sr))
+
+	testRunner := "go test -shuffle=on"
+	if sr.UseGinkgo {
+		testRunner = "ginkgo run --randomize-all"
+		testRule.prerequisites = append(testRule.prerequisites, "install-ginkgo")
+	}
+	goTest := fmt.Sprintf(`%s $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
+		testRunner, makeDefaultLinkerFlags(path.Base(sr.MustModulePath()), sr))
 	if sr.KubernetesController {
 		testRule.prerequisites = append(testRule.prerequisites, "generate")
 		testRule.recipe = append(testRule.recipe, fmt.Sprintf(`KUBEBUILDER_ASSETS="$(shell setup-envtest use %s --bin-dir $(TESTBIN) -p path)" %s`, sr.KubernetesVersion, goTest))

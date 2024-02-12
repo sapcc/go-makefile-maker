@@ -42,7 +42,7 @@ install: FORCE build/go-makefile-maker
 	install -d -m 0755 "$(DESTDIR)$(PREFIX)/bin"
 	install -m 0755 build/go-makefile-maker "$(DESTDIR)$(PREFIX)/bin/go-makefile-maker"
 
-# which packages to test with "go test"
+# which packages to test with test runner
 GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./...)
 # which packages to measure coverage for
 GO_COVERPKGS := $(shell go list ./...)
@@ -59,8 +59,8 @@ run-golangci-lint: FORCE prepare-static-check
 	@golangci-lint run
 
 build/cover.out: FORCE | build
-	@printf "\e[1;36m>> go test\e[0m\n"
-	@env $(GO_TESTENV) go test $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -shuffle=on -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)
+	@printf "\e[1;36m>> Running tests\e[0m\n"
+	@env $(GO_TESTENV) go test -shuffle=on $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)
 
 build/cover.html: build/cover.out
 	@printf "\e[1;36m>> go tool cover > build/cover.html\e[0m\n"
