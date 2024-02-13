@@ -77,7 +77,7 @@ endif
 	// Prepare
 	prepare := category{name: "prepare"}
 
-	//add target for installing dependencies for `make check`
+	//add target for installing dependencies for `make static-check`
 	prepareStaticRecipe := []string{
 		`@if ! hash golangci-lint 2>/dev/null; then` +
 			` printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n";` +
@@ -93,14 +93,6 @@ endif
 				` printf "\e[1;36m>> Installing addlicense...\e[0m\n"; ` +
 				` go install github.com/google/addlicense@latest; fi`,
 		}...)
-	}
-	if sr.KubernetesController {
-		prepareStaticRecipe = append(prepareStaticRecipe, []string{
-			`@if ! hash setup-envtest 2>/dev/null; then` +
-				` printf "\e[1;36m>> Installing setup-envtest...\e[0m\n";` +
-				` go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest; fi`,
-		}...)
-		prepareStaticPrerequisites = append(prepareStaticPrerequisites, "install-controller-gen")
 	}
 	prepare.addRule(rule{
 		description:   "Install any tools required by static-check. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
@@ -120,6 +112,17 @@ endif
 					` go install sigs.k8s.io/controller-tools/cmd/controller-gen@latest; fi`,
 			},
 			target: "install-controller-gen",
+		})
+
+		prepare.addRule(rule{
+			description: "Install setup-envtest required by check. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
+			phony:       true,
+			recipe: []string{
+				`@if ! hash setup-envtest 2>/dev/null; then` +
+					` printf "\e[1;36m>> Installing setup-envtest...\e[0m\n";` +
+					` go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest; fi`,
+			},
+			target: "install-setup-envtest",
 		})
 	}
 
@@ -274,7 +277,7 @@ endif
 	goTest := fmt.Sprintf(`%s $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
 		testRunner, makeDefaultLinkerFlags(path.Base(sr.MustModulePath()), sr))
 	if sr.KubernetesController {
-		testRule.prerequisites = append(testRule.prerequisites, "generate", "install-controller-gen")
+		testRule.prerequisites = append(testRule.prerequisites, "generate", "install-controller-gen", "install-setup-envtest")
 		testRule.recipe = append(testRule.recipe, fmt.Sprintf(`KUBEBUILDER_ASSETS="$(shell setup-envtest use %s --bin-dir $(TESTBIN) -p path)" %s`, sr.KubernetesVersion, goTest))
 	} else {
 		testRule.recipe = append(testRule.recipe, `@env $(GO_TESTENV) `+goTest)
