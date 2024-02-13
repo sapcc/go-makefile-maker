@@ -274,7 +274,7 @@ endif
 	goTest := fmt.Sprintf(`%s $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
 		testRunner, makeDefaultLinkerFlags(path.Base(sr.MustModulePath()), sr))
 	if sr.KubernetesController {
-		testRule.prerequisites = append(testRule.prerequisites, "generate")
+		testRule.prerequisites = append(testRule.prerequisites, "generate", "install-controller-gen")
 		testRule.recipe = append(testRule.recipe, fmt.Sprintf(`KUBEBUILDER_ASSETS="$(shell setup-envtest use %s --bin-dir $(TESTBIN) -p path)" %s`, sr.KubernetesVersion, goTest))
 	} else {
 		testRule.recipe = append(testRule.recipe, `@env $(GO_TESTENV) `+goTest)
