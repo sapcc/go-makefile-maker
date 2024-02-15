@@ -346,9 +346,9 @@ endif
 
 		ignoreOptions := []string{}
 		if cfg.GitHubWorkflow != nil {
-			for idx, pattern := range cfg.GitHubWorkflow.License.IgnorePatterns {
+			for _, pattern := range cfg.GitHubWorkflow.License.IgnorePatterns {
 				//quoting avoids glob expansion
-				ignoreOptions[idx] = fmt.Sprintf("-ignore %q", pattern)
+				ignoreOptions = append(ignoreOptions, fmt.Sprintf("-ignore %q", pattern))
 			}
 		}
 
