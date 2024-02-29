@@ -269,18 +269,21 @@ endif
 		},
 	}
 
-	testRunner := "go test -shuffle=on"
+	testRunner := "go test -shuffle=on -p 1 -coverprofile=$@"
 	if sr.UseGinkgo {
-		testRunner = "ginkgo run --randomize-all"
+		testRunner = "ginkgo run --randomize-all -output-dir=build"
 		testRule.prerequisites = append(testRule.prerequisites, "install-ginkgo")
 	}
-	goTest := fmt.Sprintf(`%s $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -p 1 -coverprofile=$@ -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
+	goTest := fmt.Sprintf(`%s $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
 		testRunner, makeDefaultLinkerFlags(path.Base(sr.MustModulePath()), sr))
 	if sr.KubernetesController {
 		testRule.prerequisites = append(testRule.prerequisites, "generate", "install-setup-envtest")
 		testRule.recipe = append(testRule.recipe, fmt.Sprintf(`KUBEBUILDER_ASSETS="$(shell setup-envtest use %s --bin-dir $(TESTBIN) -p path)" %s`, sr.KubernetesVersion, goTest))
 	} else {
 		testRule.recipe = append(testRule.recipe, `@env $(GO_TESTENV) `+goTest)
+	}
+	if sr.UseGinkgo {
+		testRule.recipe = append(testRule.recipe, `@mv build/coverprofile.out build/cover.out`)
 	}
 
 	test.addRule(testRule)

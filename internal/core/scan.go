@@ -74,6 +74,8 @@ func Scan() ScanResult {
 		}
 		if v.Mod.Path == "k8s.io/api" {
 			kubernetesVersion = strings.ReplaceAll(v.Mod.Version, "v0", "1")
+			splitted := strings.Split(kubernetesVersion, ".")
+			kubernetesVersion = strings.Join(splitted[:len(splitted)-1], ".")
 		}
 		if v.Mod.Path == "sigs.k8s.io/controller-runtime" {
 			kubernetesController = true
