@@ -4,6 +4,6 @@ go 1.22
 
 require (
 	github.com/sapcc/go-bits v0.0.0-20240307080654-364c083fcdf1
-	golang.org/x/mod v0.15.0
+	golang.org/x/mod v0.16.0
 	gopkg.in/yaml.v3 v3.0.1
 )
