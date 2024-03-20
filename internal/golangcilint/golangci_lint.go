@@ -114,10 +114,6 @@ linters-settings:
     enable-all: true
     disable:
       - fieldalignment
-    settings:
-      shadow:
-        # Report about shadowed variables.
-        strict: true
 	nolintlint:
 		require-specific: true
 	{{- if .MisspellIgnoreWords }}
