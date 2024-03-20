@@ -77,7 +77,7 @@ endif
 	// Prepare
 	prepare := category{name: "prepare"}
 
-	//add target for installing dependencies for `make static-check`
+	// add target for installing dependencies for `make static-check`
 	prepareStaticRecipe := []string{
 		`@if ! hash golangci-lint 2>/dev/null; then` +
 			` printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n";` +
@@ -217,7 +217,7 @@ endif
 	test.addDefinition(`space := $(null) $(null)`)
 	test.addDefinition(`comma := ,`)
 
-	//add main testing target
+	// add main testing target
 	checkPrerequisites := []string{"static-check", "build/cover.html"}
 	if hasBinaries {
 		checkPrerequisites = append(checkPrerequisites, "build-all")
@@ -257,7 +257,7 @@ endif
 		},
 	})
 
-	//add targets for test runner incl. coverage report
+	// add targets for test runner incl. coverage report
 	testRule := rule{
 		description: "Run tests and generate coverage report.",
 		phony:       true,
@@ -302,13 +302,13 @@ endif
 	// Development
 	dev := category{name: "development"}
 
-	//ensure that build directory exists
+	// ensure that build directory exists
 	dev.addRule(rule{
 		target: "build",
 		recipe: []string{`@mkdir $@`},
 	})
 
-	//add tidy-deps or vendor target
+	// add tidy-deps or vendor target
 	if cfg.Golang.EnableVendoring {
 		dev.addRule(rule{
 			description: "Run go mod tidy, go mod verify, and go mod vendor.",
@@ -350,7 +350,7 @@ endif
 		ignoreOptions := []string{}
 		if cfg.GitHubWorkflow != nil {
 			for _, pattern := range cfg.GitHubWorkflow.License.IgnorePatterns {
-				//quoting avoids glob expansion
+				// quoting avoids glob expansion
 				ignoreOptions = append(ignoreOptions, fmt.Sprintf("-ignore %q", pattern))
 			}
 		}
@@ -401,7 +401,7 @@ endif
 		})
 	}
 
-	//add target for static code checks
+	// add target for static code checks
 	staticCheckPrerequisites := []string{"run-golangci-lint"}
 	if isSAPCC {
 		staticCheckPrerequisites = append(staticCheckPrerequisites, "check-dependency-licenses", "check-license-headers")
@@ -413,7 +413,7 @@ endif
 		prerequisites: staticCheckPrerequisites,
 	})
 
-	//add cleaning target
+	// add cleaning target
 	dev.addRule(rule{
 		description: "Run git clean.",
 		target:      "clean",

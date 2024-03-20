@@ -127,8 +127,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult core.ScanResult, u
 	}
 	hasK8sIOPkgs := false
 	for _, v := range scanResult.GoDirectDependencies {
-		switch dep := v.Path; {
-		case strings.HasPrefix(dep, "k8s.io/"):
+		if strings.HasPrefix(v.Path, "k8s.io/") {
 			hasK8sIOPkgs = true
 		}
 	}

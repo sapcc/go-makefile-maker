@@ -82,7 +82,7 @@ type makefile struct {
 }
 
 func (m *makefile) vars() *rule {
-	//collect all variable refs that look like $(THIS) or $(LIKE_THAT) from definitions and recipes
+	// collect all variable refs that look like $(THIS) or $(LIKE_THAT) from definitions and recipes
 	varRefRx := regexp.MustCompile(`\$\([A-Za-z_][A-Za-z0-9_]*\)`)
 	isVarRef := make(map[string]bool)
 	searchIn := func(inputs []string) {
@@ -100,12 +100,12 @@ func (m *makefile) vars() *rule {
 		}
 	}
 
-	//skip some variables that we only use internally to circumvent Makefile syntax limitations
+	// skip some variables that we only use internally to circumvent Makefile syntax limitations
 	delete(isVarRef, "$(comma)")
 	delete(isVarRef, "$(null)")
 	delete(isVarRef, "$(space)")
 
-	//compile a sorted list of variable names
+	// compile a sorted list of variable names
 	var varNames []string
 	for varRef := range isVarRef {
 		str := strings.TrimPrefix(varRef, "$(")
@@ -114,7 +114,7 @@ func (m *makefile) vars() *rule {
 	}
 	sort.Strings(varNames)
 
-	//generate a target printing their values (the output is not colorized to allow usage like `eval "$(make vars)"`)
+	// generate a target printing their values (the output is not colorized to allow usage like `eval "$(make vars)"`)
 	result := rule{
 		phony:  true,
 		target: "vars",

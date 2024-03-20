@@ -35,14 +35,14 @@ func FixRuleIndentation(in string) string {
 	var currentRecipeLines []string
 
 	for _, line := range strings.SplitAfter(in, "\n") {
-		//when inside a recipe, collect all lines belonging to it first
+		// when inside a recipe, collect all lines belonging to it first
 		if isRecipeRx.MatchString(line) {
 			currentRecipeLines = append(currentRecipeLines, line)
 			continue
 		}
 
-		//when not inside a recipe, return this line unchanged, but first transform
-		//the collected recipe (if any)
+		// when not inside a recipe, return this line unchanged, but first transform
+		// the collected recipe (if any)
 		if len(currentRecipeLines) > 0 {
 			for _, line := range fixRecipeIndentation(currentRecipeLines) {
 				out.WriteString(line)
