@@ -151,6 +151,7 @@ linters:
 	enable:
 		- bodyclose
 		- containedctx
+		- copyloopvar
 		- dupl
 		- dupword
 		- durationcheck
@@ -167,6 +168,7 @@ linters:
 		- gosimple
 		- govet
 		- ineffassign
+		- intrange
 		- misspell
 		- noctx
 		- nolintlint
