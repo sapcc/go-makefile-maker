@@ -29,12 +29,6 @@ var configTmpl = template.Must(template.New("golangci").Parse(strings.TrimSpace(
 run:
 	timeout: 3m # 1m by default
 	modules-download-mode: {{ .ModDownloadMode }}
-	{{- if .SkipDirs }}
-	skip-dirs:
-		{{- range .SkipDirs }}
-		- {{ . }}
-		{{- end }}
-	{{- end }}
 
 output:
 	# Do not print lines of code with issue.
@@ -45,6 +39,12 @@ issues:
 		# It is idiomatic Go to reuse the name 'err' with ':=' for subsequent errors.
 		# Ref: https://go.dev/doc/effective_go#redeclaration
 		- 'declaration of "err" shadows declaration at'
+	{{- if .SkipDirs }}
+	exclude-dirs:
+		{{- range .SkipDirs }}
+		- {{ . }}
+		{{- end }}
+	{{- end }}
 	exclude-rules:
 		- path: _test\.go
 			linters:
