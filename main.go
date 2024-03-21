@@ -73,7 +73,7 @@ func main() {
 
 	// Render golangci-lint config file
 	if cfg.GolangciLint.CreateConfig {
-		golangcilint.RenderConfig(cfg.GolangciLint, cfg.Golang.EnableVendoring, sr.MustModulePath(), cfg.SpellCheck.IgnoreWords)
+		golangcilint.RenderConfig(cfg, sr)
 	}
 
 	// Render Goreleaser config file
