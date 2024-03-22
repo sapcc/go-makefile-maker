@@ -19,7 +19,7 @@ const (
 	DefaultGolangImagePrefix = "1.22.1-alpine"
 
 	DefaultGoVersion           = "1.22"
-	DefaultPostgresVersion     = "12"
+	DefaultPostgresVersion     = "16"
 	DefaultLinkerdAwaitVersion = "0.2.7"
 	DefaultGitHubComRunnerType = "ubuntu-latest"
 )
