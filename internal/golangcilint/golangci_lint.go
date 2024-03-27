@@ -55,6 +55,8 @@ issues:
 	max-same-issues: 0
 
 linters-settings:
+	copyloopvar:
+	  ignore-alias: true
 	dupl:
 		# Tokens count to trigger issue, 150 by default.
 		threshold: 100
