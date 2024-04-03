@@ -16,7 +16,7 @@ package core
 
 const (
 	DefaultAlpineImage       = "3.19"
-	DefaultGolangImagePrefix = "1.22.1-alpine"
+	DefaultGolangImagePrefix = "1.22.2-alpine"
 
 	DefaultGoVersion           = "1.22"
 	DefaultPostgresVersion     = "16"
