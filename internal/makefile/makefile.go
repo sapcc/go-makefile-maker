@@ -133,7 +133,7 @@ endif
 			recipe: []string{
 				`@if ! hash ginkgo 2>/dev/null; then` +
 					` printf "\e[1;36m>> Installing ginkgo...\e[0m\n";` +
-					` go install github.com/onsi/ginkgo/v2/ginkgo; fi`,
+					` go install github.com/onsi/ginkgo/v2/ginkgo@latest; fi`,
 			},
 			target: "install-ginkgo",
 		})
