@@ -22,7 +22,11 @@ import (
 
 func ciWorkflow(cfg core.Configuration) {
 	ghwCfg := cfg.GitHubWorkflow
-	w := newWorkflow("CI", ghwCfg.Global.DefaultBranch, ghwCfg.CI.IgnorePaths)
+	ignorePaths := ghwCfg.CI.IgnorePaths
+	if len(ignorePaths) == 0 {
+		ignorePaths = append(ignorePaths, "**.md")
+	}
+	w := newWorkflow("CI", ghwCfg.Global.DefaultBranch, ignorePaths)
 
 	if w.deleteIf(ghwCfg.CI.Enabled) {
 		return

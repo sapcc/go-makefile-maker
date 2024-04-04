@@ -21,7 +21,7 @@ func codeQLWorkflow(cfg core.Configuration) {
 	ghwCfg := cfg.GitHubWorkflow
 	w := newWorkflow("CodeQL", ghwCfg.Global.DefaultBranch, nil)
 
-	if w.deleteIf(ghwCfg.SecurityChecks.Enabled && !ghwCfg.IsSelfHostedRunner) {
+	if w.deleteIf((ghwCfg.SecurityChecks.Enabled == nil || *ghwCfg.SecurityChecks.Enabled) && !ghwCfg.IsSelfHostedRunner) {
 		return
 	}
 

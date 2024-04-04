@@ -143,7 +143,7 @@ type CIWorkflowConfig struct {
 
 // LicenseWorkflowConfig appears in type Configuration.
 type LicenseWorkflowConfig struct {
-	Enabled        bool     `yaml:"enabled"`
+	Enabled        *bool    `yaml:"enabled"`
 	IgnorePatterns []string `yaml:"ignorePatterns"`
 }
 
@@ -157,7 +157,7 @@ type ReleaseWorkflowConfig struct {
 
 // SecurityChecksWorkflowConfig appears in type Configuration.
 type SecurityChecksWorkflowConfig struct {
-	Enabled bool `yaml:"enabled"`
+	Enabled *bool `yaml:"enabled"`
 }
 
 type PackageRule struct {

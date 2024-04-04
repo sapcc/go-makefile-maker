@@ -427,7 +427,7 @@ If `securityChecks` is enabled then it will generate the following workflows:
   will raise an error if any new dependencies have existing vulnerabilities.
   It uses the [GitHub Advisory Database](https://github.com/advisories) as a source.
 
-* [govulncheck] workflow will scan your dependencies for vulnerarbilites and
+* [govulncheck] workflow will scan your dependencies for vulnerabilities and
   will raise an error if any dependency has an existing vulnerability and the code path is in use.
   It uses the [Go Vulnerability Database](https://pkg.go.dev/vuln/) as a source.
 
