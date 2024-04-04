@@ -49,13 +49,9 @@ func ciWorkflow(cfg core.Configuration) {
 
 	testJob := buildOrTestBaseJob("Test", cfg)
 	testJob.Needs = []string{"buildAndLint"}
-	if ghwCfg.CI.Postgres.Enabled {
-		version := core.DefaultPostgresVersion
-		if ghwCfg.CI.Postgres.Version != "" {
-			version = ghwCfg.CI.Postgres.Version
-		}
+	if ghwCfg.CI.Postgres {
 		testJob.Services = map[string]jobService{"postgres": {
-			Image: "postgres:" + version,
+			Image: "postgres:" + core.DefaultPostgresVersion,
 			Env:   map[string]string{"POSTGRES_PASSWORD": "postgres"},
 			Ports: []string{"54321:5432"},
 			Options: strings.Join([]string{

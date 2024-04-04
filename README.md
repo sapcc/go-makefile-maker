@@ -379,9 +379,7 @@ ci:
     - ubuntu-latest
     - windows-latest
   coveralls: true
-  postgres:
-    enabled: true
-    version: 12
+  postgres: true
   ignorePaths: []
 ```
 
@@ -391,12 +389,8 @@ successful on multiple operating systems. Default value for this is `ubuntu-late
 
 If `coveralls` is `true` then your test coverage report will be uploaded to [Coveralls]. Make sure that you have enabled Coveralls for your GitHub repo beforehand.
 
-If `postgres.enabled` is `true` then a PostgreSQL service container will be added for the
-`test` job. You can connect to this PostgreSQL service at `localhost:54321` with
-`postgres` as username and password ([More info][postgres-service-container]).
-`postgres.version` specifies the Docker Hub image tag for the [`postgres`
-image][docker-hub-postgres] that is used for this container. By default `12` is used as
-image tag.
+If `postgres` is `true` then a PostgreSQL service container will be added for the `test` job.
+You can connect to this PostgreSQL service at `localhost:54321` with `postgres` as username and password ([More info][postgres-service-container]).
 
 `ignorePaths` specifies a list of filename patterns. Workflows will not trigger if a path
 name matches a pattern in this list. [More info][ref-onpushpull] and [filter pattern cheat
@@ -461,7 +455,6 @@ license:
 
 [codeql]: https://codeql.github.com/
 [coveralls]: https://coveralls.io
-[docker-hub-postgres]: https://hub.docker.com/_/postgres/
 [doublestar-pattern]: https://github.com/bmatcuk/doublestar#patterns
 [govulncheck]: https://github.com/golang/vuln
 [misspell]: https://github.com/client9/misspell

@@ -138,10 +138,7 @@ type CIWorkflowConfig struct {
 	IgnorePaths []string `yaml:"ignorePaths"`
 	RunnerType  []string `yaml:"runOn"`
 	Coveralls   bool     `yaml:"coveralls"`
-	Postgres    struct {
-		Enabled bool   `yaml:"enabled"`
-		Version string `yaml:"version"`
-	} `yaml:"postgres"`
+	Postgres    bool     `yaml:"postgres"`
 }
 
 // LicenseWorkflowConfig appears in type Configuration.
@@ -243,7 +240,7 @@ func (c *Configuration) Validate() {
 		}
 
 		// Validate CI workflow configuration.
-		if ghwCfg.CI.Postgres.Enabled {
+		if ghwCfg.CI.Postgres {
 			if !ghwCfg.CI.Enabled {
 				logg.Fatal("githubWorkflow.ci.enabled must be set to 'true' when githubWorkflow.ci.postgres is enabled")
 			}
