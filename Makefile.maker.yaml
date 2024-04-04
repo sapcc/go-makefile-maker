@@ -9,7 +9,6 @@ binaries:
     installTo:   bin/
 
 golang:
-  enableVendoring: true
   setGoModVersion: true
 
 golangciLint:
@@ -19,11 +18,7 @@ githubWorkflow:
   ci:
     enabled: true
     coveralls: true
-    ignorePaths: ["**.md"]
-  license:
-    enabled: true
-  securityChecks:
-    enabled: true
+
 renovate:
   enabled: true
   assignees:
