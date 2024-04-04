@@ -61,8 +61,12 @@ func baseJob(name string, isSelfHostedRunner bool) job {
 	}
 }
 
-func baseJobWithGo(name string, isSelfHostedRunner bool, goVersion string) job {
-	j := baseJob(name, isSelfHostedRunner)
+func baseJobWithGo(name string, cfg core.Configuration) job {
+	j := baseJob(name, cfg.GitHubWorkflow.IsSelfHostedRunner)
+	goVersion := cfg.GitHubWorkflow.Global.GoVersion
+	if cfg.Golang.SetGoModVersion {
+		goVersion = core.DefaultGoVersion
+	}
 	step := jobStep{
 		Name: "Set up Go",
 		Uses: core.SetupGoAction,

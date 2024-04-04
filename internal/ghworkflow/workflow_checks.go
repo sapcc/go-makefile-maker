@@ -21,11 +21,12 @@ import (
 )
 
 // basically a collection of other linters and checks which run fast to reduce the amount of created githbu action workflows
-func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string) {
-	w := newWorkflow("Checks", cfg.Global.DefaultBranch, nil)
-	j := baseJobWithGo("Checks", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
+func checksWorkflow(cfg core.Configuration) {
+	ghwCfg := cfg.GitHubWorkflow
+	w := newWorkflow("Checks", ghwCfg.Global.DefaultBranch, nil)
+	j := baseJobWithGo("Checks", cfg)
 
-	if cfg.SecurityChecks.Enabled {
+	if ghwCfg.SecurityChecks.Enabled {
 		j.addStep(jobStep{
 			Name: "Dependency Licenses Review",
 			Run:  "make check-dependency-licenses",
@@ -37,7 +38,7 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 		})
 	}
 
-	if !cfg.IsSelfHostedRunner {
+	if !ghwCfg.IsSelfHostedRunner {
 		with := map[string]any{
 			"exclude":       "./vendor/*",
 			"reporter":      "github-check",
@@ -45,6 +46,7 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 			"github_token":  "${{ secrets.GITHUB_TOKEN }}",
 			"ignore":        "importas", //nolint:misspell //importas is a valid linter name, so we always ignore it
 		}
+		ignoreWords := cfg.SpellCheck.IgnoreWords
 		if len(ignoreWords) > 0 {
 			with["ignore"] = fmt.Sprintf("%s,%s", with["ignore"], strings.Join(ignoreWords, ","))
 		}
@@ -57,7 +59,7 @@ func checksWorkflow(cfg *core.GithubWorkflowConfiguration, ignoreWords []string)
 		})
 	}
 
-	if cfg.License.Enabled {
+	if ghwCfg.License.Enabled {
 		j.addStep(jobStep{
 			Name: "Check if source code files have license header",
 			Run:  "make check-license-headers",

@@ -17,10 +17,11 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) {
-	w := newWorkflow("CodeQL", cfg.Global.DefaultBranch, nil)
+func codeQLWorkflow(cfg core.Configuration) {
+	ghwCfg := cfg.GitHubWorkflow
+	w := newWorkflow("CodeQL", ghwCfg.Global.DefaultBranch, nil)
 
-	if w.deleteIf(cfg.SecurityChecks.Enabled && !cfg.IsSelfHostedRunner) {
+	if w.deleteIf(ghwCfg.SecurityChecks.Enabled && !ghwCfg.IsSelfHostedRunner) {
 		return
 	}
 
@@ -29,10 +30,10 @@ func codeQLWorkflow(cfg *core.GithubWorkflowConfiguration) {
 
 	// Overwrite because CodeQL expects the pull_request.branches to be a subset of
 	// push.branches.
-	w.On.PullRequest.Branches = []string{cfg.Global.DefaultBranch}
+	w.On.PullRequest.Branches = []string{ghwCfg.Global.DefaultBranch}
 	w.On.Schedule = []cronExpr{{Cron: "00 07 * * 1"}} // every Monday at 07:00 AM
 
-	j := baseJobWithGo("Analyze", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
+	j := baseJobWithGo("Analyze", cfg)
 	j.addStep(jobStep{
 		Name: "Initialize CodeQL",
 		Uses: core.CodeqlInitAction,

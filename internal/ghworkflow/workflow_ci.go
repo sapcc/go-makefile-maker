@@ -20,16 +20,17 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
-	w := newWorkflow("CI", cfg.Global.DefaultBranch, cfg.CI.IgnorePaths)
+func ciWorkflow(cfg core.Configuration) {
+	ghwCfg := cfg.GitHubWorkflow
+	w := newWorkflow("CI", ghwCfg.Global.DefaultBranch, ghwCfg.CI.IgnorePaths)
 
-	if w.deleteIf(cfg.CI.Enabled) {
+	if w.deleteIf(ghwCfg.CI.Enabled) {
 		return
 	}
 
 	w.Jobs = make(map[string]job)
-	buildAndLintJob := baseJobWithGo("Build & Lint", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
-	if hasBinaries {
+	buildAndLintJob := baseJobWithGo("Build & Lint", cfg)
+	if len(cfg.Binaries) > 0 {
 		buildAndLintJob.addStep(jobStep{
 			Name: "Build all binaries",
 			Run:  "make build-all",
@@ -46,12 +47,12 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
 
 	w.Jobs["buildAndLint"] = buildAndLintJob
 
-	testJob := buildOrTestBaseJob("Test", cfg.IsSelfHostedRunner, cfg.CI.RunnerType, cfg.Global.GoVersion)
+	testJob := buildOrTestBaseJob("Test", cfg)
 	testJob.Needs = []string{"buildAndLint"}
-	if cfg.CI.Postgres.Enabled {
+	if ghwCfg.CI.Postgres.Enabled {
 		version := core.DefaultPostgresVersion
-		if cfg.CI.Postgres.Version != "" {
-			version = cfg.CI.Postgres.Version
+		if ghwCfg.CI.Postgres.Version != "" {
+			version = ghwCfg.CI.Postgres.Version
 		}
 		testJob.Services = map[string]jobService{"postgres": {
 			Image: "postgres:" + version,
@@ -70,8 +71,8 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
 		Name: "Run tests and generate coverage report",
 		Run:  "make build/cover.out",
 	})
-	if cfg.CI.Coveralls && !cfg.IsSelfHostedRunner {
-		multipleOS := len(cfg.CI.RunnerType) > 1
+	if ghwCfg.CI.Coveralls && !ghwCfg.IsSelfHostedRunner {
+		multipleOS := len(ghwCfg.CI.RunnerType) > 1
 		env := map[string]string{
 			"GIT_BRANCH":      "${{ github.head_ref }}",
 			"COVERALLS_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
@@ -89,7 +90,7 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
 
 		if multipleOS {
 			// 04. Tell Coveralls to merge coverage results.
-			finishJob := baseJobWithGo("Finish", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
+			finishJob := baseJobWithGo("Finish", cfg)
 			finishJob.Needs = []string{"test"} // this is the <job_id> for the test job
 			finishJob.addStep(jobStep{
 				Name: "Coveralls post build webhook",
@@ -104,16 +105,17 @@ func ciWorkflow(cfg *core.GithubWorkflowConfiguration, hasBinaries bool) {
 	writeWorkflowToFile(w)
 }
 
-func buildOrTestBaseJob(name string, isSelfHostedRunner bool, runsOnList []string, goVersion string) job {
-	j := baseJobWithGo(name, isSelfHostedRunner, goVersion)
-	switch len(runsOnList) {
+func buildOrTestBaseJob(name string, cfg core.Configuration) job {
+	ghwCfg := cfg.GitHubWorkflow
+	j := baseJobWithGo(name, cfg)
+	switch len(ghwCfg.CI.RunnerType) {
 	case 0:
 		// baseJobWithGo() will set j.RunsOn to DefaultGitHubComRunnerType.
 	case 1:
-		j.RunsOn = runsOnList[0]
+		j.RunsOn = ghwCfg.CI.RunnerType[0]
 	default:
 		j.RunsOn = "${{ matrix.os }}"
-		j.Strategy.Matrix.OS = runsOnList
+		j.Strategy.Matrix.OS = ghwCfg.CI.RunnerType
 	}
 	return j
 }

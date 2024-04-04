@@ -102,7 +102,7 @@ RUN %s --version 2>/dev/null`, binary.Name)
 	runCommands := strings.Join(commands, " \\\n  && ")
 
 	dockerfile := fmt.Sprintf(
-		`FROM golang:%[1]s%[2]s as builder
+		`FROM golang:%[1]s-alpine%[2]s as builder
 
 RUN apk add --no-cache --no-progress ca-certificates gcc git make musl-dev
 
@@ -132,7 +132,7 @@ LABEL source_repository="%[7]s" \
 
 %[8]s%[9]sWORKDIR %[10]s
 ENTRYPOINT [ %[11]s ]
-`, core.DefaultGolangImagePrefix, core.DefaultAlpineImage, goBuildflags, addUserGroup, runCommands, runVersionArg, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
+`, core.DefaultGoVersion, core.DefaultAlpineImage, goBuildflags, addUserGroup, runCommands, runVersionArg, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 

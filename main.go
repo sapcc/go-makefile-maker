@@ -53,8 +53,9 @@ func main() {
 
 	if cfg.Golang.SetGoModVersion {
 		modFileBytes := must.Return(os.ReadFile(core.ModFilename))
-		rgx := regexp.MustCompile(`go \d\.\d\d`)
-		modFileBytesReplaced := rgx.ReplaceAll(modFileBytes, []byte("go "+core.DefaultGoVersion))
+		rgx := regexp.MustCompile(`go \d\.\d+(\.\d+)?`)
+		goVersionSlice := strings.Split(core.DefaultGoVersion, ".")
+		modFileBytesReplaced := rgx.ReplaceAll(modFileBytes, []byte("go "+strings.Join(goVersionSlice[:len(goVersionSlice)-1], ".")))
 		must.Succeed(os.WriteFile(core.ModFilename, modFileBytesReplaced, 0o666))
 	}
 
@@ -89,7 +90,7 @@ func main() {
 			}
 			cfg.GitHubWorkflow.Global.GoVersion = sr.GoVersion
 		}
-		ghworkflow.Render(&cfg)
+		ghworkflow.Render(cfg)
 	}
 
 	// Render Renovate config

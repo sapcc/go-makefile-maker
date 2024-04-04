@@ -15,11 +15,12 @@ package ghworkflow
 
 import "github.com/sapcc/go-makefile-maker/internal/core"
 
-func releaseWorkflow(cfg *core.GithubWorkflowConfiguration) {
+func releaseWorkflow(cfg core.Configuration) {
 	// https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#publishing-a-package-using-an-action
-	w := newWorkflow("goreleaser", cfg.Global.DefaultBranch, nil)
+	ghwCfg := cfg.GitHubWorkflow
+	w := newWorkflow("goreleaser", ghwCfg.Global.DefaultBranch, nil)
 
-	if w.deleteIf(cfg.Release.Enabled) {
+	if w.deleteIf(ghwCfg.Release.Enabled) {
 		return
 	}
 
@@ -30,7 +31,7 @@ func releaseWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	w.On.PullRequest.Branches = nil
 	w.On.Push.Tags = []string{"*"} // goreleaser uses semver to decide if this is a prerelease or not
 
-	j := baseJobWithGo("goreleaser", cfg.IsSelfHostedRunner, cfg.Global.GoVersion)
+	j := baseJobWithGo("goreleaser", cfg)
 	// This is needed because: https://goreleaser.com/ci/actions/#fetch-depthness
 	j.Steps[0].With = map[string]any{
 		"fetch-depth": 0,

@@ -29,7 +29,7 @@ import (
 const workflowDir = ".github/workflows"
 
 // Render renders GitHub workflows.
-func Render(cfg *core.Configuration) {
+func Render(cfg core.Configuration) {
 	ghwCfg := cfg.GitHubWorkflow
 
 	must.Succeed(os.MkdirAll(workflowDir, 0o755))
@@ -39,12 +39,11 @@ func Render(cfg *core.Configuration) {
 	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "license.yaml")))
 	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "spell.yaml")))
 
-	checksWorkflow(ghwCfg, cfg.SpellCheck.IgnoreWords)
-
-	ciWorkflow(ghwCfg, len(cfg.Binaries) > 0)
+	checksWorkflow(cfg)
+	ciWorkflow(cfg)
 	ghcrWorkflow(ghwCfg)
-	releaseWorkflow(ghwCfg)
-	codeQLWorkflow(ghwCfg)
+	releaseWorkflow(cfg)
+	codeQLWorkflow(cfg)
 }
 
 func writeWorkflowToFile(w *workflow) {
