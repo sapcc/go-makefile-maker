@@ -59,7 +59,7 @@ func main() {
 		must.Succeed(os.WriteFile(core.ModFilename, modFileBytesReplaced, 0o666))
 	}
 
-	if fs, _ := os.Stat("vendor/modules.txt"); fs != nil {
+	if fs, err := os.Stat("vendor/modules.txt"); err != nil && fs != nil {
 		cfg.Golang.EnableVendoring = true
 	}
 
