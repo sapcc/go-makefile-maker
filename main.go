@@ -59,6 +59,10 @@ func main() {
 		must.Succeed(os.WriteFile(core.ModFilename, modFileBytesReplaced, 0o666))
 	}
 
+	if fs, _ := os.Stat("vendor/modules.txt"); fs != nil {
+		cfg.Golang.EnableVendoring = true
+	}
+
 	// Scan go.mod file for additional context information.
 	sr := core.Scan()
 
