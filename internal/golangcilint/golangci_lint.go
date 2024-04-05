@@ -79,6 +79,9 @@ linters-settings:
 			# Applications wishing to use http.ServeMux should obtain local instances through http.NewServeMux() instead of using the global default instance.
 			- ^http\.DefaultServeMux$
 			- ^http\.Handle(?:Func)?$
+	goconst:
+		ignore-tests: true
+		min-occurrences: 5
 	gocritic:
 		enabled-checks:
 			- boolExprSimplify
@@ -159,6 +162,7 @@ linters:
 		- dupword
 		- durationcheck
 		- errcheck
+		- errname
 		- errorlint
   {{- if lt .GoMinorVersion 22 }}
 		- exportloopref
@@ -166,6 +170,7 @@ linters:
 		- forbidigo
 		- ginkgolinter
 		- gocheckcompilerdirectives
+		- goconst
 		- gocritic
 		- gofmt
 		- goimports
@@ -175,10 +180,12 @@ linters:
 		- ineffassign
 		- intrange
 		- misspell
+		- nilerr
 		- noctx
 		- nolintlint
 		- nosprintfhostport
 		- perfsprint
+		- predeclared
 		- rowserrcheck
 		- sqlclosecheck
 		- staticcheck
