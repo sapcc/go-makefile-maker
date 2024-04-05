@@ -1,5 +1,5 @@
-# github.com/sapcc/go-bits v0.0.0-20240328092936-0e0b562825d4
-## explicit; go 1.21
+# github.com/sapcc/go-bits v0.0.0-20240404145041-8c313ab7cd29
+## explicit; go 1.22
 github.com/sapcc/go-bits/logg
 github.com/sapcc/go-bits/must
 # golang.org/x/mod v0.16.0
