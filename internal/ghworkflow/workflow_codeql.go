@@ -14,6 +14,8 @@
 package ghworkflow
 
 import (
+	"strings"
+
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
@@ -21,7 +23,7 @@ func codeQLWorkflow(cfg core.Configuration) {
 	ghwCfg := cfg.GitHubWorkflow
 	w := newWorkflow("CodeQL", ghwCfg.Global.DefaultBranch, nil)
 
-	if w.deleteIf((ghwCfg.SecurityChecks.Enabled == nil || *ghwCfg.SecurityChecks.Enabled) && !ghwCfg.IsSelfHostedRunner) {
+	if w.deleteIf((ghwCfg.SecurityChecks.Enabled == nil || *ghwCfg.SecurityChecks.Enabled)) {
 		return
 	}
 
@@ -33,21 +35,34 @@ func codeQLWorkflow(cfg core.Configuration) {
 	w.On.PullRequest.Branches = []string{ghwCfg.Global.DefaultBranch}
 	w.On.Schedule = []cronExpr{{Cron: "00 07 * * 1"}} // every Monday at 07:00 AM
 
+	var (
+		initAction    = core.CodeqlInitAction
+		buildAction   = core.CodeqlAutobuildAction
+		analyzeAction = core.CodeqlAnalyzeAction
+	)
+
+	if ghwCfg.IsSelfHostedRunner {
+		initAction = strings.ReplaceAll(initAction, "github/", "Security-Testing/")
+		buildAction = strings.ReplaceAll(buildAction, "github/", "Security-Testing/")
+		analyzeAction = strings.ReplaceAll(analyzeAction, "github/", "Security-Testing/")
+	}
+
 	j := baseJobWithGo("Analyze", cfg)
 	j.addStep(jobStep{
 		Name: "Initialize CodeQL",
-		Uses: core.CodeqlInitAction,
+		Uses: initAction,
 		With: map[string]any{
 			"languages": "go",
+			"queries":   "security-extended",
 		},
 	})
 	j.addStep(jobStep{
 		Name: "Autobuild",
-		Uses: core.CodeqlAutobuildAction,
+		Uses: buildAction,
 	})
 	j.addStep(jobStep{
 		Name: "Perform CodeQL Analysis",
-		Uses: core.CodeqlAnalyzeAction,
+		Uses: analyzeAction,
 	})
 	w.Jobs = map[string]job{"analyze": j}
 
