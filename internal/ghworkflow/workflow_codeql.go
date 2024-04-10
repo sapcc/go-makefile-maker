@@ -47,7 +47,7 @@ func codeQLWorkflow(cfg core.Configuration) {
 		analyzeAction = strings.ReplaceAll(analyzeAction, "github/", "Security-Testing/")
 	}
 
-	j := baseJobWithGo("Analyze", cfg)
+	j := baseJobWithGo("CodeQL", cfg)
 	j.addStep(jobStep{
 		Name: "Initialize CodeQL",
 		Uses: initAction,
