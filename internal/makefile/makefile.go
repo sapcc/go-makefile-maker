@@ -201,7 +201,7 @@ endif
 	if sr.UseGinkgo {
 		pathVar = "Dir"
 	}
-	test.addDefinition(`GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.%s}}{{end}}' ./...%s)`, pathVar, testPkgGreps)
+	test.addDefinition(`GO_TESTPKGS ?= $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.%s}}{{end}}' ./...%s)`, pathVar, testPkgGreps)
 
 	test.addDefinition(`# which packages to measure coverage for`)
 	coverPkgGreps := ""
@@ -211,7 +211,7 @@ endif
 	if cfg.Coverage.Except != "" {
 		coverPkgGreps += fmt.Sprintf(" | grep -Ev '%s'", cfg.Coverage.Except)
 	}
-	test.addDefinition(`GO_COVERPKGS := $(shell go list ./...%s)`, coverPkgGreps)
+	test.addDefinition(`GO_COVERPKGS ?= $(shell go list ./...%s)`, coverPkgGreps)
 	test.addDefinition(`# to get around weird Makefile syntax restrictions, we need variables containing nothing, a space and comma`)
 	test.addDefinition(`null :=`)
 	test.addDefinition(`space := $(null) $(null)`)
