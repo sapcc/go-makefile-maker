@@ -151,6 +151,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult core.ScanResult, u
 	}
 
 	must.Succeed(os.MkdirAll(".github", 0750))
+	must.Succeed(os.RemoveAll("renovate.json"))
 	f := must.Return(os.Create(".github/renovate.json"))
 
 	encoder := json.NewEncoder(f)
