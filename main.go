@@ -68,6 +68,12 @@ func main() {
 
 	// Render Makefile
 	if cfg.Makefile.Enabled == nil || *cfg.Makefile.Enabled {
+		for _, bin := range cfg.Binaries {
+			if !strings.HasPrefix(bin.FromPackage, ".") {
+				logg.Fatal("binaries[].fromPackage must begin with a dot, %q is not allowed!", bin.FromPackage)
+			}
+
+		}
 		makefile.Render(&cfg, sr)
 	}
 
