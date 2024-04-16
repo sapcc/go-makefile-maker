@@ -202,6 +202,11 @@ endif
 		pathVar = "Dir"
 	}
 	test.addDefinition(`GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.%s}}{{end}}' ./...%s)`, pathVar, testPkgGreps)
+	test.addDefinition(strings.TrimSpace(`
+ifeq ($(GO_TESTPKGS),)
+GO_TESTPKGS := ./...
+endif
+  `))
 
 	test.addDefinition(`# which packages to measure coverage for`)
 	coverPkgGreps := ""
