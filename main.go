@@ -72,7 +72,6 @@ func main() {
 			if !strings.HasPrefix(bin.FromPackage, ".") {
 				logg.Fatal("binaries[].fromPackage must begin with a dot, %q is not allowed!", bin.FromPackage)
 			}
-
 		}
 		makefile.Render(&cfg, sr)
 	}
