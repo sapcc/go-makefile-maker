@@ -26,13 +26,14 @@ import (
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
+	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
 //go:embed with-postgres-db.sh
 var withPostgresDBScript []byte
 
 // Render renders the Makefile.
-func Render(cfg *core.Configuration, sr core.ScanResult) {
+func Render(cfg *core.Configuration, sr golang.ScanResult) {
 	f := must.Return(os.Create("Makefile"))
 	defer f.Close()
 

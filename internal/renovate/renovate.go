@@ -22,6 +22,7 @@ import (
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
+	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
 type constraints struct {
@@ -46,7 +47,7 @@ func (c *config) addPackageRule(rule core.PackageRule) {
 	c.PackageRules = append(c.PackageRules, rule)
 }
 
-func RenderConfig(cfgRenovate core.RenovateConfig, scanResult core.ScanResult, url string, isApplicationRepo bool) {
+func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult, url string, isApplicationRepo bool) {
 	isGoMakefileMakerRepo := scanResult.MustModulePath() == "github.com/sapcc/go-makefile-maker"
 	isInternalRenovate := strings.HasPrefix(url, "https://github.wdf.sap.corp")
 

@@ -20,7 +20,6 @@ package main
 
 import (
 	"os"
-	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -31,6 +30,7 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/dockerfile"
 	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
+	"github.com/sapcc/go-makefile-maker/internal/golang"
 	"github.com/sapcc/go-makefile-maker/internal/golangcilint"
 	"github.com/sapcc/go-makefile-maker/internal/goreleaser"
 	"github.com/sapcc/go-makefile-maker/internal/makefile"
@@ -52,11 +52,7 @@ func main() {
 	}
 
 	if cfg.Golang.SetGoModVersion {
-		modFileBytes := must.Return(os.ReadFile(core.ModFilename))
-		rgx := regexp.MustCompile(`go \d\.\d+(\.\d+)?`)
-		goVersionSlice := strings.Split(core.DefaultGoVersion, ".")
-		modFileBytesReplaced := rgx.ReplaceAll(modFileBytes, []byte("go "+strings.Join(goVersionSlice[:len(goVersionSlice)-1], ".")))
-		must.Succeed(os.WriteFile(core.ModFilename, modFileBytesReplaced, 0o666))
+		golang.SetGoVersionInGoMod()
 	}
 
 	if fs, err := os.Stat("vendor/modules.txt"); err == nil && fs != nil {
@@ -64,7 +60,7 @@ func main() {
 	}
 
 	// Scan go.mod file for additional context information.
-	sr := core.Scan()
+	sr := golang.Scan()
 
 	// Render Makefile
 	if cfg.Makefile.Enabled == nil || *cfg.Makefile.Enabled {
@@ -93,11 +89,17 @@ func main() {
 
 	// Render GitHub workflows
 	if cfg.GitHubWorkflow != nil {
+		// consider differnet fallbacks when no explizit go version is set
 		if cfg.GitHubWorkflow.Global.GoVersion == "" {
-			if sr.GoVersion == "" {
-				logg.Fatal("could not find Go version from go.mod file, consider defining manually by setting 'githubWorkflow.global.goVersion' in config")
+			// default to the version in go.mod
+			goVersion := sr.GoVersion
+
+			// overwrite it, we want to use the latest go version
+			if cfg.Golang.SetGoModVersion {
+				goVersion = core.DefaultGoVersion
 			}
-			cfg.GitHubWorkflow.Global.GoVersion = sr.GoVersion
+
+			cfg.GitHubWorkflow.Global.GoVersion = goVersion
 		}
 		ghworkflow.Render(cfg)
 	}
@@ -105,10 +107,7 @@ func main() {
 	// Render Renovate config
 	if cfg.Renovate.Enabled {
 		if cfg.Renovate.GoVersion == "" {
-			if sr.GoVersion == "" {
-				logg.Fatal("could not find Go version from go.mod file, consider defining manually by setting 'renovate.goVersion' in config")
-			}
-			cfg.Renovate.GoVersion = sr.GoVersion
+			cfg.Renovate.GoVersion = sr.GoVersionMajorMinor
 		}
 		isApplicationRepo := len(cfg.Binaries) > 0
 		renovate.RenderConfig(cfg.Renovate, sr, cfg.Metadata.URL, isApplicationRepo)

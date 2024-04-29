@@ -30,6 +30,7 @@ import (
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
+	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
 //go:embed license-scan-rules.json
@@ -40,7 +41,7 @@ var scanOverrides []byte
 
 // newMakefile defines the structure of the Makefile. Order is important as categories,
 // rules, and definitions will appear in the exact order as they are defined.
-func newMakefile(cfg *core.Configuration, sr core.ScanResult) *makefile {
+func newMakefile(cfg *core.Configuration, sr golang.ScanResult) *makefile {
 	hasBinaries := len(cfg.Binaries) > 0
 
 	isSAPCC := strings.HasPrefix(sr.ModulePath, "github.com/sapcc") || strings.HasPrefix(sr.ModulePath, "github.wdf.sap.corp") || strings.HasPrefix(sr.ModulePath, "github.tools.sap")
@@ -437,7 +438,7 @@ endif
 	}
 }
 
-func buildTargets(binaries []core.BinaryConfiguration, sr core.ScanResult) []rule {
+func buildTargets(binaries []core.BinaryConfiguration, sr golang.ScanResult) []rule {
 	result := make([]rule, 0, len(binaries)+1)
 	buildAllRule := rule{
 		description: "Build all binaries.",
@@ -473,7 +474,7 @@ func buildTargets(binaries []core.BinaryConfiguration, sr core.ScanResult) []rul
 	return result
 }
 
-func makeDefaultLinkerFlags(binaryName string, sr core.ScanResult) string {
+func makeDefaultLinkerFlags(binaryName string, sr golang.ScanResult) string {
 	flags := "-s -w"
 
 	if sr.HasBinInfo {

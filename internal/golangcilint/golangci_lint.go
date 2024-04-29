@@ -24,6 +24,7 @@ import (
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
+	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
 var configTmpl = template.Must(template.New("golangci").Parse(strings.TrimSpace(strings.ReplaceAll(`
@@ -209,7 +210,7 @@ type configTmplData struct {
 	SkipDirs            []string
 }
 
-func RenderConfig(cfg core.Configuration, sr core.ScanResult) {
+func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	mode := "readonly"
 	if cfg.Golang.EnableVendoring {
 		mode = "vendor"

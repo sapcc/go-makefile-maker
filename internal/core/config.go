@@ -100,11 +100,12 @@ type GolangciLintConfiguration struct {
 }
 
 type GoReleaserConfiguration struct {
-	CreateConfig bool      `yaml:"createConfig"`
-	BinaryName   string    `yaml:"binaryName"`
-	Files        *[]string `yaml:"files"`
-	Format       string    `yaml:"format"`
-	NameTemplate string    `yaml:"nameTemplate"`
+	CreateConfig bool              `yaml:"createConfig"`
+	BinaryName   string            `yaml:"binaryName"`
+	Files        *[]string         `yaml:"files"`
+	Format       string            `yaml:"format"`
+	Ldflags      map[string]string `yaml:"ldflags"`
+	NameTemplate string            `yaml:"nameTemplate"`
 }
 
 // SpellCheckConfiguration appears in type Configuration.

@@ -16,7 +16,7 @@
 *
 ******************************************************************************/
 
-package core
+package golang
 
 import (
 	"os"
@@ -33,7 +33,8 @@ import (
 // in the repository. At the moment, only `go.mod` is scanned.
 type ScanResult struct {
 	ModulePath           string           // from "module" directive in go.mod, e.g. "github.com/foo/bar"
-	GoVersion            string           // from "go" directive in go.mod, e.g. "1.21"
+	GoVersion            string           // from "go" directive in go.mod, e.g. "1.22.0"
+	GoVersionMajorMinor  string           // GoVersion but the patch version is stripped
 	GoDirectDependencies []module.Version // from "require" directive(s) in go.mod without the "// indirect" comment
 	HasBinInfo           bool             // whether we can produce linker instructions for "github.com/sapcc/go-api-declarations/bininfo"
 	UseGinkgo            bool             // wether to use ginkgo test runner instead of go test
@@ -82,8 +83,11 @@ func Scan() ScanResult {
 		}
 	}
 
+	goVersionSlice := strings.Split(modFile.Go.Version, ".")
+
 	return ScanResult{
 		GoVersion:            modFile.Go.Version,
+		GoVersionMajorMinor:  strings.Join(goVersionSlice[:len(goVersionSlice)-1], "."),
 		ModulePath:           modFile.Module.Mod.Path,
 		GoDirectDependencies: goDeps,
 		HasBinInfo:           hasBinInfo,
