@@ -83,11 +83,16 @@ func Scan() ScanResult {
 		}
 	}
 
+	goVersion := modFile.Go.Version
+	// do not cut of go directives which do not contain a patch version
 	goVersionSlice := strings.Split(modFile.Go.Version, ".")
+	if len(goVersionSlice) == 3 {
+		goVersion = strings.Join(goVersionSlice[:len(goVersionSlice)-1], ".")
+	}
 
 	return ScanResult{
 		GoVersion:            modFile.Go.Version,
-		GoVersionMajorMinor:  strings.Join(goVersionSlice[:len(goVersionSlice)-1], "."),
+		GoVersionMajorMinor:  goVersion,
 		ModulePath:           modFile.Module.Mod.Path,
 		GoDirectDependencies: goDeps,
 		HasBinInfo:           hasBinInfo,
