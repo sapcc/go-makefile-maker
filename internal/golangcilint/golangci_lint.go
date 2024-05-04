@@ -57,8 +57,6 @@ issues:
 	max-same-issues: 0
 
 linters-settings:
-	copyloopvar:
-	  ignore-alias: true
 	dupl:
 		# Tokens count to trigger issue, 150 by default.
 		threshold: 100
@@ -141,12 +139,11 @@ linters-settings:
 		default-rpc-path: true
 		http-method: true
 		http-status-code: true
-		os-dev-null: true
+		rpc-default-path: true
 		sql-isolation-level: true
-		syslog-priority: true
-		time-weekday: true
-		time-month: true
 		time-layout: true
+		time-month: true
+		time-weekday: true
 		tls-signature-scheme: true
 	whitespace:
 		# Enforce newlines (or comments) after multi-line function signatures.
