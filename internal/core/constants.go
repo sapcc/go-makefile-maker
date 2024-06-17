@@ -32,7 +32,7 @@ const (
 	DockerMetadataAction  = "docker/metadata-action@v5"
 	DockerBuildxAction    = "docker/setup-buildx-action@v3"
 	DockerQemuAction      = "docker/setup-qemu-action@v3"
-	DockerBuildPushAction = "docker/build-push-action@v5"
+	DockerBuildPushAction = "docker/build-push-action@v6"
 
 	CodeqlInitAction      = "github/codeql-action/init@v3"
 	CodeqlAnalyzeAction   = "github/codeql-action/analyze@v3"
