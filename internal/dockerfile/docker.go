@@ -102,7 +102,7 @@ RUN %s --version 2>/dev/null`, binary.Name)
 	runCommands := strings.Join(commands, " \\\n  && ")
 
 	dockerfile := fmt.Sprintf(
-		`FROM golang:%[1]s-alpine%[2]s as builder
+		`FROM golang:%[1]s-alpine%[2]s AS builder
 
 RUN apk add --no-cache --no-progress ca-certificates gcc git make musl-dev
 
