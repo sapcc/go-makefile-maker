@@ -166,6 +166,7 @@ This user account is intended for use with all payloads that do not require a ro
 
 ```yaml
 variables:
+  GO_BUILDENV: ''
   GO_BUILDFLAGS: '-mod vendor'
   GO_LDFLAGS: ''
   GO_TESTENV: ''
@@ -192,6 +193,13 @@ auto-generate suitable linker flags to fill the global variables in the `bininfo
 ```yaml
 variables:
   GO_TESTENV: 'POSTGRES_HOST=localhost POSTGRES_DATABASE=unittestdb'
+```
+
+`GO_BUILDENV` can contain environment variables to pass to `go build`:
+
+```yaml
+variables:
+  GO_BUILDENV: 'CGO_CFLAGS=-D_LARGEFILE64_SOURCE'
 ```
 
 ### `golang`
