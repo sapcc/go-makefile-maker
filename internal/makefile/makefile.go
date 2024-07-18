@@ -166,6 +166,7 @@ endif
 	build.addDefinition("GO_BUILDFLAGS =%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
 	build.addDefinition("GO_LDFLAGS =%s", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
 	build.addDefinition("GO_TESTENV =%s", cfg.Variable("GO_TESTENV", ""))
+	build.addDefinition("GO_BUILDENV =%s", cfg.Variable("GO_BUILDENV", ""))
 	if sr.KubernetesController {
 		build.addDefinition("TESTBIN=$(shell pwd)/testbin")
 	}
@@ -456,7 +457,7 @@ func buildTargets(binaries []core.BinaryConfiguration, sr golang.ScanResult) []r
 			phony:       true,
 			target:      "build/" + bin.Name,
 			recipe: []string{fmt.Sprintf(
-				"go build $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -o build/%s %s",
+				"@env $(GO_BUILDENV) go build $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -o build/%s %s",
 				makeDefaultLinkerFlags(bin.Name, sr),
 				bin.Name, bin.FromPackage,
 			)},
