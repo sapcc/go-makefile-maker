@@ -290,7 +290,6 @@ renovate:
   goVersion: 1.18
   packageRules:
     - matchPackageNames: []
-      matchPackagePrefixes: []
       matchUpdateTypes: []
       matchDepTypes: []
       matchFiles: []
@@ -309,23 +308,25 @@ Additionally, you can also define [`packageRules`](https://docs.renovatebot.com/
 
 ```yaml
 packageRules:
-  - matchPackagePatterns: [".*"]
-    groupName: "all" # group all PRs together
-  - matchPackageNames: ["golang"]
-    allowedVersions: $goVersion.x
-  - matchDepTypes: ["action"]
-    enabled: false # because github-actions will be updated by go-makefile-maker itself, see githubWorkflow config section below.
-  - matchDepTypes: ["dockerfile"]
-    enabled: false # because dockerfile will be updated by go-makefile-maker itself, see docker config section above.
+  # Group PRs for library dependencies together.
+  - matchPackageNames: [ "!/^github\\.com\\/sapcc\\/.*/", "/.*/" ]
+    groupName: "External dependencies"
+    automerge: false
+  - matchPackageNames: [ "/^github\\.com\\/sapcc\\/.*/" ]
+    groupName: "github.com/sapcc"
+    automerge: true
+
   # This package rule will be added if go.mod file has a `k8s.io/*` dependency.
-  - matchPackagePrefixes: ["k8s.io/"]
-    allowedVersions: 0.25.x
-  # This package rule will be added along with the required matchPackagePrefixes if go.mod file has the respective dependencies.
-  - matchPackagePrefixes:
-      - github.com/sapcc/go-api-declarations
-      - github.com/sapcc/gophercloud-sapcc
-      - github.com/sapcc/go-bits
-    autoMerge: true
+  - matchPackagePrefixes: ["/^k8s.io\\//"]
+    allowedVersions: 0.28.x
+
+  # Restrict updates for versions managed by go-makefile-maker.
+  - matchPackageNames: [ golang ]
+    allowedVersions: $goVersion.x # only update within the same minor release
+  - matchDepTypes: [ action ]
+    enabled: false # see githubWorkflow config section below
+  - matchDepTypes: [ dockerfile ]
+    enabled: false # see docker config section above
 ```
 
 ### `verbatim`

@@ -138,6 +138,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.x instead of 1.x.
 			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
 			AllowedVersions: "0.28.x",
+			// ^ NOTE: When bumping this version, also adjust the rendition of this rule in the README appropriately.
 		})
 	}
 
