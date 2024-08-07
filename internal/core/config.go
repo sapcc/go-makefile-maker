@@ -162,17 +162,14 @@ type SecurityChecksWorkflowConfig struct {
 }
 
 type PackageRule struct {
-	ExcludePackagePatterns []string `yaml:"excludePackagePatterns" json:"excludePackagePatterns,omitempty"`
-	MatchPackageNames      []string `yaml:"matchPackageNames" json:"matchPackageNames,omitempty"`
-	MatchPackagePatterns   []string `yaml:"matchPackagePatterns" json:"matchPackagePatterns,omitempty"`
-	MatchPackagePrefixes   []string `yaml:"matchPackagePrefixes" json:"matchPackagePrefixes,omitempty"`
-	MatchUpdateTypes       []string `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
-	MatchDepTypes          []string `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
-	MatchFiles             []string `yaml:"matchFiles" json:"matchFiles,omitempty"`
-	AllowedVersions        string   `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
-	AutoMerge              bool     `yaml:"automerge" json:"automerge,omitempty"`
-	EnableRenovate         *bool    `yaml:"enabled" json:"enabled,omitempty"`
-	GroupName              string   `yaml:"groupName" json:"groupName,omitempty"`
+	MatchPackageNames []string `yaml:"matchPackageNames" json:"matchPackageNames,omitempty"`
+	MatchUpdateTypes  []string `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
+	MatchDepTypes     []string `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
+	MatchFiles        []string `yaml:"matchFiles" json:"matchFiles,omitempty"`
+	AllowedVersions   string   `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
+	AutoMerge         bool     `yaml:"automerge" json:"automerge,omitempty"`
+	EnableRenovate    *bool    `yaml:"enabled" json:"enabled,omitempty"`
+	GroupName         string   `yaml:"groupName" json:"groupName,omitempty"`
 }
 
 // RenovateConfig appears in type Configuration.
