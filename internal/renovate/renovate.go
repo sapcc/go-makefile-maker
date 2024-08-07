@@ -72,7 +72,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 
 	cfg := config{
 		Extends: []string{
-			"config:base",
+			"config:recommended",
 			"default:pinDigestsDisabled",
 			"mergeConfidence:all-badges",
 		},
