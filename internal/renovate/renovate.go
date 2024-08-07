@@ -72,7 +72,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 
 	cfg := config{
 		Extends: []string{
-			"config:base",
+			"config:recommended",
 			"default:pinDigestsDisabled",
 			"mergeConfidence:all-badges",
 		},
@@ -107,17 +107,16 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 
 	// combine and automerge all dependencies under github.com/sapcc/
 	cfg.addPackageRule(core.PackageRule{
-		MatchPackagePatterns: []string{`^github\.com\/sapcc\/.*`},
-		GroupName:            "github.com/sapcc",
-		AutoMerge:            true,
+		MatchPackageNames: []string{`/^github\.com\/sapcc\/.*/`},
+		GroupName:         "github.com/sapcc",
+		AutoMerge:         true,
 	})
 
 	// combine all dependencies not under github.com/sapcc/
 	cfg.addPackageRule(core.PackageRule{
-		MatchPackagePatterns:   []string{`.*`},
-		ExcludePackagePatterns: []string{`^github\.com\/sapcc\/.*`},
-		GroupName:              "External dependencies",
-		AutoMerge:              false,
+		MatchPackageNames: []string{`!/^github\.com\/sapcc\/.*/`, `/.*/`},
+		GroupName:         "External dependencies",
+		AutoMerge:         false,
 	})
 
 	// Only enable Dockerfile and github-actions updates for go-makefile-maker itself.
@@ -134,11 +133,12 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 	}
 	if hasK8sIOPkgs {
 		cfg.addPackageRule(core.PackageRule{
-			MatchPackagePrefixes: []string{"k8s.io/"},
+			MatchPackageNames: []string{`/^k8s.io\//`},
 			// Since our clusters use k8s v1.26 and k8s has a support policy of -/+ 1 minor version we set the allowedVersions to `0.27.x`.
 			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.x instead of 1.x.
 			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
 			AllowedVersions: "0.28.x",
+			// ^ NOTE: When bumping this version, also adjust the rendition of this rule in the README appropriately.
 		})
 	}
 
