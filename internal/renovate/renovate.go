@@ -30,6 +30,7 @@ type constraints struct {
 }
 
 type config struct {
+	Schema                                     string             `json:"$schema"`
 	Extends                                    []string           `json:"extends"`
 	Assignees                                  []string           `json:"assignees,omitempty"`
 	CommitMessageAction                        string             `json:"commitMessageAction"`
@@ -71,6 +72,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 	}
 
 	cfg := config{
+		Schema: "https://docs.renovatebot.com/renovate-schema.json",
 		Extends: []string{
 			"config:recommended",
 			"default:pinDigestsDisabled",
