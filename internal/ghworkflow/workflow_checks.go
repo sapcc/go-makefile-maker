@@ -26,6 +26,14 @@ func checksWorkflow(cfg core.Configuration) {
 	w := newWorkflow("Checks", ghwCfg.Global.DefaultBranch, nil)
 	j := baseJobWithGo("Checks", cfg)
 
+	j.addStep(jobStep{
+		Name: "Run golangci-lint",
+		Uses: core.GolangciLintAction,
+		With: map[string]any{
+			"version": "latest",
+		},
+	})
+
 	if ghwCfg.SecurityChecks.Enabled == nil || *ghwCfg.SecurityChecks.Enabled {
 		j.addStep(jobStep{
 			Name: "Dependency Licenses Review",

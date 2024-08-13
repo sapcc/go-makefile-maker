@@ -33,26 +33,18 @@ func ciWorkflow(cfg core.Configuration) {
 	}
 
 	w.Jobs = make(map[string]job)
-	buildAndLintJob := baseJobWithGo("Build & Lint", cfg)
+	build := baseJobWithGo("Build", cfg)
 	if len(cfg.Binaries) > 0 {
-		buildAndLintJob.addStep(jobStep{
+		build.addStep(jobStep{
 			Name: "Build all binaries",
 			Run:  "make build-all",
 		})
 	}
 
-	buildAndLintJob.addStep(jobStep{
-		Name: "Run golangci-lint",
-		Uses: core.GolangciLintAction,
-		With: map[string]any{
-			"version": "latest",
-		},
-	})
-
-	w.Jobs["buildAndLint"] = buildAndLintJob
+	w.Jobs["build"] = build
 
 	testJob := buildOrTestBaseJob("Test", cfg)
-	testJob.Needs = []string{"buildAndLint"}
+	testJob.Needs = []string{"build"}
 	if ghwCfg.CI.Postgres {
 		testJob.Services = map[string]jobService{"postgres": {
 			Image: "postgres:" + core.DefaultPostgresVersion,
