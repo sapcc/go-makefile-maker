@@ -41,7 +41,7 @@ func releaseWorkflow(cfg core.Configuration) {
 		Run: makeMultilineYAMLString([]string{
 			"go install github.com/sapcc/go-bits/tools/release-info@latest",
 			"mkdir -p build",
-			"release-info CHANGELOG.md $(git describe --tags --abbrev=0) > build/release-info",
+			`release-info CHANGELOG.md "$(git describe --tags --abbrev=0)" > build/release-info`,
 		}),
 	})
 	j.addStep(jobStep{
