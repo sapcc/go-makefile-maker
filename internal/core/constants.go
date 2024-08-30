@@ -19,10 +19,12 @@ const (
 	DefaultGoVersion           = "1.23.0"
 	DefaultPostgresVersion     = "16"
 	DefaultLinkerdAwaitVersion = "0.2.7"
-	DefaultGitHubComRunnerType = "ubuntu-latest"
+	DefaultGitHubComRunsOn     = "ubuntu-latest"
 )
 
-var DefaultGitHubEnterpriseRunnerType = [...]string{"self-hosted"}
+var DefaultGitHubEnterpriseRunsOn = map[string][]string{
+	"groups": {"Default"},
+}
 
 const (
 	CheckoutAction = "actions/checkout@v4"
