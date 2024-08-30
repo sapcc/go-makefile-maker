@@ -37,23 +37,23 @@ func pushAndPRTriggers(defaultBranch string, ignorePaths []string) eventTrigger 
 
 func baseJob(name string, isSelfHostedRunner bool) job {
 	var (
-		runnerType any
-		envs       map[string]string
+		runsOn any
+		envs   map[string]string
 	)
 
 	if isSelfHostedRunner {
-		runnerType = core.DefaultGitHubEnterpriseRunnerType
+		runsOn = core.DefaultGitHubEnterpriseRunsOn
 		envs = map[string]string{
 			"NODE_EXTRA_CA_CERTS": "/etc/ssl/certs/ca-certificates.crt",
 		}
 	} else {
-		runnerType = core.DefaultGitHubComRunnerType
+		runsOn = core.DefaultGitHubComRunsOn
 	}
 
 	return job{
 		Name:   name,
 		Env:    envs,
-		RunsOn: runnerType,
+		RunsOn: runsOn,
 		Steps: []jobStep{{
 			Name: "Check out code",
 			Uses: core.CheckoutAction,
