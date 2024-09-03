@@ -22,8 +22,8 @@ const (
 	DefaultGitHubComRunsOn     = "ubuntu-latest"
 )
 
-var DefaultGitHubEnterpriseRunsOn = map[string][]string{
-	"groups": {"Default"},
+var DefaultGitHubEnterpriseRunsOn = map[string]string{
+	"group": "organization/Default",
 }
 
 const (
