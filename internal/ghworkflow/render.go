@@ -40,11 +40,14 @@ func Render(cfg core.Configuration) {
 	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "license.yaml")))
 	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "spell.yaml")))
 
-	checksWorkflow(cfg)
-	ciWorkflow(cfg)
+	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
+	if cfg.GitHubWorkflow.Global.GoVersion != "" {
+		checksWorkflow(cfg)
+		ciWorkflow(cfg)
+		codeQLWorkflow(cfg)
+	}
 	ghcrWorkflow(ghwCfg)
 	releaseWorkflow(cfg)
-	codeQLWorkflow(cfg)
 }
 
 func writeWorkflowToFile(w *workflow) {

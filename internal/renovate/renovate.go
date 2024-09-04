@@ -26,21 +26,21 @@ import (
 )
 
 type constraints struct {
-	Go string `json:"go"`
+	Go string `json:"go,omitempty"`
 }
 
 type config struct {
 	Schema                                     string             `json:"$schema"`
 	Extends                                    []string           `json:"extends"`
 	Assignees                                  []string           `json:"assignees,omitempty"`
-	CommitMessageAction                        string             `json:"commitMessageAction"`
-	Constraints                                constraints        `json:"constraints"`
-	DependencyDashboardOSVVulnerabilitySummary string             `json:"dependencyDashboardOSVVulnerabilitySummary"`
-	OsvVulnerabilityAlerts                     bool               `json:"osvVulnerabilityAlerts"`
-	PostUpdateOptions                          []string           `json:"postUpdateOptions"`
+	CommitMessageAction                        string             `json:"commitMessageAction,omitempty"`
+	Constraints                                *constraints       `json:"constraints,omitempty"`
+	DependencyDashboardOSVVulnerabilitySummary string             `json:"dependencyDashboardOSVVulnerabilitySummary,omitempty"`
+	OsvVulnerabilityAlerts                     bool               `json:"osvVulnerabilityAlerts,omitempty"`
+	PostUpdateOptions                          []string           `json:"postUpdateOptions,omitempty"`
 	PackageRules                               []core.PackageRule `json:"packageRules,omitempty"`
 	PrHourlyLimit                              int                `json:"prHourlyLimit"`
-	Schedule                                   []string           `json:"schedule"`
+	Schedule                                   []string           `json:"schedule,omitempty"`
 	SemanticCommits                            string             `json:"semanticCommits,omitempty"`
 }
 
@@ -49,7 +49,7 @@ func (c *config) addPackageRule(rule core.PackageRule) {
 }
 
 func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult, url string, isApplicationRepo bool) {
-	isGoMakefileMakerRepo := scanResult.MustModulePath() == "github.com/sapcc/go-makefile-maker"
+	isGoMakefileMakerRepo := scanResult.ModulePath == "github.com/sapcc/go-makefile-maker"
 	isInternalRenovate := strings.HasPrefix(url, "https://github.wdf.sap.corp")
 
 	// Our default rule is to have Renovate send us PRs once a week. (More
@@ -83,43 +83,43 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 		// commit messages (and therefore, PR titles). The default value is "Update".
 		// We choose something more specific because some of us have filter rules
 		// in their mail client to separate Renovate PRs from other PRs.
-		CommitMessageAction: "Renovate: Update",
-		Constraints: constraints{
-			Go: cfgRenovate.GoVersion,
-		},
+		CommitMessageAction:                        "Renovate: Update",
 		DependencyDashboardOSVVulnerabilitySummary: "all",
 		OsvVulnerabilityAlerts:                     true,
-		PostUpdateOptions: []string{
-			"gomodUpdateImportPaths",
-		},
-		PrHourlyLimit:   0,
-		Schedule:        []string{schedule},
-		SemanticCommits: "disabled",
+		PrHourlyLimit:                              0,
+		Schedule:                                   []string{schedule},
+		SemanticCommits:                            "disabled",
 	}
-	cfg.PostUpdateOptions = append([]string{"gomodTidy"}, cfg.PostUpdateOptions...)
 
-	// Default package rules.
-	//
-	// NOTE: When changing this list, please also adjust the documentation for
-	// default package rules in the README.
-	cfg.addPackageRule(core.PackageRule{
-		MatchPackageNames: []string{"golang"},
-		AllowedVersions:   cfgRenovate.GoVersion + ".x",
-	})
+	if scanResult.GoVersion != "" {
+		cfg.Constraints = &constraints{
+			Go: cfgRenovate.GoVersion,
+		}
+		cfg.PostUpdateOptions = append([]string{"gomodTidy", "gomodUpdateImportPaths"}, cfg.PostUpdateOptions...)
 
-	// combine and automerge all dependencies under github.com/sapcc/
-	cfg.addPackageRule(core.PackageRule{
-		MatchPackageNames: []string{`/^github\.com\/sapcc\/.*/`},
-		GroupName:         "github.com/sapcc",
-		AutoMerge:         true,
-	})
+		// Default package rules.
+		//
+		// NOTE: When changing this list, please also adjust the documentation for
+		// default package rules in the README.
+		cfg.addPackageRule(core.PackageRule{
+			MatchPackageNames: []string{"golang"},
+			AllowedVersions:   cfgRenovate.GoVersion + ".x",
+		})
 
-	// combine all dependencies not under github.com/sapcc/
-	cfg.addPackageRule(core.PackageRule{
-		MatchPackageNames: []string{`!/^github\.com\/sapcc\/.*/`, `/.*/`},
-		GroupName:         "External dependencies",
-		AutoMerge:         false,
-	})
+		// combine and automerge all dependencies under github.com/sapcc/
+		cfg.addPackageRule(core.PackageRule{
+			MatchPackageNames: []string{`/^github\.com\/sapcc\/.*/`},
+			GroupName:         "github.com/sapcc",
+			AutoMerge:         true,
+		})
+
+		// combine all dependencies not under github.com/sapcc/
+		cfg.addPackageRule(core.PackageRule{
+			MatchPackageNames: []string{`!/^github\.com\/sapcc\/.*/`, `/.*/`},
+			GroupName:         "External dependencies",
+			AutoMerge:         false,
+		})
+	}
 
 	// Only enable Dockerfile and github-actions updates for go-makefile-maker itself.
 	if isGoMakefileMakerRepo {

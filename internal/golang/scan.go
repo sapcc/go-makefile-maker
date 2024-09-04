@@ -22,7 +22,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/mod/module"
@@ -31,6 +30,8 @@ import (
 
 // ScanResult contains data obtained through a scan of the configuration files
 // in the repository. At the moment, only `go.mod` is scanned.
+//
+// TODO: make ScanResult generic and move Golang specific fields into sub-struct and add Rust next to it
 type ScanResult struct {
 	ModulePath           string           // from "module" directive in go.mod, e.g. "github.com/foo/bar"
 	GoVersion            string           // from "go" directive in go.mod, e.g. "1.22.0"
@@ -46,6 +47,14 @@ type ScanResult struct {
 const ModFilename = "go.mod"
 
 func Scan() ScanResult {
+	// assume this is not a go project if there is no go.mod file
+	_, err := os.Stat(ModFilename)
+	if os.IsNotExist(err) {
+		return ScanResult{}
+	} else {
+		must.Succeed(err)
+	}
+
 	modFileBytes := must.Return(os.ReadFile(ModFilename))
 	modFile := must.Return(modfile.Parse(ModFilename, modFileBytes, nil))
 
@@ -101,12 +110,4 @@ func Scan() ScanResult {
 		KubernetesController: kubernetesController,
 		KubernetesVersion:    kubernetesVersion,
 	}
-}
-
-// MustModulePath reads the ModulePath field, but fails if it is empty.
-func (sr ScanResult) MustModulePath() string {
-	if sr.ModulePath == "" {
-		logg.Fatal("could not find module path from go.mod file, make sure it is defined")
-	}
-	return sr.ModulePath
 }

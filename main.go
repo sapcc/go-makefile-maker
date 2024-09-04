@@ -83,7 +83,7 @@ func main() {
 	}
 
 	// Render Goreleaser config file
-	if cfg.GoReleaser.CreateConfig == nil && cfg.GitHubWorkflow.Release.Enabled || *cfg.GoReleaser.CreateConfig {
+	if (cfg.GoReleaser.CreateConfig == nil && cfg.GitHubWorkflow.Release.Enabled) || (cfg.GoReleaser.CreateConfig != nil && *cfg.GoReleaser.CreateConfig) {
 		goreleaser.RenderConfig(cfg)
 	}
 
@@ -109,7 +109,8 @@ func main() {
 		if cfg.Renovate.GoVersion == "" {
 			cfg.Renovate.GoVersion = sr.GoVersionMajorMinor
 		}
-		isApplicationRepo := len(cfg.Binaries) > 0
+		// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
+		isApplicationRepo := sr.GoVersion == "" || len(cfg.Binaries) > 0
 		renovate.RenderConfig(cfg.Renovate, sr, cfg.Metadata.URL, isApplicationRepo)
 	}
 }

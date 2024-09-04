@@ -43,8 +43,11 @@ var scanOverrides []byte
 // rules, and definitions will appear in the exact order as they are defined.
 func newMakefile(cfg *core.Configuration, sr golang.ScanResult) *makefile {
 	hasBinaries := len(cfg.Binaries) > 0
-
-	isSAPCC := strings.HasPrefix(sr.ModulePath, "github.com/sapcc") || strings.HasPrefix(sr.ModulePath, "github.wdf.sap.corp") || strings.HasPrefix(sr.ModulePath, "github.tools.sap")
+	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
+	isGolang := sr.GoVersion != ""
+	isSAPCC := strings.HasPrefix(cfg.Metadata.URL, "https://github.com/sapcc") ||
+		strings.HasPrefix(cfg.Metadata.URL, "https://github.wdf.sap.corp") ||
+		strings.HasPrefix(cfg.Metadata.URL, "https://github.tools.sap")
 
 	///////////////////////////////////////////////////////////////////////////
 	// General
@@ -79,17 +82,23 @@ endif
 	prepare := category{name: "prepare"}
 
 	// add target for installing dependencies for `make static-check`
-	prepareStaticRecipe := []string{
-		`@if ! hash golangci-lint 2>/dev/null; then` +
-			` printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n";` +
-			` go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi`,
-	}
-	prepareStaticPrerequisites := []string{}
-	if isSAPCC {
+	var prepareStaticRecipe []string
+	if isGolang {
 		prepareStaticRecipe = append(prepareStaticRecipe, []string{
-			`@if ! hash go-licence-detector 2>/dev/null; then` +
-				` printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n";` +
-				` go install go.elastic.co/go-licence-detector@latest; fi`,
+			`@if ! hash golangci-lint 2>/dev/null; then` +
+				` printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n";` +
+				` go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi`,
+		}...)
+	}
+	if isSAPCC {
+		if isGolang {
+			prepareStaticRecipe = append(prepareStaticRecipe, []string{
+				`@if ! hash go-licence-detector 2>/dev/null; then` +
+					` printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n";` +
+					` go install go.elastic.co/go-licence-detector@latest; fi`,
+			}...)
+		}
+		prepareStaticRecipe = append(prepareStaticRecipe, []string{
 			`@if ! hash addlicense 2>/dev/null; then ` +
 				` printf "\e[1;36m>> Installing addlicense...\e[0m\n"; ` +
 				` go install github.com/google/addlicense@latest; fi`,
@@ -100,7 +109,7 @@ endif
 		phony:         true,
 		target:        "prepare-static-check",
 		recipe:        prepareStaticRecipe,
-		prerequisites: prepareStaticPrerequisites,
+		prerequisites: []string{},
 	})
 
 	if sr.KubernetesController {
@@ -163,10 +172,12 @@ endif
 		}
 	}
 
-	build.addDefinition("GO_BUILDFLAGS =%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
-	build.addDefinition("GO_LDFLAGS =%s", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
-	build.addDefinition("GO_TESTENV =%s", cfg.Variable("GO_TESTENV", ""))
-	build.addDefinition("GO_BUILDENV =%s", cfg.Variable("GO_BUILDENV", ""))
+	if isGolang {
+		build.addDefinition("GO_BUILDFLAGS =%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
+		build.addDefinition("GO_LDFLAGS =%s", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
+		build.addDefinition("GO_TESTENV =%s", cfg.Variable("GO_TESTENV", ""))
+		build.addDefinition("GO_BUILDENV =%s", cfg.Variable("GO_BUILDENV", ""))
+	}
 	if sr.KubernetesController {
 		build.addDefinition("TESTBIN=$(shell pwd)/testbin")
 	}
@@ -190,169 +201,179 @@ endif
 	// Test
 	test := category{name: "test"}
 
-	test.addDefinition(`# which packages to test with test runner`)
-	testPkgGreps := ""
-	if cfg.Test.Only != "" {
-		testPkgGreps += fmt.Sprintf(" | grep -E '%s'", cfg.Test.Only)
-	}
-	if cfg.Test.Except != "" {
-		testPkgGreps += fmt.Sprintf(" | grep -Ev '%s'", cfg.Test.Except)
-	}
-	pathVar := "ImportPath"
-	// ginkgo only understands relative names eg ./config or config but not example.com/package/config
-	if sr.UseGinkgo {
-		pathVar = "Dir"
-	}
-	test.addDefinition(`GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.%s}}{{end}}' ./...%s)`, pathVar, testPkgGreps)
-	test.addDefinition(strings.TrimSpace(`
+	if isGolang {
+		test.addDefinition(`# which packages to test with test runner`)
+		testPkgGreps := ""
+		if cfg.Test.Only != "" {
+			testPkgGreps += fmt.Sprintf(" | grep -E '%s'", cfg.Test.Only)
+		}
+		if cfg.Test.Except != "" {
+			testPkgGreps += fmt.Sprintf(" | grep -Ev '%s'", cfg.Test.Except)
+		}
+		pathVar := "ImportPath"
+		// ginkgo only understands relative names eg ./config or config but not example.com/package/config
+		if sr.UseGinkgo {
+			pathVar = "Dir"
+		}
+		test.addDefinition(`GO_TESTPKGS := $(shell go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.%s}}{{end}}' ./...%s)`, pathVar, testPkgGreps)
+		test.addDefinition(strings.TrimSpace(`
 ifeq ($(GO_TESTPKGS),)
 GO_TESTPKGS := ./...
 endif
   `))
 
-	test.addDefinition(`# which packages to measure coverage for`)
-	coverPkgGreps := ""
-	if cfg.Coverage.Only != "" {
-		coverPkgGreps += fmt.Sprintf(" | grep -E '%s'", cfg.Coverage.Only)
+		test.addDefinition(`# which packages to measure coverage for`)
+		coverPkgGreps := ""
+		if cfg.Coverage.Only != "" {
+			coverPkgGreps += fmt.Sprintf(" | grep -E '%s'", cfg.Coverage.Only)
+		}
+		if cfg.Coverage.Except != "" {
+			coverPkgGreps += fmt.Sprintf(" | grep -Ev '%s'", cfg.Coverage.Except)
+		}
+		test.addDefinition(`GO_COVERPKGS := $(shell go list ./...%s)`, coverPkgGreps)
 	}
-	if cfg.Coverage.Except != "" {
-		coverPkgGreps += fmt.Sprintf(" | grep -Ev '%s'", cfg.Coverage.Except)
-	}
-	test.addDefinition(`GO_COVERPKGS := $(shell go list ./...%s)`, coverPkgGreps)
+
 	test.addDefinition(`# to get around weird Makefile syntax restrictions, we need variables containing nothing, a space and comma`)
 	test.addDefinition(`null :=`)
 	test.addDefinition(`space := $(null) $(null)`)
 	test.addDefinition(`comma := ,`)
 
-	// add main testing target
-	checkPrerequisites := []string{"static-check", "build/cover.html"}
-	if hasBinaries {
-		checkPrerequisites = append(checkPrerequisites, "build-all")
-	}
-	test.addRule(rule{
-		description:   "Run the test suite (unit tests and golangci-lint).",
-		phony:         true,
-		target:        "check",
-		prerequisites: checkPrerequisites,
-		recipe:        []string{`@printf "\e[1;32m>> All checks successful.\e[0m\n"`},
-	})
-
-	if sr.KubernetesController {
-		components := strings.Split(sr.ModulePath, "/")
-		roleName := components[len(components)-1]
+	if isGolang {
+		// add main testing target
+		checkPrerequisites := []string{"static-check", "build/cover.html"}
+		if hasBinaries {
+			checkPrerequisites = append(checkPrerequisites, "build-all")
+		}
 		test.addRule(rule{
-			description: "Generate code for Kubernetes CRDs and deepcopy.",
-			target:      "generate",
+			description:   "Run the test suite (unit tests and golangci-lint).",
+			phony:         true,
+			target:        "check",
+			prerequisites: checkPrerequisites,
+			recipe:        []string{`@printf "\e[1;32m>> All checks successful.\e[0m\n"`},
+		})
+
+		if sr.KubernetesController {
+			components := strings.Split(sr.ModulePath, "/")
+			roleName := components[len(components)-1]
+			test.addRule(rule{
+				description: "Generate code for Kubernetes CRDs and deepcopy.",
+				target:      "generate",
+				recipe: []string{
+					`@printf "\e[1;36m>> controller-gen\e[0m\n"`,
+					fmt.Sprintf(`@controller-gen crd rbac:roleName=%s paths="./..." output:crd:artifacts:config=crd`, roleName),
+					`@controller-gen object paths=./...`,
+				},
+				prerequisites: []string{"install-controller-gen"},
+			})
+		}
+
+		// add target to run golangci-lint
+		test.addRule(rule{
+			description:   "Install and run golangci-lint. Installing is used in CI, but you should probably install golangci-lint using your package manager.",
+			phony:         true,
+			target:        "run-golangci-lint",
+			prerequisites: []string{"prepare-static-check"},
 			recipe: []string{
-				`@printf "\e[1;36m>> controller-gen\e[0m\n"`,
-				fmt.Sprintf(`@controller-gen crd rbac:roleName=%s paths="./..." output:crd:artifacts:config=crd`, roleName),
-				`@controller-gen object paths=./...`,
+				`@printf "\e[1;36m>> golangci-lint\e[0m\n"`,
+				`@golangci-lint run`,
 			},
-			prerequisites: []string{"install-controller-gen"},
+		})
+
+		// add targets for test runner incl. coverage report
+		testRule := rule{
+			description: "Run tests and generate coverage report.",
+			phony:       true,
+			target:      "build/cover.out",
+			// We use order only prerequisite because this target is used in CI.
+			orderOnlyPrerequisites: []string{"build"},
+			recipe: []string{
+				`@printf "\e[1;36m>> Running tests\e[0m\n"`,
+			},
+		}
+
+		testRunner := "go test -shuffle=on -p 1 -coverprofile=$@"
+		if sr.UseGinkgo {
+			testRunner = "ginkgo run --randomize-all -output-dir=build"
+			testRule.prerequisites = append(testRule.prerequisites, "install-ginkgo")
+		}
+		goTest := fmt.Sprintf(`%s $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
+			testRunner, makeDefaultLinkerFlags(path.Base(sr.ModulePath), sr))
+		if sr.KubernetesController {
+			testRule.prerequisites = append(testRule.prerequisites, "generate", "install-setup-envtest")
+			testRule.recipe = append(testRule.recipe, fmt.Sprintf(`KUBEBUILDER_ASSETS="$(shell setup-envtest use %s --bin-dir $(TESTBIN) -p path)" %s`, sr.KubernetesVersion, goTest))
+		} else {
+			testRule.recipe = append(testRule.recipe, `@env $(GO_TESTENV) `+goTest)
+		}
+		if sr.UseGinkgo {
+			testRule.recipe = append(testRule.recipe, `@mv build/coverprofile.out build/cover.out`)
+		}
+
+		test.addRule(testRule)
+
+		test.addRule(rule{
+			description:   "Generate an HTML file with source code annotations from the coverage report.",
+			target:        "build/cover.html",
+			prerequisites: []string{"build/cover.out"},
+			recipe: []string{
+				`@printf "\e[1;36m>> go tool cover > build/cover.html\e[0m\n"`,
+				`@go tool cover -html $< -o $@`,
+			},
 		})
 	}
-
-	// add target to run golangci-lint
-	test.addRule(rule{
-		description:   "Install and run golangci-lint. Installing is used in CI, but you should probably install golangci-lint using your package manager.",
-		phony:         true,
-		target:        "run-golangci-lint",
-		prerequisites: []string{"prepare-static-check"},
-		recipe: []string{
-			`@printf "\e[1;36m>> golangci-lint\e[0m\n"`,
-			`@golangci-lint run`,
-		},
-	})
-
-	// add targets for test runner incl. coverage report
-	testRule := rule{
-		description: "Run tests and generate coverage report.",
-		phony:       true,
-		target:      "build/cover.out",
-		// We use order only prerequisite because this target is used in CI.
-		orderOnlyPrerequisites: []string{"build"},
-		recipe: []string{
-			`@printf "\e[1;36m>> Running tests\e[0m\n"`,
-		},
-	}
-
-	testRunner := "go test -shuffle=on -p 1 -coverprofile=$@"
-	if sr.UseGinkgo {
-		testRunner = "ginkgo run --randomize-all -output-dir=build"
-		testRule.prerequisites = append(testRule.prerequisites, "install-ginkgo")
-	}
-	goTest := fmt.Sprintf(`%s $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
-		testRunner, makeDefaultLinkerFlags(path.Base(sr.MustModulePath()), sr))
-	if sr.KubernetesController {
-		testRule.prerequisites = append(testRule.prerequisites, "generate", "install-setup-envtest")
-		testRule.recipe = append(testRule.recipe, fmt.Sprintf(`KUBEBUILDER_ASSETS="$(shell setup-envtest use %s --bin-dir $(TESTBIN) -p path)" %s`, sr.KubernetesVersion, goTest))
-	} else {
-		testRule.recipe = append(testRule.recipe, `@env $(GO_TESTENV) `+goTest)
-	}
-	if sr.UseGinkgo {
-		testRule.recipe = append(testRule.recipe, `@mv build/coverprofile.out build/cover.out`)
-	}
-
-	test.addRule(testRule)
-
-	test.addRule(rule{
-		description:   "Generate an HTML file with source code annotations from the coverage report.",
-		target:        "build/cover.html",
-		prerequisites: []string{"build/cover.out"},
-		recipe: []string{
-			`@printf "\e[1;36m>> go tool cover > build/cover.html\e[0m\n"`,
-			`@go tool cover -html $< -o $@`,
-		},
-	})
 
 	///////////////////////////////////////////////////////////////////////////
 	// Development
 	dev := category{name: "development"}
 
-	// ensure that build directory exists
-	dev.addRule(rule{
-		target: "build",
-		recipe: []string{`@mkdir $@`},
-	})
+	if isGolang {
+		// ensure that build directory exists
+		dev.addRule(rule{
+			target: "build",
+			recipe: []string{`@mkdir $@`},
+		})
 
-	// add tidy-deps or vendor target
-	if cfg.Golang.EnableVendoring {
-		dev.addRule(rule{
-			description: "Run go mod tidy, go mod verify, and go mod vendor.",
-			target:      "vendor",
-			phony:       true,
-			recipe: []string{
-				"go mod tidy",
-				"go mod vendor",
-				"go mod verify",
-			},
-		})
-		dev.addRule(rule{
-			description: "Same as 'make vendor' but go mod tidy will use '-compat' flag with the Go version from go.mod file as value.",
-			target:      "vendor-compat",
-			phony:       true,
-			recipe: []string{
-				`go mod tidy -compat=$(shell awk '$$1 == "go" { print $$2 }' < go.mod)`,
-				"go mod vendor",
-				"go mod verify",
-			},
-		})
-	} else {
-		dev.addRule(rule{
-			description: "Run go mod tidy and go mod verify.",
-			target:      "tidy-deps",
-			phony:       true,
-			recipe: []string{
-				"go mod tidy",
-				"go mod verify",
-			},
-		})
+		// add tidy-deps or vendor target
+		if cfg.Golang.EnableVendoring {
+			dev.addRule(rule{
+				description: "Run go mod tidy, go mod verify, and go mod vendor.",
+				target:      "vendor",
+				phony:       true,
+				recipe: []string{
+					"go mod tidy",
+					"go mod vendor",
+					"go mod verify",
+				},
+			})
+			dev.addRule(rule{
+				description: "Same as 'make vendor' but go mod tidy will use '-compat' flag with the Go version from go.mod file as value.",
+				target:      "vendor-compat",
+				phony:       true,
+				recipe: []string{
+					`go mod tidy -compat=$(shell awk '$$1 == "go" { print $$2 }' < go.mod)`,
+					"go mod vendor",
+					"go mod verify",
+				},
+			})
+		} else {
+			dev.addRule(rule{
+				description: "Run go mod tidy and go mod verify.",
+				target:      "tidy-deps",
+				phony:       true,
+				recipe: []string{
+					"go mod tidy",
+					"go mod verify",
+				},
+			})
+		}
 	}
 
 	if isSAPCC {
 		// `go list .` does not work to get the package name because it requires a go file in the current directory
 		// but some packages like concourse-swift-resource or gatekeeper-addons only have subpackages
-		allGoFilesExpr := `$(patsubst $(shell awk '$$1 == "module" {print $$2}' go.mod)%,.%/*.go,$(shell go list ./...))`
+		allSourceFilesExpr := `$(patsubst $(shell awk '$$1 == "module" {print $$2}' go.mod)%,.%/*.go,$(shell go list ./...))`
+		if !isGolang {
+			allSourceFilesExpr = `$(shell find -name *.rs)`
+		}
 
 		ignoreOptions := []string{}
 		if cfg.GitHubWorkflow != nil {
@@ -363,15 +384,15 @@ endif
 		}
 
 		dev.addRule(rule{
-			description:   "Add license headers to all non-vendored .go files.",
+			description:   "Add license headers to all non-vendored source code files.",
 			target:        "license-headers",
 			phony:         true,
 			prerequisites: []string{"prepare-static-check"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
-				fmt.Sprintf(`@addlicense -c "SAP SE" %s -- %s`,
+				fmt.Sprintf(`@addlicense -c "SAP SE" %s-- %s`,
 					strings.Join(ignoreOptions, " "),
-					allGoFilesExpr,
+					allSourceFilesExpr,
 				)},
 		})
 
@@ -382,43 +403,47 @@ endif
 			prerequisites: []string{"prepare-static-check"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense --check\e[0m\n"`,
-				fmt.Sprintf(`@addlicense --check %s -- %s`,
+				fmt.Sprintf(`@addlicense --check %s-- %s`,
 					strings.Join(ignoreOptions, " "),
-					allGoFilesExpr,
+					allSourceFilesExpr,
 				)},
 		})
 
-		licenseRulesFile := ".license-scan-rules.json"
-		must.Succeed(os.WriteFile(licenseRulesFile, licenseRules, 0666))
+		if isGolang {
+			licenseRulesFile := ".license-scan-rules.json"
+			must.Succeed(os.WriteFile(licenseRulesFile, licenseRules, 0666))
 
-		scanOverridesFile := ".license-scan-overrides.jsonl"
-		must.Succeed(os.WriteFile(scanOverridesFile, scanOverrides, 0666))
+			scanOverridesFile := ".license-scan-overrides.jsonl"
+			must.Succeed(os.WriteFile(scanOverridesFile, scanOverrides, 0666))
 
-		dev.addRule(rule{
-			description:   "Check all dependency licenses using go-licence-detector.",
-			target:        "check-dependency-licenses",
+			dev.addRule(rule{
+				description:   "Check all dependency licenses using go-licence-detector.",
+				target:        "check-dependency-licenses",
+				phony:         true,
+				prerequisites: []string{"prepare-static-check"},
+				recipe: []string{
+
+					`@printf "\e[1;36m>> go-licence-detector\e[0m\n"`,
+					fmt.Sprintf(`@go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules %s -overrides %s`,
+						licenseRulesFile, scanOverridesFile),
+				},
+			})
+		}
+	}
+
+	if isGolang {
+		// add target for static code checks
+		staticCheckPrerequisites := []string{"run-golangci-lint"}
+		if isSAPCC {
+			staticCheckPrerequisites = append(staticCheckPrerequisites, "check-dependency-licenses", "check-license-headers")
+		}
+		test.addRule(rule{
+			description:   "Run static code checks",
 			phony:         true,
-			prerequisites: []string{"prepare-static-check"},
-			recipe: []string{
-
-				`@printf "\e[1;36m>> go-licence-detector\e[0m\n"`,
-				fmt.Sprintf(`@go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules %s -overrides %s`,
-					licenseRulesFile, scanOverridesFile),
-			},
+			target:        "static-check",
+			prerequisites: staticCheckPrerequisites,
 		})
 	}
-
-	// add target for static code checks
-	staticCheckPrerequisites := []string{"run-golangci-lint"}
-	if isSAPCC {
-		staticCheckPrerequisites = append(staticCheckPrerequisites, "check-dependency-licenses", "check-license-headers")
-	}
-	test.addRule(rule{
-		description:   "Run static code checks",
-		phony:         true,
-		target:        "static-check",
-		prerequisites: staticCheckPrerequisites,
-	})
 
 	// add cleaning target
 	dev.addRule(rule{
