@@ -411,13 +411,19 @@ If `enabled` is set to true, the generated `Dockerfile` is built for the platfor
 ```yaml
 pushContainerToGhcr:
   enabled: true
+  tagStrategy:
+    - edge
+    - latest
+    - semver
 ```
+
+`tagStrategy` influences which container tags will be pushed. Currently `edge`, `latest` and `semver` are supported.
 
 ### `githubWorkflow.release`
 
 If `release` is enabled a workflow is generated which creates a new GitHub release using goreleaser when a git tag is pushed.
 
-`goreleaser.enabled` must be enabled when using this workflow.
+`goreleaser.enabled` will be enabled automatically when the option isn't set yet.
 
 #### `githubWorkflow.securityChecks`
 

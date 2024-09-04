@@ -149,7 +149,8 @@ type LicenseWorkflowConfig struct {
 }
 
 type PushContainerToGhcrConfig struct {
-	Enabled bool `yaml:"enabled"`
+	Enabled     bool     `yaml:"enabled"`
+	TagStrategy []string `yaml:"tagStrategy"`
 }
 
 type ReleaseWorkflowConfig struct {

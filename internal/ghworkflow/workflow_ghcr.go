@@ -13,7 +13,14 @@
 
 package ghworkflow
 
-import "github.com/sapcc/go-makefile-maker/internal/core"
+import (
+	"slices"
+	"strings"
+
+	"github.com/sapcc/go-bits/logg"
+
+	"github.com/sapcc/go-makefile-maker/internal/core"
+)
 
 func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	// https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#publishing-a-package-using-an-action
@@ -42,18 +49,47 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 			"password": "${{ secrets.GITHUB_TOKEN }}",
 		},
 	})
+
+	var tags string
+	strategy := cfg.PushContainerToGhcr.TagStrategy
+	if slices.Contains(strategy, "edge") {
+		strategy = slices.DeleteFunc(strategy, func(s string) bool {
+			return s == "edge"
+		})
+		tags += `# https://github.com/docker/metadata-action#typeedge
+type=edge
+`
+	}
+	if slices.Contains(strategy, "latest") {
+		strategy = slices.DeleteFunc(strategy, func(s string) bool {
+			return s == "latest"
+		})
+		tags += `# https://github.com/docker/metadata-action#latest-tag
+type=raw,value=latest,enable={{is_default_branch}}
+`
+	}
+	if slices.Contains(strategy, "semver") {
+		strategy = slices.DeleteFunc(strategy, func(s string) bool {
+			return s == "semver"
+		})
+		tags += `# https://github.com/docker/metadata-action#typesemver
+type=semver,pattern={{raw}}
+type=semver,pattern=v{{major}}.{{minor}}
+type=semver,pattern=v{{major}}
+`
+	}
+
+	if len(strategy) != 0 {
+		logg.Fatal("unknown tagStrategy: %s", strings.Join(strategy, ", "))
+	}
+
 	j.addStep(jobStep{
 		Name: "Extract metadata (tags, labels) for Docker",
 		ID:   "meta",
 		Uses: core.DockerMetadataAction,
 		With: map[string]any{
 			"images": registry + "/${{ github.repository }}",
-			"tags": `# https://github.com/docker/metadata-action#latest-tag
-type=raw,value=latest,enable={{is_default_branch}}
-# https://github.com/docker/metadata-action#typesemver
-type=semver,pattern={{raw}}
-type=semver,pattern=v{{major}}.{{minor}}
-type=semver,pattern=v{{major}}`,
+			"tags":   tags,
 		},
 	})
 	j.addStep(jobStep{
