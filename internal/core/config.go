@@ -100,7 +100,7 @@ type GolangciLintConfiguration struct {
 }
 
 type GoReleaserConfiguration struct {
-	CreateConfig bool              `yaml:"createConfig"`
+	CreateConfig *bool             `yaml:"createConfig"`
 	BinaryName   string            `yaml:"binaryName"`
 	Files        *[]string         `yaml:"files"`
 	Format       string            `yaml:"format"`

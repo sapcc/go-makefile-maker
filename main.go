@@ -83,7 +83,7 @@ func main() {
 	}
 
 	// Render Goreleaser config file
-	if cfg.GoReleaser.CreateConfig {
+	if cfg.GoReleaser.CreateConfig == nil && cfg.GitHubWorkflow.Release.Enabled || *cfg.GoReleaser.CreateConfig {
 		goreleaser.RenderConfig(cfg)
 	}
 
