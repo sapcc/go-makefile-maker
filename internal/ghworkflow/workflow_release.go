@@ -14,8 +14,11 @@
 package ghworkflow
 
 import (
+	"bytes"
+	"net/url"
 	"os"
 	"strings"
+	"text/template"
 
 	"github.com/sapcc/go-bits/must"
 
@@ -23,9 +26,9 @@ import (
 )
 
 const enterpriseGoReleaserConfig string = `github_urls:
-  api: https://github.wdf.sap.corp/api/v3/
-  upload: https://github.wdf.sap.corp/api/uploads/
-  download: https://github.wdf.sap.corp/
+  api: https://{{ . }}/api/v3/
+  upload: https://{{ . }}/api/uploads/
+  download: https://{{ . }}/
 `
 
 func releaseWorkflow(cfg core.Configuration) {
@@ -71,10 +74,15 @@ func releaseWorkflow(cfg core.Configuration) {
 	w.Jobs = map[string]job{"release": j}
 
 	writeWorkflowToFile(w)
-	isInternal := strings.HasPrefix(cfg.Metadata.URL, "https://github.wdf.sap.corp")
+
+	isInternal := !strings.HasPrefix(cfg.Metadata.URL, "https://github.com")
 	if !isInternal {
 		return
 	}
-	err := os.WriteFile(".goreleaser.yaml", []byte(enterpriseGoReleaserConfig), 0644)
-	must.Succeed(err)
+	ghURL := must.Return(url.Parse(cfg.Metadata.URL))
+	tpl := template.New("")
+	must.Return(tpl.Parse(enterpriseGoReleaserConfig))
+	var buf bytes.Buffer
+	must.Succeed(tpl.Execute(&buf, ghURL.Host))
+	must.Succeed(os.WriteFile(".goreleaser.yaml", buf.Bytes(), 0644))
 }
