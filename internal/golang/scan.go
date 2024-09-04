@@ -37,7 +37,7 @@ type ScanResult struct {
 	GoVersionMajorMinor  string           // GoVersion but the patch version is stripped
 	GoDirectDependencies []module.Version // from "require" directive(s) in go.mod without the "// indirect" comment
 	HasBinInfo           bool             // whether we can produce linker instructions for "github.com/sapcc/go-api-declarations/bininfo"
-	UseGinkgo            bool             // wether to use ginkgo test runner instead of go test
+	UseGinkgo            bool             // whether to use ginkgo test runner instead of go test
 	UsesPostgres         bool             // whether postgres is used
 	KubernetesController bool             // whether the repository contains a Kubernetes controller
 	KubernetesVersion    string           // version of kubernetes to use, derived from k8s.io/api
@@ -75,8 +75,8 @@ func Scan() ScanResult {
 		}
 		if v.Mod.Path == "k8s.io/api" {
 			kubernetesVersion = strings.ReplaceAll(v.Mod.Version, "v0", "1")
-			splitted := strings.Split(kubernetesVersion, ".")
-			kubernetesVersion = strings.Join(splitted[:len(splitted)-1], ".")
+			split := strings.Split(kubernetesVersion, ".")
+			kubernetesVersion = strings.Join(split[:len(split)-1], ".")
 		}
 		if v.Mod.Path == "sigs.k8s.io/controller-runtime" {
 			kubernetesController = true

@@ -89,7 +89,7 @@ func main() {
 
 	// Render GitHub workflows
 	if cfg.GitHubWorkflow != nil {
-		// consider differnet fallbacks when no explizit go version is set
+		// consider different fallbacks when no explicit go version is set
 		if cfg.GitHubWorkflow.Global.GoVersion == "" {
 			// default to the version in go.mod
 			goVersion := sr.GoVersion

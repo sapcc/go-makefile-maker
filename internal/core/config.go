@@ -223,7 +223,7 @@ func (c *Configuration) Validate() {
 
 		// Validate global options.
 		if ghwCfg.Global.DefaultBranch == "" {
-			errMsg := "could not find default branch using git, you can define manually be setting 'githubWorkflow.global.defaultBranch' in config"
+			errMsg := "could not find default branch using git, you can define it manually by setting 'githubWorkflow.global.defaultBranch' in config"
 			b, err := exec.Command("git", "symbolic-ref", "refs/remotes/origin/HEAD").CombinedOutput()
 			if err != nil {
 				logg.Fatal("%s: %s", errMsg, err.Error())
