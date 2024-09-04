@@ -13,7 +13,19 @@
 
 package ghworkflow
 
-import "github.com/sapcc/go-makefile-maker/internal/core"
+import (
+	"os"
+	"strings"
+
+	"github.com/sapcc/go-bits/must"
+	"github.com/sapcc/go-makefile-maker/internal/core"
+)
+
+const enterpriseGoReleaserConfig string = `github_urls:
+  api: https://github.wdf.sap.corp/api/v3/
+  upload: https://github.wdf.sap.corp/api/uploads/
+  download: https://github.wdf.sap.corp/
+`
 
 func releaseWorkflow(cfg core.Configuration) {
 	// https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#publishing-a-package-using-an-action
@@ -58,4 +70,10 @@ func releaseWorkflow(cfg core.Configuration) {
 	w.Jobs = map[string]job{"release": j}
 
 	writeWorkflowToFile(w)
+	isInternal := strings.HasPrefix(cfg.Metadata.URL, "https://github.wdf.sap.corp")
+	if !isInternal {
+		return
+	}
+	err := os.WriteFile(".goreleaser.yaml", []byte(enterpriseGoReleaserConfig), 0644)
+	must.Succeed(err)
 }
