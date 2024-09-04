@@ -160,7 +160,7 @@ This user account is intended for use with all payloads that do not require a ro
 * `extraIgnores` appends entries in `.dockerignore` to the default ones.
 * `extraPackages` installs extra Alpine packages in the final Docker layer. `ca-certificates` is always installed.
 * `runAsRoot` skips the privilege drop in the Dockerfile, i.e. the `USER appuser:appgroup` command is not added.
-* `withLinkerdAwait` wether to download the binary and prepend linkerd-await to the entrypoint. For more details see <https://github.com/linkerd/linkerd-await>.
+* `withLinkerdAwait` whether to download the binary and prepend linkerd-await to the entrypoint. For more details see <https://github.com/linkerd/linkerd-await>.
 
 ### `variables`
 
@@ -226,7 +226,7 @@ The `ldflags` option can be used to share flags between the Makefile and GoRelea
 
 ```yaml
 golangciLint:
-  createConfig: false
+  createConfig: true
   errcheckExcludes:
     - io/ioutil.ReadFile
     - io.Copy(*bytes.Buffer)
@@ -239,9 +239,8 @@ golangciLint:
 The `make check` and `make static-check` targets use [`golangci-lint`](https://golangci-lint.run) to lint your code.
 
 If `createConfig` is set to `true` then `go-makefile-maker` will create a
-config file (`.golangci.yaml`) for `golangci-lint` and keep it up-to-date (in case of new
-changes). This config file enables extra linters in addition to the default ones and
-configures various settings that can improve code quality.
+config file (`.golangci.yaml`) for `golangci-lint` and keep it up-to-date (in case of new changes).
+This config file enables extra linters in addition to the default ones and configures various settings that can improve code quality.
 
 Additionally, if `createConfig` is `true`, you can specify a list of files skipped entirely by golangci-lint in `skipDirs`
 and a list of functions to be excluded from `errcheck` linter in `errcheckExcludes` field.
@@ -254,13 +253,13 @@ Take a look at `go-makefile-maker`'s own [`golangci-lint` config file](./.golang
 
 ```yaml
 goreleaser:
-  enabled: true
+  createConfig: true
   binaryName: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
   format: .tar.gz
   nameTemplate: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 ```
 
-If `goreleaser.enabled` is set to true a config file for goreleaser will be generated based on the metadata of the repository.
+If `goreleaser.createConfig` is set to true a config file for goreleaser will be generated based on the metadata of the repository.
 The `format` option can be used to only upload binaries. It corresponds to the upstream archives[].format option. See <https://goreleaser.com/customization/archive/> for more details.
 The `binaryName` option can be used to change the name of the compiled binaries. It corresponds to the upstream builds[].binary option. This is only really useful when format is set to binary. It defaults to name of the first entry in the binaries option.
 The `nameTemplate` option can be used to change the name of uploaded release artefacts. It corresponds to the upstream archives[].name_template option.
