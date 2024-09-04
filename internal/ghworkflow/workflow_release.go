@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	"github.com/sapcc/go-bits/must"
+
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
