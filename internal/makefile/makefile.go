@@ -375,13 +375,14 @@ endif
 			allSourceFilesExpr = `$(shell find -name *.rs)`
 		}
 
-		ignoreOptions := []string{}
+		var ignoreOptions []string
 		if cfg.GitHubWorkflow != nil {
 			for _, pattern := range cfg.GitHubWorkflow.License.IgnorePatterns {
 				// quoting avoids glob expansion
 				ignoreOptions = append(ignoreOptions, fmt.Sprintf("-ignore %q", pattern))
 			}
 		}
+		ignoreOptionsStr := strings.Join(append(ignoreOptions, "--"), " ")
 
 		dev.addRule(rule{
 			description:   "Add license headers to all non-vendored source code files.",
@@ -390,10 +391,7 @@ endif
 			prerequisites: []string{"prepare-static-check"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
-				fmt.Sprintf(`@addlicense -c "SAP SE" %s-- %s`,
-					strings.Join(ignoreOptions, " "),
-					allSourceFilesExpr,
-				)},
+				fmt.Sprintf(`@addlicense -c "SAP SE" %s %s`, ignoreOptionsStr, allSourceFilesExpr)},
 		})
 
 		dev.addRule(rule{
@@ -403,10 +401,7 @@ endif
 			prerequisites: []string{"prepare-static-check"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense --check\e[0m\n"`,
-				fmt.Sprintf(`@addlicense --check %s-- %s`,
-					strings.Join(ignoreOptions, " "),
-					allSourceFilesExpr,
-				)},
+				fmt.Sprintf(`@addlicense --check %s %s`, ignoreOptionsStr, allSourceFilesExpr)},
 		})
 
 		if isGolang {
