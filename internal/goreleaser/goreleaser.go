@@ -31,7 +31,10 @@ import (
 	"github.com/sapcc/go-bits/must"
 )
 
-const goreleaserTemplate = `archives:
+const goreleaserTemplate = `# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+
+archives:
   - name_template: '%[1]s'%[2]s
     format_overrides:
       - goos: windows
@@ -66,7 +69,7 @@ release:
   prerelease: auto
 %[8]s
 snapshot:
-  name_template: "{{ .Tag }}-next"
+  version_template: "{{ .Tag }}-next"
 `
 
 func RenderConfig(cfg core.Configuration) {
