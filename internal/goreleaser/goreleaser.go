@@ -55,6 +55,9 @@ builds:
     goarch:
       - amd64
       - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
     ldflags:
       - -s -w
       - -X github.com/sapcc/go-api-declarations/bininfo.binName=%[5]s
