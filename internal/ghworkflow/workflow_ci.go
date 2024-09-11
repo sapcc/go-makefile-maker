@@ -26,7 +26,9 @@ func ciWorkflow(cfg core.Configuration) {
 	if len(ignorePaths) == 0 {
 		ignorePaths = append(ignorePaths, "**.md")
 	}
+
 	w := newWorkflow("CI", ghwCfg.Global.DefaultBranch, ignorePaths)
+	w.On.WorkflowDispatch.manualTrigger = true
 
 	if w.deleteIf(ghwCfg.CI.Enabled) {
 		return

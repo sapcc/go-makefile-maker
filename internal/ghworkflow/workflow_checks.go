@@ -24,6 +24,7 @@ import (
 func checksWorkflow(cfg core.Configuration) {
 	ghwCfg := cfg.GitHubWorkflow
 	w := newWorkflow("Checks", ghwCfg.Global.DefaultBranch, nil)
+	w.On.WorkflowDispatch.manualTrigger = true
 	j := baseJobWithGo("Checks", cfg)
 
 	j.addStep(jobStep{

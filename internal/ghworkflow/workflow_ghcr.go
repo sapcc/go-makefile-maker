@@ -30,12 +30,13 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 		return
 	}
 
-	strategy := cfg.PushContainerToGhcr.TagStrategy
-
 	w.Permissions.Contents = tokenScopeRead
 	w.Permissions.Packages = tokenScopeWrite
 
 	w.On.Push.Branches = nil
+	w.On.WorkflowDispatch.manualTrigger = true
+
+	strategy := cfg.PushContainerToGhcr.TagStrategy
 	if slices.Contains(strategy, "edge") {
 		w.On.Push.Branches = []string{cfg.Global.DefaultBranch}
 	} else {

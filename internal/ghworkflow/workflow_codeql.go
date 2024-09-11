@@ -22,6 +22,7 @@ import (
 func codeQLWorkflow(cfg core.Configuration) {
 	ghwCfg := cfg.GitHubWorkflow
 	w := newWorkflow("CodeQL", ghwCfg.Global.DefaultBranch, nil)
+	w.On.WorkflowDispatch.manualTrigger = true
 
 	if w.deleteIf((ghwCfg.SecurityChecks.Enabled == nil || *ghwCfg.SecurityChecks.Enabled)) {
 		return
