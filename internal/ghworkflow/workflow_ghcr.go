@@ -30,11 +30,17 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 		return
 	}
 
+	strategy := cfg.PushContainerToGhcr.TagStrategy
+
 	w.Permissions.Contents = tokenScopeRead
 	w.Permissions.Packages = tokenScopeWrite
 
 	w.On.Push.Branches = nil
-	w.On.Push.Tags = []string{"*"}
+	if slices.Contains(strategy, "edge") {
+		w.On.Push.Branches = []string{cfg.Global.DefaultBranch}
+	} else {
+		w.On.Push.Tags = []string{"*"}
+	}
 	w.On.PullRequest.Branches = nil
 
 	registry := "ghcr.io"
@@ -51,7 +57,6 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	})
 
 	var tags string
-	strategy := cfg.PushContainerToGhcr.TagStrategy
 	if slices.Contains(strategy, "edge") {
 		strategy = slices.DeleteFunc(strategy, func(s string) bool {
 			return s == "edge"
