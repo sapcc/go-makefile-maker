@@ -411,12 +411,14 @@ If `enabled` is set to true, the generated `Dockerfile` is built for the platfor
 ```yaml
 pushContainerToGhcr:
   enabled: true
+  platforms: "linux/amd64,linux/arm64"
   tagStrategy:
     - edge
     - latest
     - semver
 ```
 
+`platforms` configures for which platforms the multi-arch docker image is built. Defaults to `linux/amd64`. Note: emulation is provided by qemu and might take significant time.
 `tagStrategy` influences which container tags will be pushed. Currently `edge`, `latest` and `semver` are supported.
 
 ### `githubWorkflow.release`

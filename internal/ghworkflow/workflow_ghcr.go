@@ -106,6 +106,11 @@ type=semver,pattern=v{{major}}
 		Name: "Set up Docker Buildx",
 		Uses: core.DockerBuildxAction,
 	})
+
+	platforms := cfg.PushContainerToGhcr.Platforms
+	if platforms == "" {
+		platforms = "linux/amd64"
+	}
 	j.addStep(jobStep{
 		Name: "Build and push Docker image",
 		Uses: core.DockerBuildPushAction,
@@ -114,7 +119,7 @@ type=semver,pattern=v{{major}}
 			"push":      true,
 			"tags":      "${{ steps.meta.outputs.tags }}",
 			"labels":    "${{ steps.meta.outputs.labels }}",
-			"platforms": "linux/amd64,linux/arm64",
+			"platforms": platforms,
 		},
 	})
 	w.Jobs = map[string]job{"build-and-push-image": j}
