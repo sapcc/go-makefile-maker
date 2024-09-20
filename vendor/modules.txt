@@ -1,4 +1,4 @@
-# github.com/sapcc/go-bits v0.0.0-20240912081530-0967be9f0a6b
+# github.com/sapcc/go-bits v0.0.0-20240919081231-a80ea73a2dce
 ## explicit; go 1.23
 github.com/sapcc/go-bits/logg
 github.com/sapcc/go-bits/must
