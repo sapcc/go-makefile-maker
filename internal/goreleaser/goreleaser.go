@@ -69,6 +69,7 @@ builds:
     mod_timestamp: "{{ .CommitTimestamp }}"
 
 release:
+  make_latest: true
   prerelease: auto
 %[8]s
 snapshot:
