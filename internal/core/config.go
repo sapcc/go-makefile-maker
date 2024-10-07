@@ -49,6 +49,7 @@ type Configuration struct {
 	GitHubWorkflow *GithubWorkflowConfiguration `yaml:"githubWorkflow"`
 	Makefile       MakefileConfig               `yaml:"makefile"`
 	Renovate       RenovateConfig               `yaml:"renovate"`
+	ControllerGen  ControllerGen                `yaml:"controllerGen"`
 	Dockerfile     DockerfileConfig             `yaml:"dockerfile"`
 	Metadata       Metadata                     `yaml:"metadata"`
 }
@@ -191,6 +192,12 @@ type DockerfileConfig struct {
 	ExtraPackages    []string `yaml:"extraPackages"`
 	RunAsRoot        bool     `yaml:"runAsRoot"`
 	WithLinkerdAwait bool     `yaml:"withLinkerdAwait"`
+}
+
+type ControllerGen struct {
+	CrdOutputPath    string `yaml:"crdOutputPath"`
+	ObjectHeaderFile string `yaml:"objectHeaderFile"`
+	RBACRoleName     string `yaml:"rbacRoleName"`
 }
 
 type MakefileConfig struct {

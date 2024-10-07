@@ -105,6 +105,23 @@ The `fromPackage` is a Go module path relative to the directory containing the M
 If `installTo` is set for at least one binary, the `install` target is added to the Makefile, and all binaries with `installTo` are installed by it.
 In this case, `example` would be installed as `/usr/bin/example` by default, and `test-helper` would not be installed.
 
+### `controllerGen`
+
+```yaml
+controllerGen:
+  crdOutputPath: config/crd/bases
+  objectHeaderFile: boilerplate.go.txt
+  rbacRoleName: manager-role crd webhook
+```
+
+Customization options for controller-gen.
+
+`crdOutputPath` allows changing the `output:crd:artifacts:config` argument given to `controller-gen rbac`. Defaults to `crd`.
+
+`objectHeaderFile` allows changing the `headerFile` argument given to `controller-gen object`.
+
+`rbacRoleName` allows changing the `roleName` argument given to controller-gen rbac. Defaults to the last element in the go module name.
+
 ### `testPackages`
 
 ```yaml

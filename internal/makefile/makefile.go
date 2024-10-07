@@ -255,15 +255,26 @@ endif
 		})
 
 		if sr.KubernetesController {
+			crdOutputPath := "crd"
+			if cfg.ControllerGen.CrdOutputPath != "" {
+				crdOutputPath = cfg.ControllerGen.CrdOutputPath
+			}
 			components := strings.Split(sr.ModulePath, "/")
 			roleName := components[len(components)-1]
+			if cfg.ControllerGen.RBACRoleName != "" {
+				roleName = cfg.ControllerGen.RBACRoleName
+			}
+			objectParams := ""
+			if cfg.ControllerGen.ObjectHeaderFile != "" {
+				objectParams = fmt.Sprintf(`:headerFile="%s"`, cfg.ControllerGen.ObjectHeaderFile)
+			}
 			test.addRule(rule{
 				description: "Generate code for Kubernetes CRDs and deepcopy.",
 				target:      "generate",
 				recipe: []string{
 					`@printf "\e[1;36m>> controller-gen\e[0m\n"`,
-					fmt.Sprintf(`@controller-gen crd rbac:roleName=%s paths="./..." output:crd:artifacts:config=crd`, roleName),
-					`@controller-gen object paths=./...`,
+					fmt.Sprintf(`@controller-gen crd rbac:roleName=%s paths="./..." output:crd:artifacts:config=%s`, roleName, crdOutputPath),
+					fmt.Sprintf(`@controller-gen object%s paths="./..."`, objectParams),
 				},
 				prerequisites: []string{"install-controller-gen"},
 			})
