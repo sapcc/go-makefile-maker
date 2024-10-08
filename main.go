@@ -34,6 +34,7 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/golangcilint"
 	"github.com/sapcc/go-makefile-maker/internal/goreleaser"
 	"github.com/sapcc/go-makefile-maker/internal/makefile"
+	"github.com/sapcc/go-makefile-maker/internal/nix"
 	"github.com/sapcc/go-makefile-maker/internal/renovate"
 )
 
@@ -62,6 +63,10 @@ func main() {
 	// Scan go.mod file for additional context information.
 	sr := golang.Scan()
 
+	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig == nil && cfg.GitHubWorkflow.Release.Enabled) || (cfg.GoReleaser.CreateConfig != nil && *cfg.GoReleaser.CreateConfig)
+
+	nix.RenderShell(cfg, sr, renderGoreleaserConfig)
+
 	// Render Makefile
 	if cfg.Makefile.Enabled == nil || *cfg.Makefile.Enabled {
 		for _, bin := range cfg.Binaries {
@@ -83,7 +88,7 @@ func main() {
 	}
 
 	// Render Goreleaser config file
-	if (cfg.GoReleaser.CreateConfig == nil && cfg.GitHubWorkflow.Release.Enabled) || (cfg.GoReleaser.CreateConfig != nil && *cfg.GoReleaser.CreateConfig) {
+	if renderGoreleaserConfig {
 		goreleaser.RenderConfig(cfg)
 	}
 

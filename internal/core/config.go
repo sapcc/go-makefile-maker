@@ -208,6 +208,10 @@ type Metadata struct {
 	URL string `yaml:"url"`
 }
 
+type NixConfig struct {
+	ExtraPackages []string `yaml:"extraPackages"`
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Helper functions
 
