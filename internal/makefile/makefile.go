@@ -64,7 +64,7 @@ ifneq (,$(wildcard /etc/os-release)) # check file existence
 		SHELL := /bin/bash
 	endif
 endif
-	`))
+`))
 
 	if hasBinaries {
 		general.addRule(rule{
@@ -222,7 +222,7 @@ endif
 ifeq ($(GO_TESTPKGS),)
 GO_TESTPKGS := ./...
 endif
-  `))
+`))
 
 		test.addDefinition(`# which packages to measure coverage for`)
 		coverPkgGreps := ""
@@ -313,7 +313,13 @@ endif
 			testRunner, makeDefaultLinkerFlags(path.Base(sr.ModulePath), sr))
 		if sr.KubernetesController {
 			testRule.prerequisites = append(testRule.prerequisites, "generate", "install-setup-envtest")
-			testRule.recipe = append(testRule.recipe, fmt.Sprintf(`KUBEBUILDER_ASSETS="$(shell setup-envtest use %s --bin-dir $(TESTBIN) -p path)" %s`, sr.KubernetesVersion, goTest))
+			testRule.addDefinition(strings.TrimSpace(fmt.Sprintf(`
+KUBEBUILDER_ASSETS ?= $(shell setup-envtest use %s --bin-dir $(TESTBIN) -p path)
+ifeq ($(KUBEBUILDER_ASSETS),)
+$(error setup-envtest failed)
+endif
+`, sr.KubernetesVersion)))
+			testRule.recipe = append(testRule.recipe, `KUBEBUILDER_ASSETS=$(KUBEBUILDER_ASSETS) `+goTest)
 		} else {
 			testRule.recipe = append(testRule.recipe, `@env $(GO_TESTENV) `+goTest)
 		}
@@ -536,7 +542,7 @@ ifeq ($(shell uname -s),Darwin)
 else
 	PREFIX = /usr
 endif
-	`))
+`))
 
 	for _, bin := range binaries {
 		if bin.InstallTo != "" {
