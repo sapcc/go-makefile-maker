@@ -273,7 +273,7 @@ endif
 				target:      "generate",
 				recipe: []string{
 					`@printf "\e[1;36m>> controller-gen\e[0m\n"`,
-					fmt.Sprintf(`@controller-gen rbac:roleName=%s paths="./..." output:crd:artifacts:config=%s`, roleName, crdOutputPath),
+					fmt.Sprintf(`@controller-gen crd rbac:roleName=%s webhook paths="./..." output:crd:artifacts:config=%s`, roleName, crdOutputPath),
 					fmt.Sprintf(`@controller-gen object%s paths="./..."`, objectParams),
 				},
 				prerequisites: []string{"install-controller-gen"},
