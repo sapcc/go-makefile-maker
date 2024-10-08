@@ -24,12 +24,13 @@ import (
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
+	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
 const workflowDir = ".github/workflows"
 
 // Render renders GitHub workflows.
-func Render(cfg core.Configuration) {
+func Render(cfg core.Configuration, sr golang.ScanResult) {
 	ghwCfg := cfg.GitHubWorkflow
 
 	must.Succeed(os.MkdirAll(workflowDir, 0o755))
@@ -43,7 +44,7 @@ func Render(cfg core.Configuration) {
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
 	if cfg.GitHubWorkflow.Global.GoVersion != "" {
 		checksWorkflow(cfg)
-		ciWorkflow(cfg)
+		ciWorkflow(cfg, sr)
 		codeQLWorkflow(cfg)
 	}
 	ghcrWorkflow(ghwCfg)

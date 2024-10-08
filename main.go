@@ -69,7 +69,7 @@ func main() {
 				logg.Fatal("binaries[].fromPackage must begin with a dot, %q is not allowed!", bin.FromPackage)
 			}
 		}
-		makefile.Render(&cfg, sr)
+		makefile.Render(cfg, sr)
 	}
 
 	// Render Dockerfile
@@ -101,7 +101,7 @@ func main() {
 
 			cfg.GitHubWorkflow.Global.GoVersion = goVersion
 		}
-		ghworkflow.Render(cfg)
+		ghworkflow.Render(cfg, sr)
 	}
 
 	// Render Renovate config

@@ -41,7 +41,7 @@ var scanOverrides []byte
 
 // newMakefile defines the structure of the Makefile. Order is important as categories,
 // rules, and definitions will appear in the exact order as they are defined.
-func newMakefile(cfg *core.Configuration, sr golang.ScanResult) *makefile {
+func newMakefile(cfg core.Configuration, sr golang.ScanResult) *makefile {
 	hasBinaries := len(cfg.Binaries) > 0
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
 	isGolang := sr.GoVersion != ""

@@ -18,9 +18,10 @@ import (
 	"strings"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
+	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
-func ciWorkflow(cfg core.Configuration) {
+func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 	ghwCfg := cfg.GitHubWorkflow
 	ignorePaths := ghwCfg.CI.IgnorePaths
 	if len(ignorePaths) == 0 {
@@ -47,7 +48,7 @@ func ciWorkflow(cfg core.Configuration) {
 
 	testJob := buildOrTestBaseJob("Test", cfg)
 	testJob.Needs = []string{"build"}
-	if ghwCfg.CI.Postgres {
+	if sr.UsesPostgres {
 		testJob.Services = map[string]jobService{"postgres": {
 			Image: "postgres:" + core.DefaultPostgresVersion,
 			Env:   map[string]string{"POSTGRES_PASSWORD": "postgres"},

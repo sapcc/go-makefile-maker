@@ -33,7 +33,7 @@ import (
 var withPostgresDBScript []byte
 
 // Render renders the Makefile.
-func Render(cfg *core.Configuration, sr golang.ScanResult) {
+func Render(cfg core.Configuration, sr golang.ScanResult) {
 	f := must.Return(os.Create("Makefile"))
 	defer f.Close()
 
