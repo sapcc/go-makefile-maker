@@ -16,6 +16,30 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 
 with pkgs;
 
+let
+  # TODO: drop after https://github.com/NixOS/nixpkgs/pull/347304 got merged
+  go-licence-detector = buildGoModule rec {
+    pname = "go-licence-detector";
+    version = "0.7.0";
+
+    src = fetchFromGitHub {
+      owner = "elastic";
+      repo = "go-licence-detector";
+      rev = "v${version}";
+      hash = "sha256-43MyzEF7BZ7pcgzDvXx9SjXGHaLozmWkGWUO/yf6K98=";
+    };
+
+    vendorHash = "sha256-7vIP5pGFH6CbW/cJp+DiRg2jFcLFEBl8dQzUw1ogTTA=";
+
+    meta = with lib; {
+      description = "Detect licences in Go projects and generate documentation";
+      homepage = "https://github.com/elastic/go-licence-detector";
+      license = licenses.asl20;
+      maintainers = with maintainers; [ SuperSandro2000 ];
+    };
+  };%s
+in
+
 mkShell {
   nativeBuildInputs = [
 %s
@@ -32,6 +56,7 @@ mkShell {
 		"go-licence-detector",
 		"gotools # goimports",
 	}
+	overlay := ""
 	if cfg.GolangciLint.CreateConfig {
 		packages = append(packages, "golangci-lint")
 	}
@@ -47,6 +72,16 @@ mkShell {
 	}
 	if sr.UsesPostgres {
 		packages = append(packages, "postgresql_"+core.DefaultPostgresVersion)
+		overlay += `
+
+  # TODO: drop after https://github.com/NixOS/nixpkgs/pull/345260 got merged
+  postgresql_17 = (import (pkgs.path + /pkgs/servers/sql/postgresql/generic.nix) {
+    version = "17.0";
+    hash = "sha256-fidhMcD91rYliNutmzuyS4w0mNUAkyjbpZrxboGRCd4=";
+  } { self = pkgs; jitSupport = false; }).overrideAttrs ({ nativeBuildInputs, configureFlags , ... }: {
+    nativeBuildInputs = nativeBuildInputs ++ (with pkgs; [ bison flex perl docbook_xml_dtd_45 docbook-xsl-nons libxslt ]);
+    configureFlags = configureFlags ++ [ "--without-perl" ];
+  });`
 	}
 	packages = append(packages, cfg.Nix.ExtraPackages...)
 
@@ -56,7 +91,7 @@ mkShell {
 		packageList += fmt.Sprintf("    %s\n", pkg)
 	}
 
-	nixShellFile := fmt.Sprintf(nixShellTemplate, packageList)
+	nixShellFile := fmt.Sprintf(nixShellTemplate, overlay, packageList)
 	must.Succeed(os.WriteFile("shell.nix", []byte(nixShellFile), 0666))
 
 	must.Succeed(os.WriteFile(".envrc", []byte(`#!/usr/bin/env bash
