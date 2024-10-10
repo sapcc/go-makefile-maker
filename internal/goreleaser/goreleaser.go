@@ -25,6 +25,8 @@ import (
 	"sort"
 	"strings"
 
+	_ "embed"
+
 	"github.com/sapcc/go-makefile-maker/internal/core"
 
 	"github.com/sapcc/go-bits/logg"
@@ -75,6 +77,9 @@ release:
 snapshot:
   version_template: "{{ .Tag }}-next"
 `
+
+//go:embed RELEASE.md
+var releaseMD string
 
 func RenderConfig(cfg core.Configuration) {
 	if len(cfg.Binaries) < 1 {
@@ -146,4 +151,5 @@ github_urls:
 	// Remove renamed file
 	must.Succeed(os.RemoveAll(".goreleaser.yml"))
 	must.Succeed(os.WriteFile(".goreleaser.yaml", []byte(goreleaserFile), 0666))
+	must.Succeed(os.WriteFile("RELEASE.md", []byte(releaseMD), 0666))
 }
