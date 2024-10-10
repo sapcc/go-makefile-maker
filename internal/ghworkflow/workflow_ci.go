@@ -48,7 +48,7 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 
 	testJob := buildOrTestBaseJob("Test", cfg)
 	testJob.Needs = []string{"build"}
-	if sr.UsesPostgres {
+	if ghwCfg.CI.Postgres || sr.UsesPostgres {
 		testJob.Services = map[string]jobService{"postgres": {
 			Image: "postgres:" + core.DefaultPostgresVersion,
 			Env:   map[string]string{"POSTGRES_PASSWORD": "postgres"},
