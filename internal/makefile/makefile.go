@@ -313,13 +313,7 @@ endif
 			testRunner, makeDefaultLinkerFlags(path.Base(sr.ModulePath), sr))
 		if sr.KubernetesController {
 			testRule.prerequisites = append(testRule.prerequisites, "generate", "install-setup-envtest")
-			testRule.addDefinition(strings.TrimSpace(fmt.Sprintf(`
-KUBEBUILDER_ASSETS ?= $(shell setup-envtest use %s --bin-dir $(TESTBIN) -p path)
-ifeq ($(KUBEBUILDER_ASSETS),)
-$(error setup-envtest failed)
-endif
-`, sr.KubernetesVersion)))
-			testRule.recipe = append(testRule.recipe, `KUBEBUILDER_ASSETS=$(KUBEBUILDER_ASSETS) `+goTest)
+			testRule.recipe = append(testRule.recipe, fmt.Sprintf(`KUBEBUILDER_ASSETS=$$(setup-envtest use %s --bin-dir $(TESTBIN) -p path) %s`, sr.KubernetesVersion, goTest))
 		} else {
 			testRule.recipe = append(testRule.recipe, `@env $(GO_TESTENV) `+goTest)
 		}
