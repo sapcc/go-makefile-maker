@@ -253,11 +253,12 @@ func (c *Configuration) Validate() {
 
 		// Validate CI workflow configuration.
 		if ghwCfg.CI.Enabled {
-			if !ghwCfg.CI.Postgres {
-				logg.Fatal("githubWorkflow.ci.enabled must be set to 'true' when githubWorkflow.ci.postgres is enabled")
-			}
 			if len(ghwCfg.CI.RunnerType) > 1 && !strings.HasPrefix(ghwCfg.CI.RunnerType[0], "ubuntu") {
 				logg.Fatal("githubWorkflow.ci.runOn must only define a single Ubuntu based runner when githubWorkflow.ci.postgres is enabled")
+			}
+		} else {
+			if ghwCfg.CI.Postgres {
+				logg.Fatal("githubWorkflow.ci.enabled must be set to 'true' when githubWorkflow.ci.postgres is enabled")
 			}
 		}
 	}
