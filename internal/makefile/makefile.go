@@ -180,9 +180,6 @@ endif
 		build.addDefinition("GO_TESTENV =%s", cfg.Variable("GO_TESTENV", ""))
 		build.addDefinition("GO_BUILDENV =%s", cfg.Variable("GO_BUILDENV", ""))
 	}
-	if sr.KubernetesController {
-		build.addDefinition("TESTBIN=$(shell pwd)/testbin")
-	}
 	if sr.HasBinInfo {
 		build.addDefinition("")
 		build.addDefinition("# These definitions are overridable, e.g. to provide fixed version/commit values when")
@@ -313,7 +310,7 @@ endif
 			testRunner, makeDefaultLinkerFlags(path.Base(sr.ModulePath), sr))
 		if sr.KubernetesController {
 			testRule.prerequisites = append(testRule.prerequisites, "generate", "install-setup-envtest")
-			testRule.recipe = append(testRule.recipe, fmt.Sprintf(`KUBEBUILDER_ASSETS=$$(setup-envtest use %s --bin-dir $(TESTBIN) -p path) %s`, sr.KubernetesVersion, goTest))
+			testRule.recipe = append(testRule.recipe, fmt.Sprintf(`KUBEBUILDER_ASSETS=$$(setup-envtest use %s -p path) %s`, sr.KubernetesVersion, goTest))
 		} else {
 			testRule.recipe = append(testRule.recipe, `@env $(GO_TESTENV) `+goTest)
 		}
