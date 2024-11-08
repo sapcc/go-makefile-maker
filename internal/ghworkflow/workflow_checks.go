@@ -41,9 +41,16 @@ func checksWorkflow(cfg core.Configuration) {
 			Run:  "make check-dependency-licenses",
 		})
 
+		// we are not using golang/govulncheck-action because that always wants to install go again
+		// https://github.com/golang/govulncheck-action/blob/master/action.yml
+		j.addStep(jobStep{
+			Name: "Install govulncheck",
+			Run:  "go install golang.org/x/vuln/cmd/govulncheck@latest",
+		})
+
 		j.addStep(jobStep{
 			Name: "Run govulncheck",
-			Uses: core.GovulncheckAction,
+			Run:  "govulncheck -format text ./...",
 		})
 	}
 
