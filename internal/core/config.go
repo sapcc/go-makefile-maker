@@ -169,7 +169,7 @@ type PackageRule struct {
 	MatchPackageNames []string `yaml:"matchPackageNames" json:"matchPackageNames,omitempty"`
 	MatchUpdateTypes  []string `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
 	MatchDepTypes     []string `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
-	MatchFiles        []string `yaml:"matchFiles" json:"matchFiles,omitempty"`
+	MatchFileNames    []string `yaml:"matchFileNames" json:"matchFileNames,omitempty"`
 	AllowedVersions   string   `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
 	AutoMerge         bool     `yaml:"automerge" json:"automerge,omitempty"`
 	EnableRenovate    *bool    `yaml:"enabled" json:"enabled,omitempty"`

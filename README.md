@@ -308,7 +308,7 @@ renovate:
     - matchPackageNames: []
       matchUpdateTypes: []
       matchDepTypes: []
-      matchFiles: []
+      matchFileNames: []
       allowedVersions: ""
       autoMerge: false
       enabled: false
