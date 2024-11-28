@@ -83,35 +83,52 @@ endif
 	// Prepare
 	prepare := category{name: "prepare"}
 
-	// add target for installing dependencies for `make static-check`
 	var prepareStaticRecipe []string
 	if isGolang {
-		prepareStaticRecipe = append(prepareStaticRecipe, []string{
-			`@if ! hash golangci-lint 2>/dev/null; then` +
-				` printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n";` +
-				` go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi`,
-		}...)
+		prepare.addRule(rule{
+			description: "Install golangci-lint required by run-golangci-lint/static-check",
+			phony:       true,
+			target:      "install-golangci-lint",
+			recipe: []string{
+				`@if ! hash golangci-lint 2>/dev/null; then` +
+					` printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n";` +
+					` go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi`,
+			},
+		})
+		prepareStaticRecipe = append(prepareStaticRecipe, "install-golangci-lint")
 	}
 	if isSAPCC {
 		if isGolang {
-			prepareStaticRecipe = append(prepareStaticRecipe, []string{
-				`@if ! hash go-licence-detector 2>/dev/null; then` +
-					` printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n";` +
-					` go install go.elastic.co/go-licence-detector@latest; fi`,
-			}...)
+			prepare.addRule(rule{
+				description: "Install go-licence-detector required by check-dependency-licenses/static-check",
+				phony:       true,
+				target:      "install-go-licence-detector",
+				recipe: []string{
+					`@if ! hash go-licence-detector 2>/dev/null; then` +
+						` printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n";` +
+						` go install go.elastic.co/go-licence-detector@latest; fi`,
+				},
+			})
+			prepareStaticRecipe = append(prepareStaticRecipe, "install-go-licence-detector")
 		}
-		prepareStaticRecipe = append(prepareStaticRecipe, []string{
-			`@if ! hash addlicense 2>/dev/null; then ` +
-				` printf "\e[1;36m>> Installing addlicense...\e[0m\n"; ` +
-				` go install github.com/google/addlicense@latest; fi`,
-		}...)
+		prepare.addRule(rule{
+			description: "Install addlicense required by check-license-headers/license-headers/static-check",
+			phony:       true,
+			target:      "install-addlicense",
+			recipe: []string{
+				`@if ! hash addlicense 2>/dev/null; then ` +
+					` printf "\e[1;36m>> Installing addlicense...\e[0m\n"; ` +
+					` go install github.com/google/addlicense@latest; fi`,
+			},
+		})
+		prepareStaticRecipe = append(prepareStaticRecipe, "install-addlicense")
 	}
+	// add target for installing dependencies for `make static-check`
 	prepare.addRule(rule{
 		description:   "Install any tools required by static-check. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
 		phony:         true,
 		target:        "prepare-static-check",
-		recipe:        prepareStaticRecipe,
-		prerequisites: []string{},
+		prerequisites: prepareStaticRecipe,
 	})
 
 	if sr.KubernetesController {
@@ -282,7 +299,7 @@ endif
 			description:   "Install and run golangci-lint. Installing is used in CI, but you should probably install golangci-lint using your package manager.",
 			phony:         true,
 			target:        "run-golangci-lint",
-			prerequisites: []string{"prepare-static-check"},
+			prerequisites: []string{"install-golangci-lint"},
 			recipe: []string{
 				`@printf "\e[1;36m>> golangci-lint\e[0m\n"`,
 				`@golangci-lint run`,
@@ -398,7 +415,7 @@ endif
 			description:   "Add license headers to all non-vendored source code files.",
 			target:        "license-headers",
 			phony:         true,
-			prerequisites: []string{"prepare-static-check"},
+			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
 				fmt.Sprintf(`@addlicense -c "SAP SE" -s %s %s`, ignoreOptionsStr, allSourceFilesExpr)},
@@ -408,7 +425,7 @@ endif
 			description:   "Check license headers in all non-vendored .go files.",
 			target:        "check-license-headers",
 			phony:         true,
-			prerequisites: []string{"prepare-static-check"},
+			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense --check\e[0m\n"`,
 				fmt.Sprintf(`@addlicense --check %s %s`, ignoreOptionsStr, allSourceFilesExpr)},
@@ -425,7 +442,7 @@ endif
 				description:   "Check all dependency licenses using go-licence-detector.",
 				target:        "check-dependency-licenses",
 				phony:         true,
-				prerequisites: []string{"prepare-static-check"},
+				prerequisites: []string{"install go-licence-detector"},
 				recipe: []string{
 
 					`@printf "\e[1;36m>> go-licence-detector\e[0m\n"`,
