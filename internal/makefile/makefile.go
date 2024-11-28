@@ -412,13 +412,25 @@ endif
 		ignoreOptionsStr := strings.Join(append(ignoreOptions, "--"), " ")
 
 		dev.addRule(rule{
+			description:   "Remove and re-add all license headers to all non-vendored source code files.",
+			target:        "force-license-headers",
+			phony:         true,
+			prerequisites: []string{"install-addlicense"},
+			recipe: []string{
+				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
+				fmt.Sprintf(`echo -n %s | xargs -d" " -I{} bash -c 'year="$$(rg -P "Copyright (....) SAP SE" -Nor "\$$1" {})"; awk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/ && !/^\$$/}}; /^package /{print;display=1}'"'"' {}; addlicense -c "SAP SE" -s -y "$$year" %s {}'`, allSourceFilesExpr, ignoreOptionsStr),
+			},
+		})
+
+		dev.addRule(rule{
 			description:   "Add license headers to all non-vendored source code files.",
 			target:        "license-headers",
 			phony:         true,
 			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
-				fmt.Sprintf(`@addlicense -c "SAP SE" -s %s %s`, ignoreOptionsStr, allSourceFilesExpr)},
+				fmt.Sprintf(`@addlicense -c "SAP SE" -s %s %s`, ignoreOptionsStr, allSourceFilesExpr),
+			},
 		})
 
 		dev.addRule(rule{
@@ -428,7 +440,8 @@ endif
 			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense --check\e[0m\n"`,
-				fmt.Sprintf(`@addlicense --check %s %s`, ignoreOptionsStr, allSourceFilesExpr)},
+				fmt.Sprintf(`@addlicense --check %s %s`, ignoreOptionsStr, allSourceFilesExpr),
+			},
 		})
 
 		if isGolang {

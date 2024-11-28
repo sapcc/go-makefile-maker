@@ -91,6 +91,10 @@ vendor-compat: FORCE
 	go mod vendor
 	go mod verify
 
+force-license-headers: FORCE install-addlicense
+	@printf "\e[1;36m>> addlicense\e[0m\n"
+	echo -n $(patsubst $(shell awk '$$1 == "module" {print $$2}' go.mod)%,.%/*.go,$(shell go list ./...)) | xargs -d" " -I{} bash -c 'year="$$(rg -P "Copyright (....) SAP SE" -Nor "\$$1" {})"; awk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/ && !/^\$$/}}; /^package /{print;display=1}'"'"' {}; addlicense -c "SAP SE" -s -y "$$year" -- {}'
+
 license-headers: FORCE install-addlicense
 	@printf "\e[1;36m>> addlicense\e[0m\n"
 	@addlicense -c "SAP SE" -s -- $(patsubst $(shell awk '$$1 == "module" {print $$2}' go.mod)%,.%/*.go,$(shell go list ./...))
@@ -145,6 +149,7 @@ help: FORCE
 	@printf "\e[1mDevelopment\e[0m\n"
 	@printf "  \e[36mvendor\e[0m                       Run go mod tidy, go mod verify, and go mod vendor.\n"
 	@printf "  \e[36mvendor-compat\e[0m                Same as 'make vendor' but go mod tidy will use '-compat' flag with the Go version from go.mod file as value.\n"
+	@printf "  \e[36mforce-license-headers\e[0m        Remove and re-add all license headers to all non-vendored source code files.\n"
 	@printf "  \e[36mlicense-headers\e[0m              Add license headers to all non-vendored source code files.\n"
 	@printf "  \e[36mcheck-license-headers\e[0m        Check license headers in all non-vendored .go files.\n"
 	@printf "  \e[36mcheck-dependency-licenses\e[0m    Check all dependency licenses using go-licence-detector.\n"
