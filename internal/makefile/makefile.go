@@ -401,7 +401,7 @@ endif
 			prerequisites: []string{"prepare-static-check"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
-				fmt.Sprintf(`@addlicense -c "SAP SE" %s %s`, ignoreOptionsStr, allSourceFilesExpr)},
+				fmt.Sprintf(`@addlicense -c "SAP SE" -s %s %s`, ignoreOptionsStr, allSourceFilesExpr)},
 		})
 
 		dev.addRule(rule{

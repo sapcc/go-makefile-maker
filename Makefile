@@ -87,7 +87,7 @@ vendor-compat: FORCE
 
 license-headers: FORCE prepare-static-check
 	@printf "\e[1;36m>> addlicense\e[0m\n"
-	@addlicense -c "SAP SE" -- $(patsubst $(shell awk '$$1 == "module" {print $$2}' go.mod)%,.%/*.go,$(shell go list ./...))
+	@addlicense -c "SAP SE" -s -- $(patsubst $(shell awk '$$1 == "module" {print $$2}' go.mod)%,.%/*.go,$(shell go list ./...))
 
 check-license-headers: FORCE prepare-static-check
 	@printf "\e[1;36m>> addlicense --check\e[0m\n"
