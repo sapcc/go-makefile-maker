@@ -119,7 +119,7 @@ check-license-headers: FORCE install-addlicense
 	@printf "\e[1;36m>> addlicense --check\e[0m\n"
 	@addlicense --check -- $(patsubst $(shell awk '$$1 == "module" {print $$2}' go.mod)%,.%/*.go,$(shell go list ./...))
 
-check-dependency-licenses: FORCE install go-licence-detector
+check-dependency-licenses: FORCE install-go-licence-detector
 	@printf "\e[1;36m>> go-licence-detector\e[0m\n"
 	@go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules .license-scan-rules.json -overrides .license-scan-overrides.jsonl
 
@@ -146,7 +146,7 @@ help: FORCE
 	@printf "\n"
 	@printf "\e[1mPrepare\e[0m\n"
 	@printf "  \e[36minstall-golangci-lint\e[0m        Install golangci-lint required by run-golangci-lint/static-check\n"
-	@printf "  \e[36minstall-go-licence-detector\e[0m  Install go-licence-detector required by check-dependency-licenses/static-check\n"
+	@printf "  \e[36minstall-go-licence-detector\e[0m  Install-go-licence-detector required by check-dependency-licenses/static-check\n"
 	@printf "  \e[36minstall-addlicense\e[0m           Install addlicense required by check-license-headers/license-headers/static-check\n"
 	@printf "  \e[36mprepare-static-check\e[0m         Install any tools required by static-check. This is used in CI before dropping privileges, you should probably install all the tools using your package manager\n"
 	@printf "\n"

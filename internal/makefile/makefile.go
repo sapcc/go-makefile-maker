@@ -98,7 +98,7 @@ endif
 	if isSAPCC {
 		if isGolang {
 			prepare.addRule(rule{
-				description: "Install go-licence-detector required by check-dependency-licenses/static-check",
+				description: "Install-go-licence-detector required by check-dependency-licenses/static-check",
 				phony:       true,
 				target:      "install-go-licence-detector",
 				recipe: []string{
@@ -453,7 +453,7 @@ endif
 				description:   "Check all dependency licenses using go-licence-detector.",
 				target:        "check-dependency-licenses",
 				phony:         true,
-				prerequisites: []string{"install go-licence-detector"},
+				prerequisites: []string{"install-go-licence-detector"},
 				recipe: []string{
 
 					`@printf "\e[1;36m>> go-licence-detector\e[0m\n"`,
