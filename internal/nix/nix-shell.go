@@ -32,7 +32,7 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 	nixShellTemplate := `{ pkgs ? import <nixpkgs> { } }:
 
 with pkgs;
-%s
+
 mkShell {
   nativeBuildInputs = [
 %s
@@ -49,7 +49,6 @@ mkShell {
 		"go-licence-detector",
 		"gotools # goimports",
 	}
-	overlay := ""
 	if cfg.GolangciLint.CreateConfig {
 		packages = append(packages, "golangci-lint")
 	}
@@ -65,18 +64,6 @@ mkShell {
 	}
 	if sr.UsesPostgres {
 		packages = append(packages, "postgresql_"+core.DefaultPostgresVersion)
-		overlay += `
-let
-  # TODO: drop after https://github.com/NixOS/nixpkgs/pull/345260 got merged
-  postgresql_17 = (import (pkgs.path + /pkgs/servers/sql/postgresql/generic.nix) {
-    version = "17.0";
-    hash = "sha256-fidhMcD91rYliNutmzuyS4w0mNUAkyjbpZrxboGRCd4=";
-  } { self = pkgs; jitSupport = false; }).overrideAttrs ({ nativeBuildInputs, configureFlags , ... }: {
-    nativeBuildInputs = nativeBuildInputs ++ (with pkgs; [ bison flex perl docbook_xml_dtd_45 docbook-xsl-nons libxslt ]);
-    configureFlags = configureFlags ++ [ "--without-perl" ];
-  });
-in
-`
 	}
 	packages = append(packages, cfg.Nix.ExtraPackages...)
 
@@ -86,7 +73,7 @@ in
 		packageList += fmt.Sprintf("    %s\n", pkg)
 	}
 
-	nixShellFile := fmt.Sprintf(nixShellTemplate, overlay, packageList)
+	nixShellFile := fmt.Sprintf(nixShellTemplate, packageList)
 	must.Succeed(os.WriteFile("shell.nix", []byte(nixShellFile), 0666))
 
 	must.Succeed(os.WriteFile(".envrc", []byte(`#!/usr/bin/env bash
