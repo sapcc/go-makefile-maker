@@ -29,7 +29,9 @@ import (
 )
 
 func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserConfig bool) {
-	nixShellTemplate := `{ pkgs ? import <nixpkgs> { } }:
+	nixShellTemplate := `# SPDX-License-Identifier: Apache-2.0
+
+{ pkgs ? import <nixpkgs> { } }:
 
 with pkgs;
 
