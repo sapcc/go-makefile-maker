@@ -67,6 +67,8 @@ mkShell {
 	must.Succeed(os.WriteFile("shell.nix", []byte(nixShellFile), 0666))
 
 	must.Succeed(os.WriteFile(".envrc", []byte(`#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2019–2020 Target, Copyright 2021 The Nix Community
+# SPDX-License-Identifier: Apache-2.0
 if type -P lorri &>/dev/null; then
   eval "$(lorri direnv)"
 else

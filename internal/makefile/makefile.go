@@ -18,6 +18,9 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
+//go:embed REUSE.toml
+var reuseConfig []byte
+
 //go:embed license-scan-rules.json
 var licenseRules []byte
 
@@ -414,7 +417,7 @@ endif
 			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
-				fmt.Sprintf(`@addlicense -c "SAP SE" -s %s %s`, ignoreOptionsStr, allSourceFilesExpr),
+				fmt.Sprintf(`@addlicense -c "SAP SE" -s=only %s %s`, ignoreOptionsStr, allSourceFilesExpr),
 			},
 		})
 
@@ -430,6 +433,9 @@ endif
 		})
 
 		if isGolang {
+			reuseConfigFile := "REUSE.toml"
+			must.Succeed(os.WriteFile(reuseConfigFile, reuseConfig, 0666))
+
 			licenseRulesFile := ".license-scan-rules.json"
 			must.Succeed(os.WriteFile(licenseRulesFile, licenseRules, 0666))
 
