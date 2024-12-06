@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: SAP SE
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # go-makefile-maker
 
 [![CI](https://github.com/sapcc/go-makefile-maker/actions/workflows/ci.yaml/badge.svg)](https://github.com/sapcc/go-makefile-maker/actions/workflows/ci.yaml)

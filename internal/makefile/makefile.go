@@ -1,17 +1,4 @@
 // Copyright 2020 SAP SE
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
 // SPDX-License-Identifier: Apache-2.0
 
 package makefile
@@ -30,6 +17,9 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
+
+//go:embed REUSE.toml
+var reuseConfig []byte
 
 //go:embed license-scan-rules.json
 var licenseRules []byte
@@ -416,7 +406,7 @@ endif
 			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
-				fmt.Sprintf(`echo -n %s | xargs -d" " -I{} bash -c 'year="$$(rg -P "Copyright (....) SAP SE" -Nor "\$$1" {})"; awk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/ && !/^\$$/}}; /^package /{print;display=1}'"'"' {}; addlicense -c "SAP SE" -s -y "$$year" %s {}'`, allSourceFilesExpr, ignoreOptionsStr),
+				fmt.Sprintf(`echo -n %s | xargs -d" " -I{} bash -c 'year="$$(rg -P "Copyright (....) SAP SE" -Nor "\$$1" {})"; awk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/ && !/^\$$/}}; /^package /{print;display=1}'"'"' {}; addlicense -c "SAP SE" -s=only -y "$$year" %s {}'`, allSourceFilesExpr, ignoreOptionsStr),
 			},
 		})
 
@@ -427,7 +417,7 @@ endif
 			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
-				fmt.Sprintf(`@addlicense -c "SAP SE" -s %s %s`, ignoreOptionsStr, allSourceFilesExpr),
+				fmt.Sprintf(`@addlicense -c "SAP SE" -s=only %s %s`, ignoreOptionsStr, allSourceFilesExpr),
 			},
 		})
 
@@ -443,6 +433,9 @@ endif
 		})
 
 		if isGolang {
+			reuseConfigFile := "REUSE.toml"
+			must.Succeed(os.WriteFile(reuseConfigFile, reuseConfig, 0666))
+
 			licenseRulesFile := ".license-scan-rules.json"
 			must.Succeed(os.WriteFile(licenseRulesFile, licenseRules, 0666))
 
