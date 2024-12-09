@@ -4,7 +4,7 @@
 package core
 
 const (
-	DefaultAlpineImage         = "3.20"
+	DefaultAlpineImage         = "3.21"
 	DefaultGoVersion           = "1.23.4"
 	DefaultPostgresVersion     = "17"
 	DefaultLinkerdAwaitVersion = "0.2.7"
