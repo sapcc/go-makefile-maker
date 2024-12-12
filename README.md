@@ -409,7 +409,6 @@ ci:
     - ubuntu-latest
     - windows-latest
   coveralls: true
-  postgres: true
   ignorePaths: []
 ```
 
@@ -419,12 +418,12 @@ successful on multiple operating systems. Default value for this is `ubuntu-late
 
 If `coveralls` is `true` then your test coverage report will be uploaded to [Coveralls]. Make sure that you have enabled Coveralls for your GitHub repo beforehand.
 
-If `postgres` is `true` then a PostgreSQL service container will be added for the `test` job.
-You can connect to this PostgreSQL service at `localhost:54321` with `postgres` as username and password ([More info][postgres-service-container]).
-
 `ignorePaths` specifies a list of filename patterns. Workflows will not trigger if a path
 name matches a pattern in this list. [More info][ref-onpushpull] and [filter pattern cheat
 sheet][ref-pattern-cheat-sheet]. This option is not defined by default.
+
+If your application depends on `github.com/lib/pq`, the latest PostgreSQL server binaries will be available in the container when tests are executed.
+This is intended for use with `github.com/sapcc/go-bits/easypg`, which can launch a PostgreSQL server during `func TestMain`; see documentation in package easypg for details.
 
 ### `githubWorkflow.pushContainerToGhcr`
 
@@ -496,7 +495,6 @@ license:
 [doublestar-pattern]: https://github.com/bmatcuk/doublestar#patterns
 [govulncheck]: https://github.com/golang/vuln
 [misspell]: https://github.com/client9/misspell
-[postgres-service-container]: https://docs.github.com/en/actions/guides/creating-postgresql-service-containers#testing-the-postgresql-service-container
 [ref-onpushpull]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths
 [ref-pattern-cheat-sheet]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
 [ref-runs-on]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on

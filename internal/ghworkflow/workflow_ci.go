@@ -5,7 +5,6 @@ package ghworkflow
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/golang"
@@ -41,30 +40,18 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 	testCmd := []string{
 		"make build/cover.out",
 	}
-	if ghwCfg.CI.Postgres || sr.UsesPostgres {
+	if sr.UsesPostgres {
 		testCmd = append([]string{
 			"sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y",
 			"sudo apt-get install --no-install-recommends postgresql-" + core.DefaultPostgresVersion,
 			fmt.Sprintf("export PATH=/usr/lib/postgresql/%s/bin:$PATH", core.DefaultPostgresVersion),
 		}, testCmd...)
-		// TODO remove this service once all users migrated to use github.com/sapcc/go-bits/easypg
-		testJob.Services = map[string]jobService{"postgres": {
-			Image: "postgres:" + core.DefaultPostgresVersion,
-			Env:   map[string]string{"POSTGRES_PASSWORD": "postgres"},
-			Ports: []string{"54321:5432"},
-			Options: strings.Join([]string{
-				// Set health checks to wait until postgres has started
-				"--health-cmd pg_isready",
-				"--health-interval 10s",
-				"--health-timeout 5s",
-				"--health-retries 5",
-			}, " "),
-		}}
 	}
 	testJob.addStep(jobStep{
 		Name: "Run tests and generate coverage report",
 		Run:  makeMultilineYAMLString(testCmd),
 	})
+
 	if ghwCfg.CI.Coveralls && !ghwCfg.IsSelfHostedRunner {
 		multipleOS := len(ghwCfg.CI.RunnerType) > 1
 		env := map[string]string{
