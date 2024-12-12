@@ -18,9 +18,6 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
-//go:embed with-postgres-db.sh
-var withPostgresDBScript []byte
-
 // Render renders the Makefile.
 func Render(cfg core.Configuration, sr golang.ScanResult) {
 	f := must.Return(os.Create("Makefile"))
@@ -62,7 +59,12 @@ func Render(cfg core.Configuration, sr golang.ScanResult) {
 
 	if sr.UsesPostgres {
 		must.Succeed(os.MkdirAll("testing", os.ModePerm))
-		must.Succeed(os.WriteFile("testing/with-postgres-db.sh", withPostgresDBScript, 0666))
+
+		// Cleanup obsolete helper script that was previously managed by this tool.
+		err := os.Remove("testing/with-postgres-db.sh")
+		if !os.IsNotExist(err) {
+			must.Succeed(err)
+		}
 	}
 }
 
