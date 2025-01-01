@@ -99,7 +99,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 		cfg.addPackageRule(core.PackageRule{
 			MatchPackageNames: []string{`/^github\.com\/sapcc\/.*/`},
 			GroupName:         "github.com/sapcc",
-			AutoMerge:         false, //NOTE: disabled for the Christmas break, TODO: reenable afterwards
+			AutoMerge:         true,
 		})
 
 		// combine all dependencies not under github.com/sapcc/
