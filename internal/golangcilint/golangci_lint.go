@@ -110,6 +110,9 @@ linters-settings:
 	goimports:
 		# Put local imports after 3rd-party packages.
 		local-prefixes: {{ .ModulePath }}
+		gomoddirectives:
+			toolchain-forbidden: true
+			go-version-pattern: '1\.\d+(\.0)?$'
 	gosec:
 		excludes:
 			# gosec wants us to set a short ReadHeaderTimeout to avoid Slowloris attacks, but doing so would expose us to Keep-Alive race conditions (see https://iximiuz.com/en/posts/reverse-proxy-http-keep-alive-and-502s/)
@@ -144,6 +147,9 @@ linters-settings:
 		time-month: true
 		time-weekday: true
 		tls-signature-scheme: true
+		usetesting:
+			os-setenv: true
+			os-temp-dir: true
 	whitespace:
 		# Enforce newlines (or comments) after multi-line function signatures.
 		multi-func: true
@@ -165,6 +171,7 @@ linters:
   {{- if lt .GoMinorVersion 22 }}
 		- exportloopref
   {{- end }}
+		- exptostd
 		- forbidigo
 		- ginkgolinter
 		- gocheckcompilerdirectives
@@ -172,6 +179,7 @@ linters:
 		- gocritic
 		- gofmt
 		- goimports
+		- gomoddirectives
 		- gosec
 		- gosimple
 		- govet
@@ -194,6 +202,7 @@ linters:
 		- unparam
 		- unused
 		- usestdlibvars
+		- usetesting
 		- whitespace
 `, "\t", "  "))))
 
