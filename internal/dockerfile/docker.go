@@ -61,13 +61,20 @@ func RenderConfig(cfg core.Configuration) {
 	}
 
 	var runVersionArg string
+	firstBinary := true
+	if len(cfg.Binaries) > 0 {
+		runVersionArg += "RUN "
+	}
 	for _, binary := range cfg.Binaries {
 		if binary.InstallTo == "" {
 			continue
 		}
-
-		runVersionArg += fmt.Sprintf(`
-RUN %s --version 2>/dev/null`, binary.Name)
+		if !firstBinary {
+			runVersionArg += `
+  && `
+		}
+		runVersionArg += binary.Name + " --version 2>/dev/null"
+		firstBinary = false
 	}
 
 	extraDirectives := strings.Join(cfg.Dockerfile.ExtraDirectives, "\n")
@@ -110,7 +117,8 @@ RUN %[5]s
 COPY --from=builder /etc/ssl/certs/ /etc/ssl/certs/
 COPY --from=builder /etc/ssl/cert.pem /etc/ssl/cert.pem
 COPY --from=builder /pkg/ /usr/
-# make sure all binaries can be executed%[6]s
+# make sure all binaries can be executed
+%[6]s
 
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
 LABEL source_repository="%[7]s" \
