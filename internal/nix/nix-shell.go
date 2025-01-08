@@ -36,6 +36,7 @@ mkShell {
 	goPackage := fmt.Sprintf("go_%s_%s", goVersionSlice[0], goVersionSlice[1])
 	packages := []string{
 		goPackage,
+		"addlicense",
 		"go-licence-detector",
 		"gotools # goimports",
 	}
