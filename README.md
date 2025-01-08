@@ -114,12 +114,15 @@ In this case, `example` would be installed as `/usr/bin/example` by default, and
 
 ```yaml
 controllerGen:
+  enabled: true
   crdOutputPath: config/crd/bases
   objectHeaderFile: boilerplate.go.txt
   rbacRoleName: manager-role crd webhook
 ```
 
 Customization options for controller-gen.
+
+`enabled` defaults to the presence of the `sigs.k8s.io/controller-runtime` dependency unless set explicitly.
 
 `crdOutputPath` allows changing the `output:crd:artifacts:config` argument given to `controller-gen rbac`. Defaults to `crd`.
 

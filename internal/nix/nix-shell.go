@@ -45,7 +45,11 @@ mkShell {
 	if renderGoreleaserConfig {
 		packages = append(packages, "goreleaser")
 	}
-	if sr.KubernetesController {
+	runControllerGen := sr.KubernetesController
+	if cfg.ControllerGen.Enabled != nil {
+		runControllerGen = *cfg.ControllerGen.Enabled
+	}
+	if runControllerGen {
 		packages = append(packages, "kubernetes-controller-tools # controller-gen")
 		packages = append(packages, "setup-envtest")
 	}

@@ -183,6 +183,7 @@ type DockerfileConfig struct {
 }
 
 type ControllerGen struct {
+	Enabled          *bool  `yaml:"enabled"`
 	CrdOutputPath    string `yaml:"crdOutputPath"`
 	ObjectHeaderFile string `yaml:"objectHeaderFile"`
 	RBACRoleName     string `yaml:"rbacRoleName"`

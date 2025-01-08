@@ -31,6 +31,10 @@ var scanOverrides []byte
 // rules, and definitions will appear in the exact order as they are defined.
 func newMakefile(cfg core.Configuration, sr golang.ScanResult) *makefile {
 	hasBinaries := len(cfg.Binaries) > 0
+	runControllerGen := sr.KubernetesController
+	if cfg.ControllerGen.Enabled != nil {
+		runControllerGen = *cfg.ControllerGen.Enabled
+	}
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
 	isGolang := sr.GoVersion != ""
 	isSAPCC := strings.HasPrefix(cfg.Metadata.URL, "https://github.com/sapcc") ||
@@ -119,7 +123,7 @@ endif
 		prerequisites: prepareStaticRecipe,
 	})
 
-	if sr.KubernetesController {
+	if runControllerGen {
 		prepare.addRule(rule{
 			description: "Install controller-gen required by static-check and build-all. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
 			phony:       true,
@@ -195,7 +199,7 @@ endif
 	}
 
 	if hasBinaries {
-		build.addRule(buildTargets(cfg.Binaries, sr)...)
+		build.addRule(buildTargets(cfg.Binaries, sr, runControllerGen)...)
 		if r, ok := installTarget(cfg.Binaries); ok {
 			build.addRule(r)
 		}
@@ -256,7 +260,7 @@ endif
 			recipe:        []string{`@printf "\e[1;32m>> All checks successful.\e[0m\n"`},
 		})
 
-		if sr.KubernetesController {
+		if runControllerGen {
 			crdOutputPath := "crd"
 			if cfg.ControllerGen.CrdOutputPath != "" {
 				crdOutputPath = cfg.ControllerGen.CrdOutputPath
@@ -313,7 +317,7 @@ endif
 		}
 		goTest := fmt.Sprintf(`%s $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
 			testRunner, makeDefaultLinkerFlags(path.Base(sr.ModulePath), sr))
-		if sr.KubernetesController {
+		if runControllerGen {
 			testRule.prerequisites = append(testRule.prerequisites, "generate", "install-setup-envtest")
 			testRule.recipe = append(testRule.recipe, fmt.Sprintf(`KUBEBUILDER_ASSETS=$$(setup-envtest use %s -p path) %s`, sr.KubernetesVersion, goTest))
 		} else {
@@ -490,13 +494,13 @@ endif
 	}
 }
 
-func buildTargets(binaries []core.BinaryConfiguration, sr golang.ScanResult) []rule {
+func buildTargets(binaries []core.BinaryConfiguration, sr golang.ScanResult, runControllerGen bool) []rule {
 	result := make([]rule, 0, len(binaries)+1)
 	buildAllRule := rule{
 		description: "Build all binaries.",
 		target:      "build-all",
 	}
-	if sr.KubernetesController {
+	if runControllerGen {
 		buildAllRule.prerequisites = []string{"install-controller-gen"}
 	}
 	result = append(result, buildAllRule)
@@ -514,7 +518,7 @@ func buildTargets(binaries []core.BinaryConfiguration, sr golang.ScanResult) []r
 			)},
 		}
 
-		if sr.KubernetesController {
+		if runControllerGen {
 			r.prerequisites = append(r.prerequisites, "generate")
 		}
 
