@@ -74,6 +74,14 @@ type=semver,pattern=v{{major}}.{{minor}}
 type=semver,pattern=v{{major}}
 `
 	}
+	if slices.Contains(strategy, "sha") {
+		strategy = slices.DeleteFunc(strategy, func(s string) bool {
+			return s == "sha"
+		})
+		tags += `# https://github.com/docker/metadata-action#typesha
+type=sha,format=long
+`
+	}
 
 	if len(strategy) != 0 {
 		logg.Fatal("unknown tagStrategy: %s", strings.Join(strategy, ", "))

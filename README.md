@@ -440,10 +440,11 @@ pushContainerToGhcr:
     - edge
     - latest
     - semver
+    - sha
 ```
 
 `platforms` configures for which platforms the multi-arch docker image is built. Defaults to `linux/amd64`. Note: emulation is provided by qemu and might take significant time.
-`tagStrategy` influences which container tags will be pushed. Currently `edge`, `latest` and `semver` are supported.
+`tagStrategy` influences which container tags will be pushed. Currently `edge`, `latest`, `semver` and `sha` are supported.
 
 ### `githubWorkflow.release`
 
