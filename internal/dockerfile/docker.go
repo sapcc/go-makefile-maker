@@ -70,7 +70,7 @@ func RenderConfig(cfg core.Configuration) {
 			continue
 		}
 		if !firstBinary {
-			runVersionArg += `
+			runVersionArg += ` \
   && `
 		}
 		runVersionArg += binary.Name + " --version 2>/dev/null"
