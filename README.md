@@ -180,6 +180,10 @@ The Dockerfile uses the [Golang base image](https://hub.docker.com/_/golang) to 
 The image is provisioned with a dedicated user account (name `appuser`, UID 4200, home directory `/home/appuser`) and user group (name `appgroup`, GID 4200) with stable names and IDs.
 This user account is intended for use with all payloads that do not require a root user.
 
+To make sure the produced Docker Image is functional tests should be run before the image is built and uploaded.
+Also as smoke test the compiled binaries are invoked with the ``--version`` argument after being copied to the final image.
+With [go-api-declarations](https://github.com/sapcc/go-api-declarations)' [`HandleVersionArgument`](https://pkg.go.dev/github.com/sapcc/go-api-declarations/bininfo#HandleVersionArgument) function this can be implemented in one line. If you are using Cobra or any other library to handle arguments the  [`Version`](https://pkg.go.dev/github.com/sapcc/go-api-declarations/bininfo#Version) function is recommended instead.
+
 * `entrypoint` allows overwriting the final entrypoint.
 * `extraDirectives` appends additional directives near the end of the Dockerfile.
 * `extraIgnores` appends entries in `.dockerignore` to the default ones.
