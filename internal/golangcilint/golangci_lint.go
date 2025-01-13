@@ -111,8 +111,8 @@ linters-settings:
 		# Put local imports after 3rd-party packages.
 		local-prefixes: {{ .ModulePath }}
 	gomoddirectives:
-		toolchain-forbidden: true
 		go-version-pattern: '1\.\d+(\.0)?$'
+		toolchain-forbidden: true
 	gosec:
 		excludes:
 			# gosec wants us to set a short ReadHeaderTimeout to avoid Slowloris attacks, but doing so would expose us to Keep-Alive race conditions (see https://iximiuz.com/en/posts/reverse-proxy-http-keep-alive-and-502s/)
