@@ -112,6 +112,9 @@ linters-settings:
 		local-prefixes: {{ .ModulePath }}
 	gomoddirectives:
 		go-version-pattern: '1\.\d+(\.0)?$'
+		replace-allow-list:
+			# for go-pmtud
+			- github.com/mdlayher/arp
 		toolchain-forbidden: true
 	gosec:
 		excludes:
@@ -120,9 +123,9 @@ linters-settings:
 			# created file permissions are restricted by umask if necessary
 			- G306
 	govet:
-    enable-all: true
-    disable:
-      - fieldalignment
+		enable-all: true
+		disable:
+			- fieldalignment
 	nolintlint:
 		require-specific: true
 	{{- if .MisspellIgnoreWords }}
