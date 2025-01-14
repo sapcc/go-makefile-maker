@@ -17,6 +17,8 @@ func checksWorkflow(cfg core.Configuration) {
 	w.On.WorkflowDispatch.manualTrigger = true
 	j := baseJobWithGo("Checks", cfg)
 
+	// see https://github.com/golangci/golangci-lint-action#annotations
+	w.Permissions.Checks = tokenScopeWrite
 	j.addStep(jobStep{
 		Name: "Run golangci-lint",
 		Uses: core.GolangciLintAction,
