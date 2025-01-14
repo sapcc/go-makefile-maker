@@ -125,10 +125,11 @@ type GithubWorkflowConfiguration struct {
 
 // CIWorkflowConfig appears in type Configuration.
 type CIWorkflowConfig struct {
-	Enabled     bool     `yaml:"enabled"`
-	IgnorePaths []string `yaml:"ignorePaths"`
-	RunnerType  []string `yaml:"runOn"`
-	Coveralls   bool     `yaml:"coveralls"`
+	Enabled           bool     `yaml:"enabled"`
+	Coveralls         bool     `yaml:"coveralls"`
+	PrepareMakeTarget string   `yaml:"prepareMakeTarget"`
+	IgnorePaths       []string `yaml:"ignorePaths"`
+	RunnerType        []string `yaml:"runOn"`
 }
 
 // LicenseWorkflowConfig appears in type Configuration.

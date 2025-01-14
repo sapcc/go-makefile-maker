@@ -426,6 +426,7 @@ ci:
     - ubuntu-latest
     - windows-latest
   coveralls: true
+  prepareMakeTarget: generate
   ignorePaths: []
 ```
 
@@ -438,6 +439,10 @@ If `coveralls` is `true` then your test coverage report will be uploaded to [Cov
 `ignorePaths` specifies a list of filename patterns. Workflows will not trigger if a path
 name matches a pattern in this list. [More info][ref-onpushpull] and [filter pattern cheat
 sheet][ref-pattern-cheat-sheet]. This option is not defined by default.
+
+`prepareMakeTarget` specifies an additional make target to run before running any ci checks.
+This is useful when you need to run some additional commands before being able to run `go build` or `golangci-lint`.
+For example when you are using `mockgen` or `go-bindata` through `verbatim`, you want to run the extra `verbatim` target through this option.
 
 If your application depends on `github.com/lib/pq`, the latest PostgreSQL server binaries will be available in the container when tests are executed.
 This is intended for use with `github.com/sapcc/go-bits/easypg`, which can launch a PostgreSQL server during `func TestMain`; see documentation in package easypg for details.

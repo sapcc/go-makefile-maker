@@ -52,15 +52,20 @@ func baseJob(name string, isSelfHostedRunner bool) job {
 
 func baseJobWithGo(name string, cfg core.Configuration) job {
 	j := baseJob(name, cfg.GitHubWorkflow.IsSelfHostedRunner)
-	step := jobStep{
+	j.addStep(jobStep{
 		Name: "Set up Go",
 		Uses: core.SetupGoAction,
 		With: map[string]any{
 			"go-version":   cfg.GitHubWorkflow.Global.GoVersion,
 			"check-latest": true,
 		},
+	})
+	if cfg.GitHubWorkflow.CI.PrepareMakeTarget != "" {
+		j.addStep(jobStep{
+			Name: "Run prepare make target",
+			Run:  "make " + cfg.GitHubWorkflow.CI.PrepareMakeTarget,
+		})
 	}
-	j.addStep(step)
 	return j
 }
 
