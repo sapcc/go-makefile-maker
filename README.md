@@ -240,6 +240,16 @@ metadata:
 
 - `url` is the repository's remote URL.
 
+### `nix`
+
+```yaml
+nix:
+  extraPackages:
+    - mockgen
+```
+
+`extraPackages` extra packages to add to the generated `shell.nix` file. This is useful if entries in `verbatim` require additional tools. See <https://search.nixos.org/> for available packages.
+
 ### `renovate`
 
 ```yaml
