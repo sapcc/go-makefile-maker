@@ -93,7 +93,7 @@ func RenderConfig(cfg core.Configuration) {
 		commands = append(commands, "apk add --no-cache --no-progress"+packages)
 	}
 	commands = append(commands, extraCommands...)
-	commands = append(commands, "apk del --no-cache --no-progress apk-tools alpine-keys")
+	commands = append(commands, "apk del --no-cache --no-progress apk-tools alpine-keys alpine-release libc-utils")
 
 	runCommands := strings.Join(commands, " \\\n  && ")
 
