@@ -43,7 +43,7 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 	if sr.UsesPostgres {
 		testCmd = append([]string{
 			"sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y",
-			"sudo apt-get install --no-install-recommends postgresql-" + core.DefaultPostgresVersion,
+			"sudo apt-get install -y --no-install-recommends postgresql-" + core.DefaultPostgresVersion,
 			fmt.Sprintf("export PATH=/usr/lib/postgresql/%s/bin:$PATH", core.DefaultPostgresVersion),
 		}, testCmd...)
 	}
