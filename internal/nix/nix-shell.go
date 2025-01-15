@@ -76,8 +76,10 @@ mkShell {
 # SPDX-License-Identifier: Apache-2.0
 if type -P lorri &>/dev/null; then
   eval "$(lorri direnv)"
-else
+elif type -P nix &>/dev/null; then
   use nix
+else
+  echo "Found no nix binary. Skipping activating nix-shell..."
 fi
 `), 0666))
 }
