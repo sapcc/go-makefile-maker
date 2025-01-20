@@ -480,7 +480,7 @@ endif
 			phony:       true,
 			recipe: []string{
 				fmt.Sprintf(`@printf "\e[1;36m>> goimports -w -local %s\e[0m\n"`, cfg.Metadata.URL),
-				fmt.Sprintf(`@goimports -w -local %s internal/ %s`, cfg.Metadata.URL, allSourceFilesExpr),
+				fmt.Sprintf(`@goimports -w -local %s %s`, sr.ModulePath, allSourceFilesExpr),
 			},
 		})
 	}
