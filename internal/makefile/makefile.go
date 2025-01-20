@@ -386,14 +386,14 @@ endif
 		}
 	}
 
-	if isSAPCC {
-		// `go list .` does not work to get the package name because it requires a go file in the current directory
-		// but some packages like concourse-swift-resource or gatekeeper-addons only have subpackages
-		allSourceFilesExpr := `$(patsubst $(shell awk '$$1 == "module" {print $$2}' go.mod)%,.%/*.go,$(shell go list ./...))`
-		if !isGolang {
-			allSourceFilesExpr = `$(shell find -name *.rs)`
-		}
+	// `go list .` does not work to get the package name because it requires a go file in the current directory
+	// but some packages like concourse-swift-resource or gatekeeper-addons only have subpackages
+	allSourceFilesExpr := `$(patsubst $(shell awk '$$1 == "module" {print $$2}' go.mod)%,.%/*.go,$(shell go list ./...))`
+	if !isGolang {
+		allSourceFilesExpr = `$(shell find -name *.rs)`
+	}
 
+	if isSAPCC {
 		var ignoreOptions []string
 		if cfg.GitHubWorkflow != nil {
 			for _, pattern := range cfg.GitHubWorkflow.License.IgnorePatterns {
@@ -472,6 +472,16 @@ endif
 			phony:         true,
 			target:        "static-check",
 			prerequisites: staticCheckPrerequisites,
+		})
+
+		dev.addRule(rule{
+			description: "Run goimports on all non-vendored .go files",
+			target:      "goimports",
+			phony:       true,
+			recipe: []string{
+				fmt.Sprintf(`@printf "\e[1;36m>> goimports -w -local %s\e[0m\n"`, cfg.Metadata.URL),
+				fmt.Sprintf(`@goimports -w -local %s internal/ %s`, cfg.Metadata.URL, allSourceFilesExpr),
+			},
 		})
 	}
 
