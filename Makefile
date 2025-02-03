@@ -39,7 +39,7 @@ GO_BUILDENV =
 build-all: build/go-makefile-maker
 
 build/go-makefile-maker: FORCE
-	@env $(GO_BUILDENV) go build $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -o build/go-makefile-maker .
+	env $(GO_BUILDENV) go build $(GO_BUILDFLAGS) -ldflags '-s -w $(GO_LDFLAGS)' -o build/go-makefile-maker .
 
 DESTDIR =
 ifeq ($(shell uname -s),Darwin)
