@@ -522,7 +522,7 @@ func buildTargets(binaries []core.BinaryConfiguration, sr golang.ScanResult, run
 			phony:       true,
 			target:      "build/" + bin.Name,
 			recipe: []string{fmt.Sprintf(
-				"@env $(GO_BUILDENV) go build $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -o build/%s %s",
+				"env $(GO_BUILDENV) go build $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -o build/%s %s",
 				makeDefaultLinkerFlags(bin.Name, sr),
 				bin.Name, bin.FromPackage,
 			)},
