@@ -78,6 +78,16 @@ endif
 	var prepareStaticRecipe []string
 	if isGolang {
 		prepare.addRule(rule{
+			description: "Install goimports required by goimports/static-check",
+			phony:       true,
+			target:      "install-goimports",
+			recipe: []string{
+				`@if ! hash goimports 2>/dev/null; then` +
+					` printf "\e[1;36m>> Installing goimports (this may take a while)...\e[0m\n";` +
+					` go install golang.org/x/tools/cmd/goimports@latest; fi`,
+			},
+		})
+		prepare.addRule(rule{
 			description: "Install golangci-lint required by run-golangci-lint/static-check",
 			phony:       true,
 			target:      "install-golangci-lint",
@@ -438,13 +448,13 @@ endif
 
 		if isGolang {
 			reuseConfigFile := "REUSE.toml"
-			must.Succeed(os.WriteFile(reuseConfigFile, reuseConfig, 0666))
+			must.Succeed(os.WriteFile(reuseConfigFile, reuseConfig, 0o666))
 
 			licenseRulesFile := ".license-scan-rules.json"
-			must.Succeed(os.WriteFile(licenseRulesFile, licenseRules, 0666))
+			must.Succeed(os.WriteFile(licenseRulesFile, licenseRules, 0o666))
 
 			scanOverridesFile := ".license-scan-overrides.jsonl"
-			must.Succeed(os.WriteFile(scanOverridesFile, scanOverrides, 0666))
+			must.Succeed(os.WriteFile(scanOverridesFile, scanOverrides, 0o666))
 
 			dev.addRule(rule{
 				description:   "Check all dependency licenses using go-licence-detector.",
@@ -452,7 +462,6 @@ endif
 				phony:         true,
 				prerequisites: []string{"install-go-licence-detector"},
 				recipe: []string{
-
 					`@printf "\e[1;36m>> go-licence-detector\e[0m\n"`,
 					fmt.Sprintf(`@go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules %s -overrides %s`,
 						licenseRulesFile, scanOverridesFile),
@@ -475,9 +484,10 @@ endif
 		})
 
 		dev.addRule(rule{
-			description: "Run goimports on all non-vendored .go files",
-			target:      "goimports",
-			phony:       true,
+			description:   "Run goimports on all non-vendored .go files",
+			phony:         true,
+			target:        "goimports",
+			prerequisites: []string{"install-goimports"},
 			recipe: []string{
 				fmt.Sprintf(`@printf "\e[1;36m>> goimports -w -local %s\e[0m\n"`, cfg.Metadata.URL),
 				fmt.Sprintf(`@goimports -w -local %s %s`, sr.ModulePath, allSourceFilesExpr),
