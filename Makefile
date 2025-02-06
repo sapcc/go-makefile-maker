@@ -27,10 +27,10 @@ install-golangci-lint: FORCE
 	@if ! hash golangci-lint 2>/dev/null; then printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n"; go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi
 
 install-go-licence-detector: FORCE
-	@if ! hash go-licence-detector 2>/dev/null; then printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n"; go install go.elastic.co/go-licence-detector@latest; fi
+	@if ! hash go-licence-detector 2>/dev/null; then printf "\e[1;36m>> Installing go-licence-detector (this may take a while)...\e[0m\n"; go install go.elastic.co/go-licence-detector@latest; fi
 
 install-addlicense: FORCE
-	@if ! hash addlicense 2>/dev/null; then  printf "\e[1;36m>> Installing addlicense...\e[0m\n";  go install github.com/google/addlicense@latest; fi
+	@if ! hash addlicense 2>/dev/null; then printf "\e[1;36m>> Installing addlicense (this may take a while)...\e[0m\n"; go install github.com/google/addlicense@latest; fi
 
 prepare-static-check: FORCE install-golangci-lint install-go-licence-detector install-addlicense
 

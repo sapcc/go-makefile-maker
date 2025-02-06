@@ -75,27 +75,27 @@ endif
 	// Prepare
 	prepare := category{name: "prepare"}
 
+	installTool := func(name, modulePath string) []string {
+		return []string{
+			fmt.Sprintf(`@if ! hash %s 2>/dev/null; then`, name) +
+				fmt.Sprintf(` printf "\e[1;36m>> Installing %s (this may take a while)...\e[0m\n";`, name) +
+				fmt.Sprintf(` go install %s; fi`, modulePath),
+		}
+	}
+
 	var prepareStaticRecipe []string
 	if isGolang {
 		prepare.addRule(rule{
 			description: "Install goimports required by goimports/static-check",
 			phony:       true,
 			target:      "install-goimports",
-			recipe: []string{
-				`@if ! hash goimports 2>/dev/null; then` +
-					` printf "\e[1;36m>> Installing goimports (this may take a while)...\e[0m\n";` +
-					` go install golang.org/x/tools/cmd/goimports@latest; fi`,
-			},
+			recipe:      installTool("goimports", "golang.org/x/tools/cmd/goimports@latest"),
 		})
 		prepare.addRule(rule{
 			description: "Install golangci-lint required by run-golangci-lint/static-check",
 			phony:       true,
 			target:      "install-golangci-lint",
-			recipe: []string{
-				`@if ! hash golangci-lint 2>/dev/null; then` +
-					` printf "\e[1;36m>> Installing golangci-lint (this may take a while)...\e[0m\n";` +
-					` go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest; fi`,
-			},
+			recipe:      installTool("golangci-lint", "github.com/golangci/golangci-lint/cmd/golangci-lint@latest"),
 		})
 		prepareStaticRecipe = append(prepareStaticRecipe, "install-golangci-lint")
 	}
@@ -105,11 +105,7 @@ endif
 				description: "Install-go-licence-detector required by check-dependency-licenses/static-check",
 				phony:       true,
 				target:      "install-go-licence-detector",
-				recipe: []string{
-					`@if ! hash go-licence-detector 2>/dev/null; then` +
-						` printf "\e[1;36m>> Installing go-licence-detector...\e[0m\n";` +
-						` go install go.elastic.co/go-licence-detector@latest; fi`,
-				},
+				recipe:      installTool("go-licence-detector", "go.elastic.co/go-licence-detector@latest"),
 			})
 			prepareStaticRecipe = append(prepareStaticRecipe, "install-go-licence-detector")
 		}
@@ -117,11 +113,7 @@ endif
 			description: "Install addlicense required by check-license-headers/license-headers/static-check",
 			phony:       true,
 			target:      "install-addlicense",
-			recipe: []string{
-				`@if ! hash addlicense 2>/dev/null; then ` +
-					` printf "\e[1;36m>> Installing addlicense...\e[0m\n"; ` +
-					` go install github.com/google/addlicense@latest; fi`,
-			},
+			recipe:      installTool("addlicense", "github.com/google/addlicense@latest"),
 		})
 		prepareStaticRecipe = append(prepareStaticRecipe, "install-addlicense")
 	}
@@ -137,23 +129,15 @@ endif
 		prepare.addRule(rule{
 			description: "Install controller-gen required by static-check and build-all. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
 			phony:       true,
-			recipe: []string{
-				`@if ! hash controller-gen 2>/dev/null; then` +
-					` printf "\e[1;36m>> Installing controller-gen...\e[0m\n";` +
-					` go install sigs.k8s.io/controller-tools/cmd/controller-gen@latest; fi`,
-			},
-			target: "install-controller-gen",
+			target:      "install-controller-gen",
+			recipe:      installTool("controller-gen", "sigs.k8s.io/controller-tools/cmd/controller-gen@latest"),
 		})
 
 		prepare.addRule(rule{
 			description: "Install setup-envtest required by check. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
 			phony:       true,
-			recipe: []string{
-				`@if ! hash setup-envtest 2>/dev/null; then` +
-					` printf "\e[1;36m>> Installing setup-envtest...\e[0m\n";` +
-					` go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest; fi`,
-			},
-			target: "install-setup-envtest",
+			target:      "install-setup-envtest",
+			recipe:      installTool("setup-envtest", "sigs.k8s.io/controller-runtime/tools/setup-envtest@latest"),
 		})
 	}
 
@@ -161,12 +145,8 @@ endif
 		prepare.addRule(rule{
 			description: "Install ginkgo required when using it as test runner. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
 			phony:       true,
-			recipe: []string{
-				`@if ! hash ginkgo 2>/dev/null; then` +
-					` printf "\e[1;36m>> Installing ginkgo...\e[0m\n";` +
-					` go install github.com/onsi/ginkgo/v2/ginkgo@latest; fi`,
-			},
-			target: "install-ginkgo",
+			target:      "install-ginkgo",
+			recipe:      installTool("ginkgo", "github.com/onsi/ginkgo/v2/ginkgo@latest"),
 		})
 	}
 
