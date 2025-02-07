@@ -129,6 +129,7 @@ dockerfile:
   extraBuildStages:
     - |
       FROM ghcr.io/foobar/big-toolbox AS toolbox
+      RUN toolbox-cmd
   extraDirectives:
     - 'LABEL mylabel=myvalue'
     - 'COPY --from=toolbox /bin/fancytool /usr/bin/fancytool'
