@@ -475,6 +475,26 @@ endif
 		})
 	}
 
+	if cfg.Dockerfile.Enabled {
+		dev.addDefinition(`DOCKER_CMD ?= $(shell if hash podman 2>/dev/null; then echo podman; else echo docker; fi)`)
+		dev.addDefinition(`REGISTRY ?= keppel.eu-de-1.cloud.sap/ccloud/` + filepath.Base(cfg.Metadata.URL))
+		dev.addDefinition(`TAG ?= dev-$(shell date +%Y%m%d%H%M%S)`)
+
+		dev.addRule(rule{
+			description: "Build the Dockerfile",
+			target:      "container-build",
+			phony:       true,
+			recipe:      []string{"$(DOCKER_CMD) build --build-arg BININFO_BUILD_DATE=$(BININFO_BUILD_DATE) --build-arg BININFO_COMMIT_HASH=$(BININFO_COMMIT_HASH) --build-arg BININFO_VERSION=$(BININFO_VERSION) -t $(REGISTRY):$(TAG) ."},
+		})
+		dev.addRule(rule{
+			description:   "Push the container to the registry",
+			target:        "container-push",
+			prerequisites: []string{"container-build"},
+			phony:         true,
+			recipe:        []string{"$(DOCKER_CMD) push $(REGISTRY):$(TAG) ."},
+		})
+	}
+
 	// add cleaning target
 	dev.addRule(rule{
 		description: "Run git clean.",
