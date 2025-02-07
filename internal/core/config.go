@@ -176,6 +176,7 @@ type RenovateConfig struct {
 type DockerfileConfig struct {
 	Enabled          bool     `yaml:"enabled"`
 	Entrypoint       []string `yaml:"entrypoint"`
+	ExtraBuildStages []string `yaml:"extraBuildStages"`
 	ExtraDirectives  []string `yaml:"extraDirectives"`
 	ExtraIgnores     []string `yaml:"extraIgnores"`
 	ExtraPackages    []string `yaml:"extraPackages"`

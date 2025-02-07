@@ -77,6 +77,11 @@ func RenderConfig(cfg core.Configuration) {
 		firstBinary = false
 	}
 
+	extraBuildStages := ""
+	for _, stage := range cfg.Dockerfile.ExtraBuildStages {
+		extraBuildStages += fmt.Sprintf("%s\n\n%s\n\n", strings.TrimSpace(stage), strings.Repeat("#", 80))
+	}
+
 	extraDirectives := strings.Join(cfg.Dockerfile.ExtraDirectives, "\n")
 	if extraDirectives != "" {
 		extraDirectives += "\n"
@@ -98,38 +103,38 @@ func RenderConfig(cfg core.Configuration) {
 	runCommands := strings.Join(commands, " \\\n  && ")
 
 	dockerfile := fmt.Sprintf(
-		`FROM golang:%[1]s-alpine%[2]s AS builder
+		`%[1]sFROM golang:%[2]s-alpine%[3]s AS builder
 
 RUN apk add --no-cache --no-progress ca-certificates gcc git make musl-dev
 
 COPY . /src
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION # provided to 'make install'
-RUN make -C /src install PREFIX=/pkg GOTOOLCHAIN=local%[3]s
+RUN make -C /src install PREFIX=/pkg GOTOOLCHAIN=local%[4]s
 
 ################################################################################
 
-FROM alpine:%[2]s
+FROM alpine:%[3]s
 
-%[4]s# upgrade all installed packages to fix potential CVEs in advance
+%[5]s# upgrade all installed packages to fix potential CVEs in advance
 # also remove apk package manager to hopefully remove dependency on OpenSSL 🤞
-RUN %[5]s
+RUN %[6]s
 
 COPY --from=builder /etc/ssl/certs/ /etc/ssl/certs/
 COPY --from=builder /etc/ssl/cert.pem /etc/ssl/cert.pem
 COPY --from=builder /pkg/ /usr/
 # make sure all binaries can be executed
-%[6]s
+%[7]s
 
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
-LABEL source_repository="%[7]s" \
-  org.opencontainers.image.url="%[7]s" \
+LABEL source_repository="%[8]s" \
+  org.opencontainers.image.url="%[8]s" \
   org.opencontainers.image.created=${BININFO_BUILD_DATE} \
   org.opencontainers.image.revision=${BININFO_COMMIT_HASH} \
   org.opencontainers.image.version=${BININFO_VERSION}
 
-%[8]s%[9]sWORKDIR %[10]s
-ENTRYPOINT [ %[11]s ]
-`, core.DefaultGoVersion, core.DefaultAlpineImage, goBuildflags, addUserGroup, runCommands, runVersionArg, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
+%[9]s%[10]sWORKDIR %[11]s
+ENTRYPOINT [ %[12]s ]
+`, extraBuildStages, core.DefaultGoVersion, core.DefaultAlpineImage, goBuildflags, addUserGroup, runCommands, runVersionArg, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 
