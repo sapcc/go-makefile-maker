@@ -126,8 +126,12 @@ Since only entire packages (not single source files) can be selected for coverag
 dockerfile:
   enabled: true
   entrypoint: [ "/bin/bash", "--", "--arg" ]
+  extraBuildStages:
+    - |
+      FROM ghcr.io/foobar/big-toolbox AS toolbox
   extraDirectives:
-    - 'LABEL mylabel=myvalu'
+    - 'LABEL mylabel=myvalue'
+    - 'COPY --from=toolbox /bin/fancytool /usr/bin/fancytool'
   extraIgnores:
     - tmp
     - files
@@ -148,6 +152,7 @@ As an additional smoke test, the compiled binaries are invoked with the `--versi
 With [go-api-declarations](https://github.com/sapcc/go-api-declarations)'s [`bininfo.HandleVersionArgument` function](https://pkg.go.dev/github.com/sapcc/go-api-declarations/bininfo#HandleVersionArgument), this can be implemented in one line. If you are using Cobra or any other library to handle arguments, the [`bininfo.Version` function](https://pkg.go.dev/github.com/sapcc/go-api-declarations/bininfo#Version) is recommended instead.
 
 * `entrypoint` allows overwriting the final entrypoint.
+* `extraBuildStages` prepends additional build stages at the top of the Dockerfile. This is useful for bringing in precompiled assets from other images, or if a non-Go compilation step is required.
 * `extraDirectives` appends additional directives near the end of the Dockerfile.
 * `extraIgnores` appends entries in `.dockerignore` to the default ones.
 * `extraPackages` installs extra Alpine packages in the final Docker layer. `ca-certificates` is always installed.
