@@ -152,7 +152,6 @@ linters-settings:
 		time-weekday: true
 		tls-signature-scheme: true
 	usetesting:
-		os-setenv: true
 		os-temp-dir: true
 	whitespace:
 		# Enforce newlines (or comments) after multi-line function signatures.
@@ -200,7 +199,6 @@ linters:
 		- sqlclosecheck
 		- staticcheck
 		- stylecheck
-		- tenv
 		- typecheck
 		- unconvert
 		- unparam
