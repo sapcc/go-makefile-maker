@@ -53,7 +53,7 @@ The config file has the following sections:
 * [dockerfile](#dockerfile)
 * [golang](#golang)
 * [golangciLint](#golangcilint)
-* [GoReleaser](#goreleaser)
+* [goReleaser](#goreleaser)
 * [makefile](#makefile)
 * [metadata](#metadata)
 * [renovate](#renovate)
@@ -207,17 +207,17 @@ for function signatures that `errcheck` accepts.
 
 Take a look at `go-makefile-maker`'s own [`golangci-lint` config file](./.golangci.yaml) for an up-to-date example of what the generated config would look like.
 
-### `goreleaser`
+### `goReleaser`
 
 ```yaml
-goreleaser:
+goReleaser:
   createConfig: true
   binaryName: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
   format: .tar.gz
   nameTemplate: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 ```
 
-If `goreleaser.createConfig` is set to true or it is unset but the release GitHub Workflow is enabled, a config file for goreleaser will be generated based on the metadata of the repository.
+If `goReleaser.createConfig` is set to true or it is unset but the release GitHub Workflow is enabled, a config file for goreleaser will be generated based on the metadata of the repository.
 The `format` option can be used to only upload binaries. It corresponds to the upstream archives[].format option. See <https://goreleaser.com/customization/archive/> for more details.
 The `binaryName` option can be used to change the name of the compiled binaries. It corresponds to the upstream builds[].binary option. This is only really useful when format is set to binary. It defaults to name of the first entry in the binaries option.
 The `nameTemplate` option can be used to change the name of uploaded release artefacts. It corresponds to the upstream archives[].name_template option.
@@ -475,7 +475,7 @@ pushContainerToGhcr:
 
 If `release` is enabled a workflow is generated which creates a new GitHub release using goreleaser when a git tag is pushed.
 
-`goreleaser.enabled` will be enabled automatically when the option isn't set yet.
+`goReleaser.enabled` will be enabled automatically when the option isn't set yet.
 
 #### `githubWorkflow.securityChecks`
 
