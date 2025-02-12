@@ -137,6 +137,7 @@ linters-settings:
 	{{- end }}
 	stylecheck:
 		dot-import-whitelist:
+			- github.com/majewsky/gg/option
 			- github.com/onsi/ginkgo/v2
 			- github.com/onsi/gomega
 	usestdlibvars:
