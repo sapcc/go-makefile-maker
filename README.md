@@ -270,9 +270,12 @@ renovate:
       matchUpdateTypes: []
       matchDepTypes: []
       matchFileNames: []
+      extends: []
       allowedVersions: ""
+      minimumReleaseAge: ""
       autoMerge: false
       enabled: false
+  customManagers: []
 ```
 
 Generate [RenovateBot](https://renovatebot.com/) config to automatically create pull requests weekly on Fridays with dependency updates.
@@ -304,6 +307,23 @@ packageRules:
     enabled: false # see githubWorkflow config section below
   - matchDepTypes: [ dockerfile ]
     enabled: false # see docker config section above
+```
+
+You can also define [`customManagers`](https://docs.renovatebot.com/modules/manager/regex/). An example to detect `ENVTEST_K8S_VERSION` env variable version and update it in `Makefile`
+
+```yaml
+customManagers:
+  - customType: "regex"
+    description: "Bump envtest version in the Makefile"
+    fileMatch: [
+      "^Makefile$"
+    ]
+    matchStrings: [
+      "ENVTEST_K8S_VERSION\\s*\\?=\\s*(?<currentValue>.?(?:\\d+\\.){0,2}\\d+)"
+    ]
+    datasourceTemplate: "github-tags"
+    depNameTemplate: "kubernetes-sigs/controller-tools"
+    extractVersionTemplate: "^envtest.v(?<version>.*)$"
 ```
 
 ### `spellCheck`

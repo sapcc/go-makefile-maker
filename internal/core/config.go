@@ -158,18 +158,21 @@ type PackageRule struct {
 	MatchUpdateTypes  []string `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
 	MatchDepTypes     []string `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
 	MatchFileNames    []string `yaml:"matchFileNames" json:"matchFileNames,omitempty"`
+	Extends           []string `yaml:"extends" json:"extends,omitempty"`
 	AllowedVersions   string   `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
 	AutoMerge         bool     `yaml:"automerge" json:"automerge,omitempty"`
 	EnableRenovate    *bool    `yaml:"enabled" json:"enabled,omitempty"`
 	GroupName         string   `yaml:"groupName" json:"groupName,omitempty"`
+	MinimumReleaseAge string   `yaml:"minimumReleaseAge" json:"minimumReleaseAge,omitempty"`
 }
 
 // RenovateConfig appears in type Configuration.
 type RenovateConfig struct {
-	Enabled      bool          `yaml:"enabled"`
-	Assignees    []string      `yaml:"assignees"`
-	GoVersion    string        `yaml:"goVersion"`
-	PackageRules []PackageRule `yaml:"packageRules"`
+	Enabled        bool          `yaml:"enabled"`
+	Assignees      []string      `yaml:"assignees"`
+	GoVersion      string        `yaml:"goVersion"`
+	PackageRules   []PackageRule `yaml:"packageRules"`
+	CustomManagers []interface{} `yaml:"customManagers"`
 }
 
 // DockerfileConfig appears in type Configuration.

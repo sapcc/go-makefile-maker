@@ -28,13 +28,10 @@ type config struct {
 	OsvVulnerabilityAlerts                     bool               `json:"osvVulnerabilityAlerts,omitempty"`
 	PostUpdateOptions                          []string           `json:"postUpdateOptions,omitempty"`
 	PackageRules                               []core.PackageRule `json:"packageRules,omitempty"`
+	CustomManagers                             []interface{}      `json:"customManagers,omitempty"`
 	PrHourlyLimit                              int                `json:"prHourlyLimit"`
 	Schedule                                   []string           `json:"schedule,omitempty"`
 	SemanticCommits                            string             `json:"semanticCommits,omitempty"`
-}
-
-func (c *config) addPackageRule(rule core.PackageRule) {
-	c.PackageRules = append(c.PackageRules, rule)
 }
 
 func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult, url string, isApplicationRepo bool) {
@@ -90,20 +87,20 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 		//
 		// NOTE: When changing this list, please also adjust the documentation for
 		// default package rules in the README.
-		cfg.addPackageRule(core.PackageRule{
+		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
 			MatchPackageNames: []string{"golang"},
 			AllowedVersions:   cfgRenovate.GoVersion + ".x",
 		})
 
 		// combine and automerge all dependencies under github.com/sapcc/
-		cfg.addPackageRule(core.PackageRule{
+		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
 			MatchPackageNames: []string{`/^github\.com\/sapcc\/.*/`},
 			GroupName:         "github.com/sapcc",
 			AutoMerge:         true,
 		})
 
 		// combine all dependencies not under github.com/sapcc/
-		cfg.addPackageRule(core.PackageRule{
+		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
 			MatchPackageNames: []string{`!/^github\.com\/sapcc\/.*/`, `/.*/`},
 			GroupName:         "External dependencies",
 			AutoMerge:         false,
@@ -123,7 +120,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 		}
 	}
 	if hasK8sIOPkgs {
-		cfg.addPackageRule(core.PackageRule{
+		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
 			MatchPackageNames: []string{`/^k8s.io\//`},
 			// Since our clusters use k8s v1.26 and k8s has a support policy of -/+ 1 minor version we set the allowedVersions to `0.27.x`.
 			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.x instead of 1.x.
@@ -138,9 +135,13 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 	// Renovate will evaluate all packageRules and not stop once it gets a first match
 	// therefore the packageRules should be in the order of importance so that user
 	// defined rules can override settings from earlier rules.
-	for _, rule := range cfgRenovate.PackageRules {
-		cfg.addPackageRule(rule)
-	}
+	cfg.PackageRules = append(cfg.PackageRules, cfgRenovate.PackageRules...)
+
+	// CustomManagers specified in config.
+	//
+	// With customManagers using regex you can configure Renovate so it finds dependencies
+	// that are not detected by its other built-in package managers.
+	cfg.CustomManagers = append(cfg.CustomManagers, cfgRenovate.CustomManagers...)
 
 	must.Succeed(os.MkdirAll(".github", 0750))
 	must.Succeed(os.RemoveAll("renovate.json"))
