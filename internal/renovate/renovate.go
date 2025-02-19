@@ -19,22 +19,27 @@ type constraints struct {
 }
 
 type config struct {
-	Schema                                     string             `json:"$schema"`
-	Extends                                    []string           `json:"extends"`
-	Assignees                                  []string           `json:"assignees,omitempty"`
-	CommitMessageAction                        string             `json:"commitMessageAction,omitempty"`
-	Constraints                                *constraints       `json:"constraints,omitempty"`
-	DependencyDashboardOSVVulnerabilitySummary string             `json:"dependencyDashboardOSVVulnerabilitySummary,omitempty"`
-	OsvVulnerabilityAlerts                     bool               `json:"osvVulnerabilityAlerts,omitempty"`
-	PostUpdateOptions                          []string           `json:"postUpdateOptions,omitempty"`
-	PackageRules                               []core.PackageRule `json:"packageRules,omitempty"`
-	PrHourlyLimit                              int                `json:"prHourlyLimit"`
-	Schedule                                   []string           `json:"schedule,omitempty"`
-	SemanticCommits                            string             `json:"semanticCommits,omitempty"`
+	Schema                                     string               `json:"$schema"`
+	Extends                                    []string             `json:"extends"`
+	Assignees                                  []string             `json:"assignees,omitempty"`
+	CommitMessageAction                        string               `json:"commitMessageAction,omitempty"`
+	Constraints                                *constraints         `json:"constraints,omitempty"`
+	DependencyDashboardOSVVulnerabilitySummary string               `json:"dependencyDashboardOSVVulnerabilitySummary,omitempty"`
+	OsvVulnerabilityAlerts                     bool                 `json:"osvVulnerabilityAlerts,omitempty"`
+	PostUpdateOptions                          []string             `json:"postUpdateOptions,omitempty"`
+	PackageRules                               []core.PackageRule   `json:"packageRules,omitempty"`
+	CustomManagers                             []core.CustomManager `json:"customManagers,omitempty"`
+	PrHourlyLimit                              int                  `json:"prHourlyLimit"`
+	Schedule                                   []string             `json:"schedule,omitempty"`
+	SemanticCommits                            string               `json:"semanticCommits,omitempty"`
 }
 
 func (c *config) addPackageRule(rule core.PackageRule) {
 	c.PackageRules = append(c.PackageRules, rule)
+}
+
+func (c *config) addCustomManagers(managers core.CustomManager) {
+	c.CustomManagers = append(c.CustomManagers, managers)
 }
 
 func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult, url string, isApplicationRepo bool) {
@@ -140,6 +145,15 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 	// defined rules can override settings from earlier rules.
 	for _, rule := range cfgRenovate.PackageRules {
 		cfg.addPackageRule(rule)
+	}
+
+	// CustomManagers specified in config.
+	//
+	// using Regex
+	// With customManagers using regex you can configure Renovate so it finds dependencies
+	// that are not detected by its other built-in package managers.
+	for _, manager := range cfgRenovate.CustomManagers {
+		cfg.addCustomManagers(manager)
 	}
 
 	must.Succeed(os.MkdirAll(".github", 0750))
