@@ -427,8 +427,13 @@ endif
 		})
 
 		if isGolang {
-			reuseConfigFile := "REUSE.toml"
-			must.Succeed(os.WriteFile(reuseConfigFile, reuseConfig, 0o666))
+			// If disabled, the REUSE.toml file should not be overridden.
+			// This is useful if the project needs additional information in
+			// the REUSE.toml file, e.g., specific disclaimers.
+			if cfg.Reuse.Enabled == nil || *cfg.Reuse.Enabled {
+				reuseConfigFile := "REUSE.toml"
+				must.Succeed(os.WriteFile(reuseConfigFile, reuseConfig, 0o666))
+			}
 
 			licenseRulesFile := ".license-scan-rules.json"
 			must.Succeed(os.WriteFile(licenseRulesFile, licenseRules, 0o666))
