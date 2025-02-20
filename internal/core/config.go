@@ -39,6 +39,7 @@ type Configuration struct {
 	Renovate       RenovateConfig               `yaml:"renovate"`
 	SpellCheck     SpellCheckConfiguration      `yaml:"spellCheck"`
 	Test           TestConfiguration            `yaml:"testPackages"`
+	Reuse          ReuseConfiguration           `yaml:"reuse"`
 	Verbatim       string                       `yaml:"verbatim"`
 	VariableValues map[string]string            `yaml:"variables"`
 }
@@ -67,6 +68,11 @@ type BinaryConfiguration struct {
 type TestConfiguration struct {
 	Only   string `yaml:"only"`
 	Except string `yaml:"except"`
+}
+
+// ReuseConfiguration appears in type Configuration.
+type ReuseConfiguration struct {
+	Enabled *bool `yaml:"enabled"`
 }
 
 // CoverageConfiguration appears in type Configuration.
