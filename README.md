@@ -55,6 +55,7 @@ The config file has the following sections:
 * [golangciLint](#golangcilint)
 * [goReleaser](#goreleaser)
 * [makefile](#makefile)
+* [reuse](#reuse)
 * [metadata](#metadata)
 * [renovate](#renovate)
 * [spellCheck](#spellcheck)
@@ -233,6 +234,18 @@ makefile:
 `makefile` contains settings related to the higher level `Makefile` generation.
 
 `enabled` is an optional setting to disable the `Makefile` generation completely.
+If not specified, the setting is treated as being set to true to maintain backwards compatibility with older configs.
+
+### `reuse`
+
+```yaml
+reuse:
+  enabled: false
+```
+
+`reuse` contains settings related to the [REUSE](https://reuse.software/) config generation.
+
+`enabled` is an optional setting to disable the REUSE config generation completely.
 If not specified, the setting is treated as being set to true to maintain backwards compatibility with older configs.
 
 ### `metadata`
