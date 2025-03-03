@@ -5,7 +5,7 @@
     "default:pinDigestsDisabled",
     "mergeConfidence:all-badges",
     "docker:enableMajor",
-    "regexManagers:dockerfileVersions"
+    "customManagers:dockerfileVersions"
   ],
   "assignees": [
     "SuperSandro2000"
