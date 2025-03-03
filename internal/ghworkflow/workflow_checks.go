@@ -23,8 +23,6 @@ func checksWorkflow(cfg core.Configuration) {
 		Name: "Run golangci-lint",
 		Uses: core.GolangciLintAction,
 		With: map[string]any{
-			// disabled until https://github.com/golangci/golangci-lint/pull/5501 is resolved
-			"verify":  false,
 			"version": "latest",
 		},
 	})
