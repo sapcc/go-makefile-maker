@@ -6,6 +6,7 @@ package core
 import (
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/sapcc/go-bits/logg"
 )
@@ -90,9 +91,10 @@ type GolangConfiguration struct {
 
 // GolangciLintConfiguration appears in type Configuration.
 type GolangciLintConfiguration struct {
-	CreateConfig     bool     `yaml:"createConfig"`
-	ErrcheckExcludes []string `yaml:"errcheckExcludes"`
-	SkipDirs         []string `yaml:"skipDirs"`
+	CreateConfig     bool          `yaml:"createConfig"`
+	ErrcheckExcludes []string      `yaml:"errcheckExcludes"`
+	SkipDirs         []string      `yaml:"skipDirs"`
+	Timeout          time.Duration `yaml:"timeout"`
 }
 
 type GoReleaserConfiguration struct {

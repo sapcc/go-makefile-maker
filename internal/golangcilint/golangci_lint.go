@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/sapcc/go-bits/must"
 
@@ -18,7 +19,7 @@ import (
 
 var configTmpl = template.Must(template.New("golangci").Parse(strings.TrimSpace(strings.ReplaceAll(`
 run:
-	timeout: 3m # 1m by default
+	timeout: {{ .Timeout }} # 1m by default
 	modules-download-mode: {{ .ModDownloadMode }}
 
 output:
@@ -215,12 +216,18 @@ type configTmplData struct {
 	MisspellIgnoreWords []string
 	ErrcheckExcludes    []string
 	SkipDirs            []string
+	Timeout             time.Duration
 }
 
 func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	mode := "readonly"
 	if cfg.Golang.EnableVendoring {
 		mode = "vendor"
+	}
+
+	timeout := 3 * time.Minute
+	if cfg.GolangciLint.Timeout != 0 {
+		timeout = cfg.GolangciLint.Timeout
 	}
 
 	f := must.Return(os.Create(".golangci.yaml"))
@@ -232,6 +239,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		MisspellIgnoreWords: cfg.SpellCheck.IgnoreWords,
 		ErrcheckExcludes:    cfg.GolangciLint.ErrcheckExcludes,
 		SkipDirs:            cfg.GolangciLint.SkipDirs,
+		Timeout:             timeout,
 	}))
 	fmt.Fprintln(f) // empty line at end
 
