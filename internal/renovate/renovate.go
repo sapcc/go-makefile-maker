@@ -109,7 +109,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 
 	// Only enable Dockerfile and github-actions updates for go-makefile-maker itself.
 	if isGoMakefileMakerRepo {
-		cfg.Extends = append(cfg.Extends, "docker:enableMajor", "regexManagers:dockerfileVersions")
+		cfg.Extends = append(cfg.Extends, "docker:enableMajor", "customManagers:dockerfileVersions")
 	} else {
 		cfg.Extends = append(cfg.Extends, "docker:disable")
 	}
