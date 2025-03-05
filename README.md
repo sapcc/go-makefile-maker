@@ -94,7 +94,7 @@ controllerGen:
   enabled: true
   crdOutputPath: config/crd/bases
   objectHeaderFile: boilerplate.go.txt
-  rbacRoleName: manager-role crd webhook
+  rbacRoleName: manager-role
 ```
 
 Customization options for controller-gen.
