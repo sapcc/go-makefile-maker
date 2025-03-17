@@ -16,6 +16,10 @@ Generates a Makefile and optionally also GitHub workflows and a Dockerfile for y
   codebase for security issues (e.g. [CodeQL] code scanning), spelling errors, and missing
   license headers.
 
+This project is based on the idea to have as many options as necessary but as little as possible.
+Not every part of the program is configurable (see #configuration), some things are hardcoded or implicit (see #implicit-configuration).
+If more options are required or some assumptions are wrong, please get in touch.
+
 ## Installation
 
 The easiest way to get `go-makefile-maker` is: `go install github.com/sapcc/go-makefile-maker@latest`.
@@ -38,7 +42,15 @@ $ go-makefile-maker
 $ make help
 ```
 
-In addition to the `Makefile`, you should also commit the `Makefile.maker.yaml` file so that your users don't need to have `go-makefile-maker` installed.
+In addition to the `Makefile.maker.yaml`, you should also commit the `Makefile` file so that your users don't need to have `go-makefile-maker` installed.
+
+## Implicit Configuration
+
+### Dependency licenses
+
+The `check-dependency-licenses` make target and the `checks` github workflow use (go-licence-detector)[go-licence-detector] to check all dependencies to have compliant licenses.
+See [license-scan-rules.json](./internal/makefile/license-scan-rules.json) for an incomplete list of licenses which is based on [SPDX licenses](https://spdx.org/licenses/) and [the internal risk analysis](https://wiki.one.int.sap/wiki/display/ospodocs/Licenses#Licenses-OpenSourceLicensesCategorization).
+If the automatic license detection is not working, overrides can be specific in the [license-scan-overrides.jsonl](./internal/makefile/license-scan-overrides.jsonl) file.
 
 ## Configuration
 
@@ -555,6 +567,7 @@ license:
 [codeql]: https://codeql.github.com/
 [coveralls]: https://coveralls.io
 [doublestar-pattern]: https://github.com/bmatcuk/doublestar#patterns
+[go-licence-detector]: https://github.com/elastic/go-licence-detector
 [govulncheck]: https://github.com/golang/vuln
 [misspell]: https://github.com/client9/misspell
 [ref-onpushpull]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths
