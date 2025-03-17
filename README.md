@@ -537,7 +537,7 @@ securityChecks:
 
 #### `githubWorkflow.license`
 
-This workflow uses [`addlicense`][addlicense`] to ensure that all your Go source code files have a license header.
+This workflow uses [`addlicense`][addlicense] to ensure that all your Go source code files have a license header.
 If vendoring is enabled, the `vendor/` directory is always entirely ignored by this workflow.
 
 ```yaml
