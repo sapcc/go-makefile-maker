@@ -18,6 +18,9 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
+//go:embed editorconfig
+var editorconfig []byte
+
 //go:embed REUSE.toml
 var reuseConfig []byte
 
@@ -434,6 +437,8 @@ endif
 				reuseConfigFile := "REUSE.toml"
 				must.Succeed(os.WriteFile(reuseConfigFile, reuseConfig, 0o666))
 			}
+
+			must.Succeed(os.WriteFile(".editorconfig", editorconfig, 0o666))
 
 			licenseRulesFile := ".license-scan-rules.json"
 			must.Succeed(os.WriteFile(licenseRulesFile, licenseRules, 0o666))
