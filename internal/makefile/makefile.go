@@ -98,7 +98,7 @@ endif
 			description: "Install golangci-lint required by run-golangci-lint/static-check",
 			phony:       true,
 			target:      "install-golangci-lint",
-			recipe:      installTool("golangci-lint", "github.com/golangci/golangci-lint/cmd/golangci-lint@latest"),
+			recipe:      installTool("golangci-lint", "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"),
 		})
 		prepareStaticRecipe = append(prepareStaticRecipe, "install-golangci-lint")
 	}
