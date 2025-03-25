@@ -185,10 +185,10 @@ golang:
 Set `golang.enableVendoring` to `true` if you vendor all dependencies in your repository. With vendoring enabled:
 
 1. The default for `GO_BUILDFLAGS` is set to `-mod vendor`, so that build targets default to using vendored dependencies.
-   This means that building binaries does not require a network connection.
+  This means that building binaries does not require a network connection.
 2. The `make tidy-deps` target is replaced by a `make vendor` target that runs `go mod tidy && go mod verify` just like `make tidy-deps`, but also runs `go
-   mod vendor`.
-   This target can be used to get the vendor directory up-to-date before commits.
+  mod vendor`.
+  This target can be used to get the vendor directory up-to-date before commits.
 
 If `golang.setGoModVersion` is set to `true` then `go.mod` will be automatically updated to the latest version.
 The `ldflags` option can be used to share flags between the Makefile and GoReleaser.
