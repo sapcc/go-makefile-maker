@@ -113,8 +113,8 @@ func RenderConfig(cfg core.Configuration) {
 
 		for _, name := range names {
 			value := cfg.Golang.LdFlags[name]
-			ldflags += fmt.Sprintf(`
-			- %s={{.Env.%s}}`, name, value)
+			ldflags += fmt.Sprintf(strings.ReplaceAll(`
+			- %s={{.Env.%s}}`, "\t", "  "), name, value)
 		}
 	}
 
