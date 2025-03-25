@@ -29,7 +29,7 @@ const (
 	CodeqlAnalyzeAction   = "github/codeql-action/analyze@v3"
 	CodeqlAutobuildAction = "github/codeql-action/autobuild@v3"
 
-	GolangciLintAction = "golangci/golangci-lint-action@v6"
+	GolangciLintAction = "golangci/golangci-lint-action@v7"
 	GoreleaserAction   = "goreleaser/goreleaser-action@v6"
 	MisspellAction     = "reviewdog/action-misspell@v1"
 )

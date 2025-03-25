@@ -16,7 +16,7 @@ import (
 )
 
 func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserConfig bool) {
-	nixShellTemplate := `# Copyright 2024 SAP SE
+	nixShellTemplate := strings.ReplaceAll(`# Copyright 2024 SAP SE
 # SPDX-License-Identifier: Apache-2.0
 
 { pkgs ? import <nixpkgs> { } }:
@@ -24,13 +24,13 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 with pkgs;
 
 mkShell {
-  nativeBuildInputs = [
+	nativeBuildInputs = [
 %s
-    # keep this line if you use bash
-    bashInteractive
-  ];
+		# keep this line if you use bash
+		bashInteractive
+	];
 }
-`
+`, "\t", "  ")
 
 	goVersionSlice := strings.Split(core.DefaultGoVersion, ".")
 	goPackage := fmt.Sprintf("go_%s_%s", goVersionSlice[0], goVersionSlice[1])
@@ -71,15 +71,15 @@ mkShell {
 	nixShellFile := fmt.Sprintf(nixShellTemplate, packageList)
 	must.Succeed(os.WriteFile("shell.nix", []byte(nixShellFile), 0666))
 
-	must.Succeed(os.WriteFile(".envrc", []byte(`#!/usr/bin/env bash
+	must.Succeed(os.WriteFile(".envrc", []byte(strings.ReplaceAll(`#!/usr/bin/env bash
 # SPDX-FileCopyrightText: 2019–2020 Target, Copyright 2021 The Nix Community
 # SPDX-License-Identifier: Apache-2.0
 if type -P lorri &>/dev/null; then
-  eval "$(lorri direnv)"
+	eval "$(lorri direnv)"
 elif type -P nix &>/dev/null; then
-  use nix
+	use nix
 else
-  echo "Found no nix binary. Skipping activating nix-shell..."
+	echo "Found no nix binary. Skipping activating nix-shell..."
 fi
-`), 0666))
+`, "\t", "  ")), 0666))
 }

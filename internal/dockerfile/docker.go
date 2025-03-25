@@ -35,10 +35,10 @@ func RenderConfig(cfg core.Configuration) {
 		// requiring an explicit `runAsUser: 4200` setting in the container spec
 		userCommand = "USER 4200:4200\n"
 		workingDir = "/home/appuser"
-		addUserGroup = `RUN addgroup -g 4200 appgroup \
-  && adduser -h /home/appuser -s /sbin/nologin -G appgroup -D -u 4200 appuser
+		addUserGroup = strings.ReplaceAll(`RUN addgroup -g 4200 appgroup \
+	&& adduser -h /home/appuser -s /sbin/nologin -G appgroup -D -u 4200 appuser
 
-`
+`, "\t", "  ")
 	}
 
 	// if there is an entrypoint configured use that otherwise fallback to the binary name
@@ -70,8 +70,8 @@ func RenderConfig(cfg core.Configuration) {
 			continue
 		}
 		if !firstBinary {
-			runVersionArg += ` \
-  && `
+			runVersionArg += strings.ReplaceAll(` \
+	&& `, "\t", "  ")
 		}
 		runVersionArg += binary.Name + " --version 2>/dev/null"
 		firstBinary = false
@@ -102,8 +102,7 @@ func RenderConfig(cfg core.Configuration) {
 
 	runCommands := strings.Join(commands, " \\\n  && ")
 
-	dockerfile := fmt.Sprintf(
-		`%[1]sFROM golang:%[2]s-alpine%[3]s AS builder
+	dockerfile := fmt.Sprintf(strings.ReplaceAll(`%[1]sFROM golang:%[2]s-alpine%[3]s AS builder
 
 RUN apk add --no-cache --no-progress ca-certificates gcc git make musl-dev
 
@@ -127,14 +126,14 @@ COPY --from=builder /pkg/ /usr/
 
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
 LABEL source_repository="%[8]s" \
-  org.opencontainers.image.url="%[8]s" \
-  org.opencontainers.image.created=${BININFO_BUILD_DATE} \
-  org.opencontainers.image.revision=${BININFO_COMMIT_HASH} \
-  org.opencontainers.image.version=${BININFO_VERSION}
+	org.opencontainers.image.url="%[8]s" \
+	org.opencontainers.image.created=${BININFO_BUILD_DATE} \
+	org.opencontainers.image.revision=${BININFO_COMMIT_HASH} \
+	org.opencontainers.image.version=${BININFO_VERSION}
 
 %[9]s%[10]sWORKDIR %[11]s
 ENTRYPOINT [ %[12]s ]
-`, extraBuildStages, core.DefaultGoVersion, core.DefaultAlpineImage, goBuildflags, addUserGroup, runCommands, runVersionArg, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
+`, "\t", "  "), extraBuildStages, core.DefaultGoVersion, core.DefaultAlpineImage, goBuildflags, addUserGroup, runCommands, runVersionArg, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 
