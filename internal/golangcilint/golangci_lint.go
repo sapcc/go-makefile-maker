@@ -203,16 +203,13 @@ linters:
 			- linters:
 					- goconst
 				path: (.+)_test\.go
-			{{- if .SkipDirs }}
-			{{- range .SkipDirs }}
-			- path:
-				- {{ . }}
-			{{- end }}
-			{{- end }}
 		paths:
 			- third_party$
 			- builtin$
 			- examples$
+			{{- range .SkipDirs }}
+			- {{ . }}
+			{{- end }}
 
 output:
   formats:
