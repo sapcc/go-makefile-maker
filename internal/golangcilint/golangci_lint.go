@@ -159,7 +159,7 @@ linters:
 			require-specific: true
 		{{- if .MisspellIgnoreWords }}
 		misspell:
-			ignore-words:
+			ignore-rules:
 				{{- range .MisspellIgnoreWords }}
 				- {{ . }}
 				{{- end }}
