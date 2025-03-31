@@ -287,6 +287,7 @@ endif
 			prerequisites: []string{"install-golangci-lint"},
 			recipe: []string{
 				`@printf "\e[1;36m>> golangci-lint\e[0m\n"`,
+				`@golangci-lint config verify`,
 				`@golangci-lint run`,
 			},
 		})
