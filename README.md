@@ -275,11 +275,17 @@ metadata:
 
 ```yaml
 nix:
+  extraLibraries:
+    - curl
   extraPackages:
     - mockgen
+    - pkg-config
 ```
 
-`extraPackages` extra packages to add to the generated `shell.nix` file. This is useful if entries in `verbatim` require additional tools. See <https://search.nixos.org/> for available packages.
+`extraLibraries` extra packages to add to buildInputs in the generated `shell.nix` file. This is useful for libraries like curl for go-curl.
+`extraPackages` extra packages to add to nativeBuildInputs in the generated `shell.nix` file. This is useful if entries in `verbatim` require additional tools.
+
+ See <https://search.nixos.org/> for available packages and libraries.
 
 ### `renovate`
 

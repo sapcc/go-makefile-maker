@@ -211,7 +211,8 @@ type Metadata struct {
 }
 
 type NixConfig struct {
-	ExtraPackages []string `yaml:"extraPackages"`
+	ExtraLibraries []string `yaml:"extraLibraries"`
+	ExtraPackages  []string `yaml:"extraPackages"`
 }
 
 ///////////////////////////////////////////////////////////////////////////////

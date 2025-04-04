@@ -28,7 +28,7 @@ mkShell {
 %s
 		# keep this line if you use bash
 		bashInteractive
-	];
+	];%s
 }
 `, "\t", "  ")
 
@@ -68,7 +68,16 @@ mkShell {
 		packageList += fmt.Sprintf("    %s\n", pkg)
 	}
 
-	nixShellFile := fmt.Sprintf(nixShellTemplate, packageList)
+	var libraryList string
+	if len(cfg.Nix.ExtraLibraries) > 0 {
+		libraryList = "\n\n  buildInputs = [\n"
+		for _, lib := range cfg.Nix.ExtraLibraries {
+			libraryList += fmt.Sprintf("    %s\n", lib)
+		}
+		libraryList += "  ];"
+	}
+
+	nixShellFile := fmt.Sprintf(nixShellTemplate, packageList, libraryList)
 	must.Succeed(os.WriteFile("shell.nix", []byte(nixShellFile), 0666))
 
 	must.Succeed(os.WriteFile(".envrc", []byte(strings.ReplaceAll(`#!/usr/bin/env bash
