@@ -102,6 +102,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 		// combine all dependencies not under github.com/sapcc/
 		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
 			MatchPackageNames: []string{`!/^github\.com\/sapcc\/.*/`, `/.*/`},
+			MatchUpdateTypes:  []string{"minor", "patch"},
 			GroupName:         "External dependencies",
 			AutoMerge:         false,
 		})
