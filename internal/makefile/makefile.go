@@ -193,7 +193,7 @@ endif
 
 	if hasBinaries {
 		build.addRule(buildTargets(cfg.Binaries, sr, runControllerGen)...)
-		if r, ok := installTarget(cfg.Binaries); ok {
+		if r, ok := installTarget(cfg.Binaries, &cfg); ok {
 			build.addRule(r)
 		}
 	}
@@ -555,7 +555,7 @@ func makeDefaultLinkerFlags(binaryName string, sr golang.ScanResult) string {
 }
 
 // installTarget also returns a bool that tells whether the install target was requested in the config.
-func installTarget(binaries []core.BinaryConfiguration) (rule, bool) {
+func installTarget(binaries []core.BinaryConfiguration, cfg *core.Configuration) (rule, bool) {
 	r := rule{
 		description: "Install all binaries. " +
 			"This option understands the conventional 'DESTDIR' and 'PREFIX' environment variables for choosing install locations.",
@@ -563,13 +563,13 @@ func installTarget(binaries []core.BinaryConfiguration) (rule, bool) {
 		target: "install",
 	}
 	r.addDefinition(strings.TrimSpace(`
-DESTDIR =
+DESTDIR =%s
 ifeq ($(shell uname -s),Darwin)
 	PREFIX = /usr/local
 else
 	PREFIX = /usr
 endif
-`))
+`), cfg.Variable("DESTDIR", ""))
 
 	for _, bin := range binaries {
 		if bin.InstallTo != "" {
