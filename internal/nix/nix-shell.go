@@ -1,4 +1,4 @@
-// Copyright 2024 SAP SE
+// SPDX-FileCopyrightText: Copyright 2024 SAP SE
 // SPDX-License-Identifier: Apache-2.0
 
 package nix
@@ -16,7 +16,7 @@ import (
 )
 
 func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserConfig bool) {
-	nixShellTemplate := strings.ReplaceAll(`# Copyright 2024 SAP SE
+	nixShellTemplate := strings.ReplaceAll(`# SPDX-FileCopyrightText: Copyright 2024 SAP SE
 # SPDX-License-Identifier: Apache-2.0
 
 { pkgs ? import <nixpkgs> { } }:
@@ -81,7 +81,7 @@ mkShell {
 	must.Succeed(os.WriteFile("shell.nix", []byte(nixShellFile), 0666))
 
 	must.Succeed(os.WriteFile(".envrc", []byte(strings.ReplaceAll(`#!/usr/bin/env bash
-# SPDX-FileCopyrightText: 2019–2020 Target, Copyright 2021 The Nix Community
+# SPDX-FileCopyrightText: Copyright 2019–2020 Target, Copyright 2021 The Nix Community
 # SPDX-License-Identifier: Apache-2.0
 if type -P lorri &>/dev/null; then
 	eval "$(lorri direnv)"
