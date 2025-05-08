@@ -21,6 +21,7 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/makefile"
 	"github.com/sapcc/go-makefile-maker/internal/nix"
 	"github.com/sapcc/go-makefile-maker/internal/renovate"
+	"github.com/sapcc/go-makefile-maker/internal/reuse"
 )
 
 func main() {
@@ -102,5 +103,10 @@ func main() {
 		// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
 		isApplicationRepo := sr.GoVersion == "" || len(cfg.Binaries) > 0
 		renovate.RenderConfig(cfg.Renovate, sr, cfg.Metadata.URL, isApplicationRepo)
+	}
+
+	// Render REUSE config file
+	if cfg.Reuse.Enabled == nil || *cfg.Reuse.Enabled {
+		reuse.RenderConfig(cfg, sr)
 	}
 }

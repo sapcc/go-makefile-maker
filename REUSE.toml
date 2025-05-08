@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: SAP SE
 # SPDX-License-Identifier: Apache-2.0
-
 version = 1
 
 [[annotations]]
@@ -13,6 +12,31 @@ path = [
   "go.mod",
   "go.sum",
   "Makefile.maker.yaml",
+  "vendor/modules.txt",
 ]
 SPDX-FileCopyrightText = "SAP SE"
 SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = [ "vendor/github.com/sapcc/go-bits/**" ]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Other"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = [ "vendor/golang.org/x/mod/**" ]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Other"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = [ "vendor/gopkg.in/yaml.v3/**" ]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Other"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = [ "vendor/gopkg.in/check.v1/**" ]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Other"
+SPDX-License-Identifier = "BSD-2-Clause"
