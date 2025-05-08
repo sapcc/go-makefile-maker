@@ -32,4 +32,5 @@ const (
 	GolangciLintAction = "golangci/golangci-lint-action@v8"
 	GoreleaserAction   = "goreleaser/goreleaser-action@v6"
 	MisspellAction     = "reviewdog/action-misspell@v1"
+	ReuseAction        = "fsfe/reuse-action@v5"
 )
