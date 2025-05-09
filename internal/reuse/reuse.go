@@ -76,12 +76,12 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 			License string `json:"license"`
 		}
 		dependencyTemplate := `
-	[[annotations]]
-	path = [ "vendor/%[1]s/**" ]
-	precedence = "aggregate"
-	SPDX-FileCopyrightText = "Other"
-	SPDX-License-Identifier = "%[2]s"
-	`
+[[annotations]]
+path = [ "vendor/%[1]s/**" ]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Other"
+SPDX-License-Identifier = "%[2]s"
+`
 
 		for _, dependencyString := range strings.Split(strings.TrimSpace(string(output)), "\n") {
 			var aDependency dependency
