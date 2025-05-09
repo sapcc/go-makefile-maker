@@ -21,9 +21,6 @@ import (
 //go:embed editorconfig
 var editorconfig []byte
 
-//go:embed REUSE.toml
-var reuseConfig []byte
-
 //go:embed license-scan-rules.json
 var licenseRules []byte
 
@@ -431,14 +428,6 @@ endif
 		})
 
 		if isGolang {
-			// If disabled, the REUSE.toml file should not be overridden.
-			// This is useful if the project needs additional information in
-			// the REUSE.toml file, e.g., specific disclaimers.
-			if cfg.Reuse.Enabled == nil || *cfg.Reuse.Enabled {
-				reuseConfigFile := "REUSE.toml"
-				must.Succeed(os.WriteFile(reuseConfigFile, reuseConfig, 0o666))
-			}
-
 			must.Succeed(os.WriteFile(".editorconfig", editorconfig, 0o666))
 
 			licenseRulesFile := ".license-scan-rules.json"

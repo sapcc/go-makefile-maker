@@ -1,0 +1,7 @@
+{{- define "depInfo" -}}
+{{- range $i, $dep := . -}}
+{ "name": "{{ $dep.Name }}", "license": "{{ $dep.LicenceType }}" }
+{{ end -}}
+{{- end -}}
+{{- template "depInfo" .Direct -}}
+{{- template "depInfo" .Indirect -}}

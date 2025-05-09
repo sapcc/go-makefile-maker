@@ -74,6 +74,13 @@ func checksWorkflow(cfg core.Configuration) {
 		})
 	}
 
+	if cfg.Reuse.Enabled == nil || *cfg.Reuse.Enabled {
+		j.addStep(jobStep{
+			Name: "REUSE Compliance Check",
+			Uses: core.ReuseAction,
+		})
+	}
+
 	w.Jobs = map[string]job{"checks": j}
 
 	writeWorkflowToFile(w)
