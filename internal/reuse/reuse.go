@@ -49,37 +49,41 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		return
 	}
 
-	gLDT := must.Return(goLicenceDetectorTemplate.Open("go-licence-detector.tmpl"))
-	defer gLDT.Close()
-
-	tmpGLDT := must.Return(os.CreateTemp("", "go-makefile-maker-*"))
-	defer os.Remove(tmpGLDT.Name())
-
-	_ = must.Return(io.Copy(tmpGLDT, gLDT))
-
-	_ = must.Return(tmpGLDT.Seek(0, 0))
-
-	cmd := exec.Command("bash", "-c",
-		"go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules .license-scan-rules.json -overrides .license-scan-overrides.jsonl -depsOut /dev/stdout -depsTemplate /dev/fd/3")
-	cmd.ExtraFiles = []*os.File{tmpGLDT}
-	output := must.Return(cmd.Output())
-
-	type dependency struct {
-		Name    string `json:"name"`
-		License string `json:"license"`
-	}
-	dependencyTemplate := `
-[[annotations]]
-path = [ "vendor/%[1]s/**" ]
-precedence = "aggregate"
-SPDX-FileCopyrightText = "Other"
-SPDX-License-Identifier = "%[2]s"
-`
 	var appendConfig string
-	for _, dependencyString := range strings.Split(strings.TrimSpace(string(output)), "\n") {
-		var aDependency dependency
-		must.Succeed(json.Unmarshal([]byte(dependencyString), &aDependency))
-		appendConfig += fmt.Sprintf(dependencyTemplate, aDependency.Name, aDependency.License)
+
+	if cfg.Golang.EnableVendoring {
+		gLDT := must.Return(goLicenceDetectorTemplate.Open("go-licence-detector.tmpl"))
+		defer gLDT.Close()
+
+		tmpGLDT := must.Return(os.CreateTemp("", "go-makefile-maker-*"))
+		defer os.Remove(tmpGLDT.Name())
+
+		_ = must.Return(io.Copy(tmpGLDT, gLDT))
+
+		_ = must.Return(tmpGLDT.Seek(0, 0))
+
+		cmd := exec.Command("bash", "-c",
+			"go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules .license-scan-rules.json -overrides .license-scan-overrides.jsonl -depsOut /dev/stdout -depsTemplate /dev/fd/3")
+		cmd.ExtraFiles = []*os.File{tmpGLDT}
+		output := must.Return(cmd.Output())
+
+		type dependency struct {
+			Name    string `json:"name"`
+			License string `json:"license"`
+		}
+		dependencyTemplate := `
+	[[annotations]]
+	path = [ "vendor/%[1]s/**" ]
+	precedence = "aggregate"
+	SPDX-FileCopyrightText = "Other"
+	SPDX-License-Identifier = "%[2]s"
+	`
+
+		for _, dependencyString := range strings.Split(strings.TrimSpace(string(output)), "\n") {
+			var aDependency dependency
+			must.Succeed(json.Unmarshal([]byte(dependencyString), &aDependency))
+			appendConfig += fmt.Sprintf(dependencyTemplate, aDependency.Name, aDependency.License)
+		}
 	}
 
 	reuseFile := fmt.Sprintf(reuseTemplate, appendConfig)
