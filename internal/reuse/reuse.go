@@ -66,6 +66,8 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		cmd := exec.Command("go", "mod", "tidy")
 		must.Return(cmd.Output())
 
+		_ = must.Return(exec.LookPath("go-licence-detector"))
+
 		cmd = exec.Command("sh", "-c",
 			"go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules .license-scan-rules.json -overrides .license-scan-overrides.jsonl -depsOut /dev/stdout -depsTemplate /dev/fd/3")
 		cmd.ExtraFiles = []*os.File{tmpGLDT}
