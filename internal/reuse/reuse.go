@@ -12,6 +12,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
@@ -71,7 +72,10 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		cmd = exec.Command("sh", "-c",
 			"go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules .license-scan-rules.json -overrides .license-scan-overrides.jsonl -depsOut /dev/stdout -depsTemplate /dev/fd/3")
 		cmd.ExtraFiles = []*os.File{tmpGLDT}
-		output := must.Return(cmd.Output())
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			logg.Fatal(string(output))
+		}
 
 		type dependency struct {
 			Name    string `json:"name"`
