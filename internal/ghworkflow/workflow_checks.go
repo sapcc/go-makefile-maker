@@ -27,7 +27,7 @@ func checksWorkflow(cfg core.Configuration) {
 		},
 	})
 
-	if ghwCfg.SecurityChecks.Enabled == nil || *ghwCfg.SecurityChecks.Enabled {
+	if ghwCfg.SecurityChecks.IsEnabled() {
 		j.addStep(jobStep{
 			Name: "Dependency Licenses Review",
 			Run:  "make check-dependency-licenses",
@@ -67,7 +67,7 @@ func checksWorkflow(cfg core.Configuration) {
 		})
 	}
 
-	if ghwCfg.License.Enabled == nil || *ghwCfg.License.Enabled {
+	if ghwCfg.License.IsEnabled() {
 		j.addStep(jobStep{
 			Name: "Check if source code files have license header",
 			Run:  "make check-license-headers",

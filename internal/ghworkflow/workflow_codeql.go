@@ -14,7 +14,7 @@ func codeQLWorkflow(cfg core.Configuration) {
 	w := newWorkflow("CodeQL", ghwCfg.Global.DefaultBranch, nil)
 	w.On.WorkflowDispatch.manualTrigger = true
 
-	if w.deleteIf((ghwCfg.SecurityChecks.Enabled == nil || *ghwCfg.SecurityChecks.Enabled)) {
+	if w.deleteIf(ghwCfg.SecurityChecks.IsEnabled()) {
 		return
 	}
 

@@ -109,12 +109,17 @@ type GolangciLintConfiguration struct {
 }
 
 type GoReleaserConfiguration struct {
-	CreateConfig *bool             `yaml:"createConfig"`
+	CreateConfig Option[bool]      `yaml:"createConfig"`
 	BinaryName   string            `yaml:"binaryName"`
 	Files        *[]string         `yaml:"files"`
 	Format       string            `yaml:"format"`
 	Ldflags      map[string]string `yaml:"ldflags"`
 	NameTemplate string            `yaml:"nameTemplate"`
+}
+
+// IsEnabled encodes that the default state for the Enabled field is `true`.
+func (g GoReleaserConfiguration) ShouldCreateConfig() bool {
+	return g.CreateConfig.UnwrapOr(true)
 }
 
 // SpellCheckConfiguration appears in type Configuration.
@@ -153,8 +158,13 @@ type CIWorkflowConfig struct {
 
 // LicenseWorkflowConfig appears in type Configuration.
 type LicenseWorkflowConfig struct {
-	Enabled        *bool    `yaml:"enabled"`
-	IgnorePatterns []string `yaml:"ignorePatterns"`
+	Enabled        Option[bool] `yaml:"enabled"`
+	IgnorePatterns []string     `yaml:"ignorePatterns"`
+}
+
+// IsEnabled encodes that the default state for the Enabled field is `true`.
+func (l LicenseWorkflowConfig) IsEnabled() bool {
+	return l.Enabled.UnwrapOr(true)
 }
 
 type PushContainerToGhcrConfig struct {
@@ -169,7 +179,12 @@ type ReleaseWorkflowConfig struct {
 
 // SecurityChecksWorkflowConfig appears in type Configuration.
 type SecurityChecksWorkflowConfig struct {
-	Enabled *bool `yaml:"enabled"`
+	Enabled Option[bool] `yaml:"enabled"`
+}
+
+// IsEnabled encodes that the default state for the Enabled field is `true`.
+func (s SecurityChecksWorkflowConfig) IsEnabled() bool {
+	return s.Enabled.UnwrapOr(true)
 }
 
 type PackageRule struct {

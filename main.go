@@ -49,7 +49,7 @@ func main() {
 	// Scan go.mod file for additional context information.
 	sr := golang.Scan()
 
-	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig == nil && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled) || (cfg.GoReleaser.CreateConfig != nil && *cfg.GoReleaser.CreateConfig)
+	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig.IsNone() && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled) || cfg.GoReleaser.ShouldCreateConfig()
 
 	nix.RenderShell(cfg, sr, renderGoreleaserConfig)
 
