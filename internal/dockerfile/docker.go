@@ -138,6 +138,9 @@ ENTRYPOINT [ %[12]s ]
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 
 	dockerignoreLines := append([]string{
+		`# SPDX-FileCopyrightText: Copyright 2025 SAP SE`,
+		`# SPDX-License-Identifier: Apache-2.0`,
+		``,
 		`/.dockerignore`,
 		`.DS_Store`,
 		`# TODO: uncomment when applications no longer use git to get version information`,
