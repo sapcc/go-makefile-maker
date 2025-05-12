@@ -4,13 +4,15 @@
 package reuse
 
 import (
-	"embed"
+	"bytes"
+	_ "embed"
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
+	"slices"
 	"strings"
+	"text/template"
 
 	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
@@ -19,28 +21,12 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
-//go:embed go-licence-detector.tmpl
-var goLicenceDetectorTemplate embed.FS
-
-var reuseTemplate = strings.ReplaceAll(`# SPDX-FileCopyrightText: SAP SE
-# SPDX-License-Identifier: Apache-2.0
-version = 1
-
-[[annotations]]
-path = [
-	".github/CODEOWNERS",
-	".github/renovate.json",
-	".gitignore",
-	".license-scan-overrides.jsonl",
-	".license-scan-rules.json",
-	"go.mod",
-	"go.sum",
-	"Makefile.maker.yaml",
-	"vendor/modules.txt",
-]
-SPDX-FileCopyrightText = "SAP SE"
-SPDX-License-Identifier = "Apache-2.0"
-%[1]s`, "\t", "  ")
+var (
+	//go:embed reuse.toml.tmpl
+	reuseTOMLTemplate string
+	//go:embed go-licence-detector.tmpl
+	goLicenceDetectorTemplate []byte
+)
 
 func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	// If disabled, the REUSE.toml file should not be overridden.
@@ -50,16 +36,13 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		return
 	}
 
-	var appendConfig string
+	allAnnotations := slices.Clone(cfg.Reuse.Annotations)
 
 	if cfg.Golang.EnableVendoring {
-		gLDT := must.Return(goLicenceDetectorTemplate.Open("go-licence-detector.tmpl"))
-		defer gLDT.Close()
-
 		tmpGLDT := must.Return(os.CreateTemp("", "go-makefile-maker-*"))
 		defer os.Remove(tmpGLDT.Name())
 
-		_ = must.Return(io.Copy(tmpGLDT, gLDT))
+		_ = must.Return(tmpGLDT.Write(goLicenceDetectorTemplate))
 
 		_ = must.Return(tmpGLDT.Seek(0, 0))
 
@@ -80,25 +63,23 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 			logg.Fatal(string(output))
 		}
 
-		type dependency struct {
-			Name    string `json:"name"`
-			License string `json:"license"`
-		}
-		dependencyTemplate := `
-[[annotations]]
-path = [ "vendor/%[1]s/**" ]
-precedence = "aggregate"
-SPDX-FileCopyrightText = "Other"
-SPDX-License-Identifier = "%[2]s"
-`
-
 		for _, dependencyString := range strings.Split(strings.TrimSpace(string(output)), "\n") {
-			var aDependency dependency
-			must.Succeed(json.Unmarshal([]byte(dependencyString), &aDependency))
-			appendConfig += fmt.Sprintf(dependencyTemplate, aDependency.Name, aDependency.License)
+			var dep struct {
+				Name    string `json:"name"`
+				License string `json:"license"`
+			}
+			must.Succeed(json.Unmarshal([]byte(dependencyString), &dep))
+			allAnnotations = append(allAnnotations, core.ReuseAnnotation{
+				Paths:                 []string{fmt.Sprintf("vendor/%s/**", dep.Name)},
+				Precedence:            "aggregate",
+				SPDXFileCopyrightText: "Other",
+				SPDXLicenseIdentifier: dep.License,
+			})
 		}
 	}
 
-	reuseFile := fmt.Sprintf(reuseTemplate, appendConfig)
-	must.Succeed(os.WriteFile("REUSE.toml", []byte(reuseFile), 0o666))
+	t := template.Must(template.New("REUSE.toml").Parse(reuseTOMLTemplate))
+	var buf bytes.Buffer
+	must.Succeed(t.Execute(&buf, map[string]any{"Annotations": allAnnotations}))
+	must.Succeed(os.WriteFile("REUSE.toml", buf.Bytes(), 0o666))
 }

@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: SAP SE
+# SPDX-License-Identifier: Apache-2.0
+version = 1
+
+[[annotations]]
+path = [
+  ".github/CODEOWNERS",
+  ".github/renovate.json",
+  ".gitignore",
+  ".license-scan-overrides.jsonl",
+  ".license-scan-rules.json",
+  "go.mod",
+  "go.sum",
+  "Makefile.maker.yaml",
+  "vendor/modules.txt",
+]
+SPDX-FileCopyrightText = "SAP SE"
+SPDX-License-Identifier = "Apache-2.0"
+
+{{- range .Annotations }}
+
+[[annotations]]
+path = [
+  {{- range .Paths }}
+  "{{.}}",
+  {{- end }}
+]
+{{- if .Precedence }}
+precedence = "{{.Precedence}}"
+{{- end }}
+{{- if .SPDXFileCopyrightText }}
+SPDX-FileCopyrightText = "{{.SPDXFileCopyrightText}}"
+{{- end }}
+{{- if .SPDXLicenseIdentifier }}
+SPDX-License-Identifier = "{{.SPDXLicenseIdentifier}}"
+{{- end }}
+{{- end }}

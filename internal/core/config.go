@@ -74,12 +74,23 @@ type TestConfiguration struct {
 
 // ReuseConfiguration appears in type Configuration.
 type ReuseConfiguration struct {
-	Enabled Option[bool] `yaml:"enabled"`
+	Enabled     Option[bool]      `yaml:"enabled"`
+	Annotations []ReuseAnnotation `yaml:"annotations"`
 }
 
 // IsEnabled encodes that the default state for the Enabled field is `true`.
 func (c ReuseConfiguration) IsEnabled() bool {
 	return c.Enabled.UnwrapOr(true)
+}
+
+// ReuseAnnotation appears in type ReuseConfiguration.
+// It matches the format of the `[[annotations]]` sections in the REUSE.toml format.
+// Ref: <https://reuse.software/spec-3.3/#reusetoml>
+type ReuseAnnotation struct {
+	Paths                 []string `yaml:"paths"`
+	Precedence            string   `yaml:"precedence"`
+	SPDXFileCopyrightText string   `yaml:"SPDX-FileCopyrightText"`
+	SPDXLicenseIdentifier string   `yaml:"SPDX-License-Identifier"`
 }
 
 // CoverageConfiguration appears in type Configuration.
