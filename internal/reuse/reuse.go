@@ -46,7 +46,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	// If disabled, the REUSE.toml file should not be overridden.
 	// This is useful if the project needs additional information in
 	// the REUSE.toml file, e.g., specific disclaimers.
-	if cfg.Reuse.Enabled != nil && !*cfg.Reuse.Enabled {
+	if !cfg.Reuse.IsEnabled() {
 		return
 	}
 

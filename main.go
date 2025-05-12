@@ -106,7 +106,7 @@ func main() {
 	}
 
 	// Render REUSE config file
-	if cfg.Reuse.Enabled == nil || *cfg.Reuse.Enabled {
+	if cfg.Reuse.IsEnabled() {
 		reuse.RenderConfig(cfg, sr)
 	}
 }

@@ -74,7 +74,7 @@ func checksWorkflow(cfg core.Configuration) {
 		})
 	}
 
-	if cfg.Reuse.Enabled == nil || *cfg.Reuse.Enabled {
+	if cfg.Reuse.IsEnabled() {
 		j.addStep(jobStep{
 			Name: "REUSE Compliance Check",
 			Uses: core.ReuseAction,

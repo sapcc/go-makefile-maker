@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	. "github.com/majewsky/gg/option"
 	"github.com/sapcc/go-bits/logg"
 )
 
@@ -73,7 +74,12 @@ type TestConfiguration struct {
 
 // ReuseConfiguration appears in type Configuration.
 type ReuseConfiguration struct {
-	Enabled *bool `yaml:"enabled"`
+	Enabled Option[bool] `yaml:"enabled"`
+}
+
+// IsEnabled encodes that the default state for the Enabled field is `true`.
+func (c ReuseConfiguration) IsEnabled() bool {
+	return c.Enabled.UnwrapOr(true)
 }
 
 // CoverageConfiguration appears in type Configuration.
