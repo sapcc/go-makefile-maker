@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright 2022 SAP SE
+// SPDX-FileCopyrightText: 2022 SAP SE
 // SPDX-License-Identifier: Apache-2.0
 
 package ghworkflow
@@ -27,7 +27,7 @@ func checksWorkflow(cfg core.Configuration) {
 		},
 	})
 
-	if ghwCfg.SecurityChecks.Enabled == nil || *ghwCfg.SecurityChecks.Enabled {
+	if ghwCfg.SecurityChecks.IsEnabled() {
 		j.addStep(jobStep{
 			Name: "Dependency Licenses Review",
 			Run:  "make check-dependency-licenses",
@@ -67,14 +67,14 @@ func checksWorkflow(cfg core.Configuration) {
 		})
 	}
 
-	if ghwCfg.License.Enabled == nil || *ghwCfg.License.Enabled {
+	if ghwCfg.License.IsEnabled() {
 		j.addStep(jobStep{
 			Name: "Check if source code files have license header",
 			Run:  "make check-license-headers",
 		})
 	}
 
-	if cfg.Reuse.Enabled == nil || *cfg.Reuse.Enabled {
+	if cfg.Reuse.IsEnabled() {
 		j.addStep(jobStep{
 			Name: "REUSE Compliance Check",
 			Uses: core.ReuseAction,

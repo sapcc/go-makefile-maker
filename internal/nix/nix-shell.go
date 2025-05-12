@@ -1,13 +1,16 @@
-// SPDX-FileCopyrightText: Copyright 2024 SAP SE
+// SPDX-FileCopyrightText: 2024 SAP SE
 // SPDX-License-Identifier: Apache-2.0
 
 package nix
 
 import (
+	"bytes"
+	_ "embed"
 	"fmt"
 	"os"
 	"slices"
 	"strings"
+	"text/template"
 
 	"github.com/sapcc/go-bits/must"
 
@@ -15,23 +18,14 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
+var (
+	//go:embed shell.nix.tmpl
+	shellNixTemplate string
+	//go:embed envrc.tmpl
+	envrcTemplate []byte
+)
+
 func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserConfig bool) {
-	nixShellTemplate := strings.ReplaceAll(`# SPDX-FileCopyrightText: Copyright 2024 SAP SE
-# SPDX-License-Identifier: Apache-2.0
-
-{ pkgs ? import <nixpkgs> { } }:
-
-with pkgs;
-
-mkShell {
-	nativeBuildInputs = [
-%s
-		# keep this line if you use bash
-		bashInteractive
-	];%s
-}
-`, "\t", "  ")
-
 	goVersionSlice := strings.Split(core.DefaultGoVersion, ".")
 	goPackage := fmt.Sprintf("go_%s_%s", goVersionSlice[0], goVersionSlice[1])
 	packages := []string{
@@ -63,32 +57,11 @@ mkShell {
 	packages = append(packages, cfg.Nix.ExtraPackages...)
 
 	slices.Sort(packages)
-	packageList := ""
-	for _, pkg := range packages {
-		packageList += fmt.Sprintf("    %s\n", pkg)
-	}
 
-	var libraryList string
-	if len(cfg.Nix.ExtraLibraries) > 0 {
-		libraryList = "\n\n  buildInputs = [\n"
-		for _, lib := range cfg.Nix.ExtraLibraries {
-			libraryList += fmt.Sprintf("    %s\n", lib)
-		}
-		libraryList += "  ];"
-	}
+	t := template.Must(template.New("shell.nix").Parse(shellNixTemplate))
+	var buf bytes.Buffer
+	must.Succeed(t.Execute(&buf, map[string]any{"Packages": packages, "ExtraLibraries": cfg.Nix.ExtraLibraries}))
+	must.Succeed(os.WriteFile("shell.nix", buf.Bytes(), 0666))
 
-	nixShellFile := fmt.Sprintf(nixShellTemplate, packageList, libraryList)
-	must.Succeed(os.WriteFile("shell.nix", []byte(nixShellFile), 0666))
-
-	must.Succeed(os.WriteFile(".envrc", []byte(strings.ReplaceAll(`#!/usr/bin/env bash
-# SPDX-FileCopyrightText: Copyright 2019–2020 Target, Copyright 2021 The Nix Community
-# SPDX-License-Identifier: Apache-2.0
-if type -P lorri &>/dev/null; then
-	eval "$(lorri direnv)"
-elif type -P nix &>/dev/null; then
-	use nix
-else
-	echo "Found no nix binary. Skipping activating nix-shell..."
-fi
-`, "\t", "  ")), 0666))
+	must.Succeed(os.WriteFile(".envrc", envrcTemplate, 0666))
 }

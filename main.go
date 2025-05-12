@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright 2020 SAP SE
+// SPDX-FileCopyrightText: 2020 SAP SE
 // SPDX-License-Identifier: Apache-2.0
 
 package main
@@ -49,7 +49,7 @@ func main() {
 	// Scan go.mod file for additional context information.
 	sr := golang.Scan()
 
-	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig == nil && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled) || (cfg.GoReleaser.CreateConfig != nil && *cfg.GoReleaser.CreateConfig)
+	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig.IsNone() && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled) || cfg.GoReleaser.ShouldCreateConfig()
 
 	nix.RenderShell(cfg, sr, renderGoreleaserConfig)
 
@@ -106,7 +106,7 @@ func main() {
 	}
 
 	// Render REUSE config file
-	if cfg.Reuse.Enabled == nil || *cfg.Reuse.Enabled {
+	if cfg.Reuse.IsEnabled() {
 		reuse.RenderConfig(cfg, sr)
 	}
 }

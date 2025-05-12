@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright 2021 SAP SE
+// SPDX-FileCopyrightText: 2021 SAP SE
 // SPDX-License-Identifier: Apache-2.0
 
 package ghworkflow
@@ -14,7 +14,7 @@ func codeQLWorkflow(cfg core.Configuration) {
 	w := newWorkflow("CodeQL", ghwCfg.Global.DefaultBranch, nil)
 	w.On.WorkflowDispatch.manualTrigger = true
 
-	if w.deleteIf((ghwCfg.SecurityChecks.Enabled == nil || *ghwCfg.SecurityChecks.Enabled)) {
+	if w.deleteIf(ghwCfg.SecurityChecks.IsEnabled()) {
 		return
 	}
 

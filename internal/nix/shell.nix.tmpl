@@ -7,13 +7,20 @@ with pkgs;
 
 mkShell {
   nativeBuildInputs = [
-    addlicense
-    go-licence-detector
-    go_1_24
-    golangci-lint
-    gotools # goimports
+    {{ range .Packages -}}
+    {{.}}
+    {{ end -}}
 
     # keep this line if you use bash
     bashInteractive
   ];
+
+  {{- if .ExtraLibraries }}
+
+  buildInputs = [
+    {{- range .ExtraLibraries }}
+    {{.}}
+    {{- end }}
+  ];
+  {{- end }}
 }
