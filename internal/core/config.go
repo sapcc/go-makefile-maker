@@ -117,9 +117,9 @@ type GoReleaserConfiguration struct {
 	NameTemplate string            `yaml:"nameTemplate"`
 }
 
-// IsEnabled encodes that the default state for the Enabled field is `true`.
+// IsEnabled encodes that the default state for the Enabled field is `false`.
 func (g GoReleaserConfiguration) ShouldCreateConfig() bool {
-	return g.CreateConfig.UnwrapOr(true)
+	return g.CreateConfig.UnwrapOr(false)
 }
 
 // SpellCheckConfiguration appears in type Configuration.
