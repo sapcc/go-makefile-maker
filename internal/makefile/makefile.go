@@ -395,32 +395,30 @@ endif
 		ignoreOptionsStr := strings.Join(append(ignoreOptions, "--"), " ")
 
 		dev.addRule(rule{
-			description:   "Remove and re-add all license headers to all non-vendored source code files.",
-			target:        "force-license-headers",
-			phony:         true,
-			prerequisites: []string{"install-addlicense"},
-			recipe: []string{
-				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
-				fmt.Sprintf(`echo -n %s | xargs -d" " -I{} bash -c 'year="$$(rg -P "Copyright (....) SAP SE" -Nor "\$$1" {})"; awk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/ && !/^\$$/}}; /^package /{print;display=1}'"'"' {}; addlicense -c "SAP SE" -s=only -y "$$year" %s {}'`, allSourceFilesExpr, ignoreOptionsStr),
-			},
-		})
-
-		dev.addRule(rule{
-			description:   "Add license headers to all non-vendored source code files.",
+			description:   "Add (or overwrite) license headers on all non-vendored source code files.",
 			target:        "license-headers",
 			phony:         true,
 			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
-				`@printf "\e[1;36m>> addlicense\e[0m\n"`,
-				fmt.Sprintf(`@addlicense -c "SAP SE" -s=only %s %s`, ignoreOptionsStr, allSourceFilesExpr),
+				`@printf "\e[1;36m>> addlicense (for license headers on source code files)\e[0m\n"`,
+				fmt.Sprintf(`@echo -n %s | xargs -d" " -I{} bash -c 'year="$$(rg -P "Copyright (....) SAP SE" -Nor "\$$1" {})"; awk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/ && !/^\$$/}}; /^package /{print;display=1}'"'"' {}; addlicense -c "SAP SE" -s=only -y "$$year" %s {}'`, allSourceFilesExpr, ignoreOptionsStr),
+				`@printf "\e[1;36m>> reuse annotate (for license headers on other files)\e[0m\n"`,
+				`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | grep -vw vendor | xargs reuse annotate -c 'SAP SE' -l Apache-2.0 --skip-unrecognised`,
+				`@printf "\e[1;36m>> reuse download --all\e[0m\n"`,
+				`@reuse download --all`,
+				`@printf "\e[1;35mPlease review the changes. If *.license files were generated, consider instructing go-makefile-maker to add overrides to REUSE.toml instead.\e[0m\n"`,
 			},
 		})
 
+		tidyTarget := "tidy-deps"
+		if cfg.Golang.EnableVendoring {
+			tidyTarget = "vendor"
+		}
 		dev.addRule(rule{
 			description:   "Check license headers in all non-vendored .go files.",
 			target:        "check-license-headers",
 			phony:         true,
-			prerequisites: []string{"install-addlicense"},
+			prerequisites: []string{"install-addlicense", tidyTarget},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense --check\e[0m\n"`,
 				fmt.Sprintf(`@addlicense --check %s %s`, ignoreOptionsStr, allSourceFilesExpr),
