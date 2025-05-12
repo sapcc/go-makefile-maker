@@ -401,7 +401,7 @@ endif
 			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense (for license headers on source code files)\e[0m\n"`,
-				fmt.Sprintf(`@echo -n %s | xargs -d" " -I{} bash -c 'year="$$(rg -P "Copyright (....) SAP SE" -Nor "\$$1" {} | head -n1)"; awk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/ && !/^\$$/}}; /^package /{print;display=1}'"'"' {}; addlicense -c "SAP SE" -s=only -y "$$year" %s {}'`, allSourceFilesExpr, ignoreOptionsStr),
+				fmt.Sprintf(`@echo -n %s | xargs -d" " -I{} bash -c 'year="$$(rg -P "Copyright.* (\d{4})" -Nor "\$$1" {} | head -n1)"; awk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/ && !/^\$$/}}; /^package /{print;display=1}'"'"' {}; addlicense -c "SAP SE" -s=only -y "$$year" %s {}; sed -i '"'"'1s+// Copyright +// SPDX-FileCopyrightText: +'"'"' {}'`, allSourceFilesExpr, ignoreOptionsStr),
 				`@printf "\e[1;36m>> reuse annotate (for license headers on other files)\e[0m\n"`,
 				`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | grep -vw vendor | xargs reuse annotate -c 'SAP SE' -l Apache-2.0 --skip-unrecognised`,
 				`@printf "\e[1;36m>> reuse download --all\e[0m\n"`,
