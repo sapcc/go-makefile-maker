@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# SPDX-FileCopyrightText: 2020 SAP SE
+# SPDX-License-Identifier: Apache-2.0
+version: 2
+
+archives:
+  - name_template: '{{ .nameTemplate }}'
+{{- if .format }}
+    format: {{ .format }}
+{{- end }}
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+{{- range .files }}
+      - {{ . }}
+{{- end }}
+
+checksum:
+  name_template: "checksums.txt"
+
+builds:
+  - binary: '{{ .binaryName }}'
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X github.com/sapcc/go-api-declarations/bininfo.binName={{ .binName }}
+      - -X github.com/sapcc/go-api-declarations/bininfo.version={{`{{ .Version }}`}}
+      - -X github.com/sapcc/go-api-declarations/bininfo.commit={{`{{ .FullCommit  }}`}}
+      - -X github.com/sapcc/go-api-declarations/bininfo.buildDate={{`{{ .CommitDate }}`}} # use CommitDate instead of Date for reproducibility
+{{- range $name, $value := .ldflags }}
+      - {{ $name }}={{ printf "{{.Env.%s}}" $value}}
+{{- end }}
+    main: {{ .fromPackage }}
+    # Set the modified timestamp on the output binary to ensure that builds are reproducible.
+    mod_timestamp: "{{`{{ .CommitTimestamp }}`}}"
+
+release:
+  make_latest: true
+  prerelease: auto
+
+{{- if .githubDomain }}
+github_urls:
+  api: https://{{ .githubDomain.Host }}/api/v3/
+  upload: https://{{ .githubDomain.Host }}/api/uploads/
+  download: https://{{ .githubDomain.Host }}/
+{{- end }}
+
+snapshot:
+  version_template: "{{`{{ .Tag }}`}}-next"
