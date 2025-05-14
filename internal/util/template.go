@@ -23,14 +23,17 @@ func WriteFileFromTemplate(fileName, templateCode string, data map[string]any) e
 		},
 		"trimSpace": strings.TrimSpace,
 	}
+
 	t, err := template.New(fileName).Funcs(funcMap).Parse(templateCode)
 	if err != nil {
 		return fmt.Errorf("could not load template for %s: %w", fileName, err)
 	}
+
 	var buf bytes.Buffer
 	err = t.Execute(&buf, data)
 	if err != nil {
 		return fmt.Errorf("could not render %s: %w", fileName, err)
 	}
+
 	return os.WriteFile(fileName, buf.Bytes(), 0o666)
 }

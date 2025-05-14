@@ -4,7 +4,7 @@
 {{- $dcfg := .Config.Dockerfile }}
 
 {{ range $dcfg.ExtraBuildStages -}}
-{{trimSpace .}}
+{{ trimSpace . }}
 
 ################################################################################
 
