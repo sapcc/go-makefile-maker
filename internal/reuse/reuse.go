@@ -4,7 +4,6 @@
 package reuse
 
 import (
-	"bytes"
 	_ "embed"
 	"encoding/json"
 	"fmt"
@@ -13,13 +12,13 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
-	"text/template"
 
 	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/golang"
+	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
 var (
@@ -83,17 +82,9 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		}
 	}
 
-	funcMap := template.FuncMap{
-		"containsIgnoreCase": func(s, substr string) bool {
-			return strings.Contains(strings.ToLower(s), strings.ToLower(substr))
-		},
-	}
-	t := template.Must(template.New("REUSE.toml").Funcs(funcMap).Parse(reuseTOMLTemplate))
-	var buf bytes.Buffer
-	must.Succeed(t.Execute(&buf, map[string]any{
+	must.Succeed(util.WriteFileFromTemplate("REUSE.toml", reuseTOMLTemplate, map[string]any{
 		"Annotations": allAnnotations,
 		"PackageName": filepath.Base(cfg.Metadata.URL),
 		"URL":         cfg.Metadata.URL,
 	}))
-	must.Succeed(os.WriteFile("REUSE.toml", buf.Bytes(), 0o666))
 }

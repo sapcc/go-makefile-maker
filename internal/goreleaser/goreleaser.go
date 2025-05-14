@@ -7,11 +7,11 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"text/template"
 
 	_ "embed"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
+	"github.com/sapcc/go-makefile-maker/internal/util"
 
 	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
@@ -62,10 +62,7 @@ func RenderConfig(cfg core.Configuration) {
 		}
 	}
 
-	t := template.Must(template.New("goreleaser.yaml").Parse(goreleaserTemplate))
-	goreleaserFile := must.Return(os.OpenFile(".goreleaser.yaml", os.O_WRONLY|os.O_TRUNC, 0666))
-	defer goreleaserFile.Close()
-	must.Succeed(t.Execute(goreleaserFile, map[string]any{
+	must.Succeed(util.WriteFileFromTemplate(".goreleaser.yaml", goreleaserTemplate, map[string]any{
 		"nameTemplate": nameTemplate,
 		"format":       cfg.GoReleaser.Format,
 		"files":        cfg.GoReleaser.Files,
@@ -75,8 +72,5 @@ func RenderConfig(cfg core.Configuration) {
 		"fromPackage":  cfg.Binaries[0].FromPackage,
 		"githubDomain": metadataURL,
 	}))
-
-	// Remove renamed file
-	must.Succeed(os.RemoveAll(".goreleaser.yml"))
 	must.Succeed(os.WriteFile("RELEASE.md", []byte(releaseMD), 0666))
 }
