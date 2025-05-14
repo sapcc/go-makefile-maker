@@ -64,6 +64,10 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		}
 
 		for _, dependencyString := range strings.Split(strings.TrimSpace(string(output)), "\n") {
+			dependencyString = strings.TrimSpace(dependencyString)
+			if dependencyString == "" {
+				continue
+			}
 			var dep struct {
 				Name    string `json:"name"`
 				License string `json:"license"`
