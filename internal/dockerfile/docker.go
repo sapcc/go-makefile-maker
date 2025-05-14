@@ -4,16 +4,14 @@
 package dockerfile
 
 import (
-	"bytes"
 	_ "embed"
 	"fmt"
-	"os"
 	"strings"
-	"text/template"
 
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
+	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
 var (
@@ -60,12 +58,7 @@ func RenderConfig(cfg core.Configuration) {
 		}
 	}
 
-	funcMap := template.FuncMap{
-		"trimSpace": strings.TrimSpace,
-	}
-	t := template.Must(template.New("Dockerfile").Funcs(funcMap).Parse(dockerfileTemplate))
-	var buf bytes.Buffer
-	must.Succeed(t.Execute(&buf, map[string]any{
+	must.Succeed(util.WriteFileFromTemplate("Dockerfile", dockerfileTemplate, map[string]any{
 		"Config": cfg,
 		"Constants": map[string]any{
 			"DefaultGoVersion":   core.DefaultGoVersion,
@@ -75,14 +68,7 @@ func RenderConfig(cfg core.Configuration) {
 		"RunCommands":        strings.Join(commands, " \\\n  && "),
 		"RunVersionCommands": strings.Join(runVersionCommands, " \\\n  && "),
 	}))
-	must.Succeed(os.WriteFile("Dockerfile", buf.Bytes(), 0666))
-
-	renderDockerignore(cfg)
-}
-
-func renderDockerignore(cfg core.Configuration) {
-	t := template.Must(template.New(".dockerignore").Parse(dockerignoreTemplate))
-	var buf bytes.Buffer
-	must.Succeed(t.Execute(&buf, map[string]any{"ExtraIgnores": cfg.Dockerfile.ExtraIgnores}))
-	must.Succeed(os.WriteFile(".dockerignore", buf.Bytes(), 0666))
+	must.Succeed(util.WriteFileFromTemplate(".dockerignore", dockerignoreTemplate, map[string]any{
+		"ExtraIgnores": cfg.Dockerfile.ExtraIgnores,
+	}))
 }

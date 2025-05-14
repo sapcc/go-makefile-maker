@@ -4,18 +4,17 @@
 package nix
 
 import (
-	"bytes"
 	_ "embed"
 	"fmt"
 	"os"
 	"slices"
 	"strings"
-	"text/template"
 
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/golang"
+	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
 var (
@@ -58,10 +57,9 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 
 	slices.Sort(packages)
 
-	t := template.Must(template.New("shell.nix").Parse(shellNixTemplate))
-	var buf bytes.Buffer
-	must.Succeed(t.Execute(&buf, map[string]any{"Packages": packages, "ExtraLibraries": cfg.Nix.ExtraLibraries}))
-	must.Succeed(os.WriteFile("shell.nix", buf.Bytes(), 0666))
-
+	must.Succeed(util.WriteFileFromTemplate("shell.nix", shellNixTemplate, map[string]any{
+		"Packages":       packages,
+		"ExtraLibraries": cfg.Nix.ExtraLibraries,
+	}))
 	must.Succeed(os.WriteFile(".envrc", envrcTemplate, 0666))
 }
