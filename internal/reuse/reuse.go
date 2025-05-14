@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"slices"
 	"strings"
 	"text/template"
@@ -78,8 +79,17 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		}
 	}
 
-	t := template.Must(template.New("REUSE.toml").Parse(reuseTOMLTemplate))
+	funcMap := template.FuncMap{
+		"containsIgnoreCase": func(s, substr string) bool {
+			return strings.Contains(strings.ToLower(s), strings.ToLower(substr))
+		},
+	}
+	t := template.Must(template.New("REUSE.toml").Funcs(funcMap).Parse(reuseTOMLTemplate))
 	var buf bytes.Buffer
-	must.Succeed(t.Execute(&buf, map[string]any{"Annotations": allAnnotations}))
+	must.Succeed(t.Execute(&buf, map[string]any{
+		"Annotations": allAnnotations,
+		"PackageName": filepath.Base(cfg.Metadata.URL),
+		"URL":         cfg.Metadata.URL,
+	}))
 	must.Succeed(os.WriteFile("REUSE.toml", buf.Bytes(), 0o666))
 }

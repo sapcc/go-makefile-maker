@@ -1,6 +1,11 @@
 # SPDX-FileCopyrightText: SAP SE
 # SPDX-License-Identifier: Apache-2.0
 version = 1
+SPDX-PackageName = "{{ .PackageName }}"
+{{- if containsIgnoreCase .URL "SAP-cloud-infrastructure" }}
+SPDX-PackageSupplier = "ospo@sap.com"
+{{- end }}
+SPDX-PackageDownloadLocation = "{{ .URL }}"
 
 [[annotations]]
 path = [
