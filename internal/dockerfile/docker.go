@@ -17,132 +17,70 @@ import (
 )
 
 var (
+	//go:embed Dockerfile.tmpl
+	dockerfileTemplate string
 	//go:embed dockerignore.tmpl
 	dockerignoreTemplate string
 )
 
 func RenderConfig(cfg core.Configuration) {
-	var (
-		goBuildflags, packages, userCommand, entrypoint, workingDir, addUserGroup string
-		extraCommands                                                             []string
-	)
-
-	if cfg.Golang.EnableVendoring {
-		goBuildflags = ` GO_BUILDFLAGS='-mod vendor'`
-	}
-
-	if cfg.Dockerfile.RunAsRoot {
-		userCommand = ""
-		workingDir = "/"
-		addUserGroup = ""
-	} else {
-		// this is the same as `USER appuser:appgroup`, but using numeric IDs
-		// should allow Kubernetes to validate the `runAsNonRoot` rule without
-		// requiring an explicit `runAsUser: 4200` setting in the container spec
-		userCommand = "USER 4200:4200\n"
-		workingDir = "/home/appuser"
-		addUserGroup = strings.ReplaceAll(`RUN addgroup -g 4200 appgroup \
-	&& adduser -h /home/appuser -s /sbin/nologin -G appgroup -D -u 4200 appuser
-
-`, "\t", "  ")
-	}
-
-	// if there is an entrypoint configured use that otherwise fallback to the binary name
+	// if there is an entrypoint configured use that otherwise fallback to the first binary name
+	var entrypoint string
 	if len(cfg.Dockerfile.Entrypoint) > 0 {
 		entrypoint = fmt.Sprintf(`"%s"`, strings.Join(cfg.Dockerfile.Entrypoint, `", "`))
 	} else {
 		entrypoint = fmt.Sprintf(`"/usr/bin/%s"`, cfg.Binaries[0].Name)
 	}
 
+	// these commands will be run early on to install dependencies
+	commands := []string{
+		"apk upgrade --no-cache --no-progress",
+	}
+	if pkgs := cfg.Dockerfile.ExtraPackages; len(pkgs) > 0 {
+		commands = append(commands, "apk add --no-cache --no-progress "+strings.Join(pkgs, " "))
+	}
 	if cfg.Dockerfile.WithLinkerdAwait {
-		extraCommands = []string{
+		commands = append(commands,
 			fmt.Sprintf(
 				"wget -qO /usr/bin/linkerd-await https://github.com/linkerd/linkerd-await/releases/download/release%%2Fv%[1]s/linkerd-await-v%[1]s-amd64",
 				core.DefaultLinkerdAwaitVersion,
 			),
 			"chmod 755 /usr/bin/linkerd-await",
-		}
-		// add linkrd-await after the fallback for entrypoint has been set
+		)
 		entrypoint = `"/usr/bin/linkerd-await", "--shutdown", "--", ` + entrypoint
 	}
-
-	var runVersionArg string
-	firstBinary := true
-	if len(cfg.Binaries) > 0 {
-		runVersionArg += "RUN "
-	}
-	for _, binary := range cfg.Binaries {
-		if binary.InstallTo == "" {
-			continue
-		}
-		if !firstBinary {
-			runVersionArg += strings.ReplaceAll(` \
-	&& `, "\t", "  ")
-		}
-		runVersionArg += binary.Name + " --version 2>/dev/null"
-		firstBinary = false
-	}
-
-	extraBuildStages := ""
-	for _, stage := range cfg.Dockerfile.ExtraBuildStages {
-		extraBuildStages += fmt.Sprintf("%s\n\n%s\n\n", strings.TrimSpace(stage), strings.Repeat("#", 80))
-	}
-
-	extraDirectives := strings.Join(cfg.Dockerfile.ExtraDirectives, "\n")
-	if extraDirectives != "" {
-		extraDirectives += "\n"
-	}
-
-	for _, v := range cfg.Dockerfile.ExtraPackages {
-		packages += " " + v
-	}
-
-	commands := []string{
-		"apk upgrade --no-cache --no-progress",
-	}
-	if packages != "" {
-		commands = append(commands, "apk add --no-cache --no-progress"+packages)
-	}
-	commands = append(commands, extraCommands...)
 	commands = append(commands, "apk del --no-cache --no-progress apk-tools alpine-keys alpine-release libc-utils")
 
-	runCommands := strings.Join(commands, " \\\n  && ")
+	// these commands will be run after `make install` to see that all installed commands can be executed
+	// (e.g. that all required shared libraries can be loaded correctly)
+	var runVersionCommands []string
+	for _, binary := range cfg.Binaries {
+		if binary.InstallTo != "" {
+			runVersionCommands = append(runVersionCommands, binary.Name+" --version 2>/dev/null")
+		}
+	}
 
-	dockerfile := fmt.Sprintf(strings.ReplaceAll(`%[1]sFROM golang:%[2]s-alpine%[3]s AS builder
+	funcMap := template.FuncMap{
+		"trimSpace": strings.TrimSpace,
+	}
+	t := template.Must(template.New("Dockerfile").Funcs(funcMap).Parse(dockerfileTemplate))
+	var buf bytes.Buffer
+	must.Succeed(t.Execute(&buf, map[string]any{
+		"Config": cfg,
+		"Constants": map[string]any{
+			"DefaultGoVersion":   core.DefaultGoVersion,
+			"DefaultAlpineImage": core.DefaultAlpineImage,
+		},
+		"Entrypoint":         entrypoint,
+		"RunCommands":        strings.Join(commands, " \\\n  && "),
+		"RunVersionCommands": strings.Join(runVersionCommands, " \\\n  && "),
+	}))
+	must.Succeed(os.WriteFile("Dockerfile", buf.Bytes(), 0666))
 
-RUN apk add --no-cache --no-progress ca-certificates gcc git make musl-dev
+	renderDockerignore(cfg)
+}
 
-COPY . /src
-ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION # provided to 'make install'
-RUN make -C /src install PREFIX=/pkg GOTOOLCHAIN=local%[4]s
-
-################################################################################
-
-FROM alpine:%[3]s
-
-%[5]s# upgrade all installed packages to fix potential CVEs in advance
-# also remove apk package manager to hopefully remove dependency on OpenSSL 🤞
-RUN %[6]s
-
-COPY --from=builder /etc/ssl/certs/ /etc/ssl/certs/
-COPY --from=builder /etc/ssl/cert.pem /etc/ssl/cert.pem
-COPY --from=builder /pkg/ /usr/
-# make sure all binaries can be executed
-%[7]s
-
-ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION
-LABEL source_repository="%[8]s" \
-	org.opencontainers.image.url="%[8]s" \
-	org.opencontainers.image.created=${BININFO_BUILD_DATE} \
-	org.opencontainers.image.revision=${BININFO_COMMIT_HASH} \
-	org.opencontainers.image.version=${BININFO_VERSION}
-
-%[9]s%[10]sWORKDIR %[11]s
-ENTRYPOINT [ %[12]s ]
-`, "\t", "  "), extraBuildStages, core.DefaultGoVersion, core.DefaultAlpineImage, goBuildflags, addUserGroup, runCommands, runVersionArg, cfg.Metadata.URL, extraDirectives, userCommand, workingDir, entrypoint)
-
-	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
-
+func renderDockerignore(cfg core.Configuration) {
 	t := template.Must(template.New(".dockerignore").Parse(dockerignoreTemplate))
 	var buf bytes.Buffer
 	must.Succeed(t.Execute(&buf, map[string]any{"ExtraIgnores": cfg.Dockerfile.ExtraIgnores}))
