@@ -4,15 +4,21 @@
 package dockerfile
 
 import (
+	"bytes"
+	_ "embed"
 	"fmt"
 	"os"
 	"strings"
-
-	_ "embed"
+	"text/template"
 
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
+)
+
+var (
+	//go:embed dockerignore.tmpl
+	dockerignoreTemplate string
 )
 
 func RenderConfig(cfg core.Configuration) {
@@ -137,32 +143,8 @@ ENTRYPOINT [ %[12]s ]
 
 	must.Succeed(os.WriteFile("Dockerfile", []byte(dockerfile), 0666))
 
-	dockerignoreLines := append([]string{
-		`# SPDX-FileCopyrightText: 2025 SAP SE`,
-		`# SPDX-License-Identifier: Apache-2.0`,
-		``,
-		`/.dockerignore`,
-		`.DS_Store`,
-		`# TODO: uncomment when applications no longer use git to get version information`,
-		`#.git/`,
-		`/.github/`,
-		`/.gitignore`,
-		`/.goreleaser.yml`,
-		`/*.env*`,
-		`/.golangci.yaml`,
-		`/.vscode/`,
-		`/build/`,
-		`/CONTRIBUTING.md`,
-		`/Dockerfile`,
-		`/docs/`,
-		`/LICENSE*`,
-		`/Makefile.maker.yaml`,
-		`/README.md`,
-		`/report.html`,
-		`/shell.nix`,
-		`/testing/`,
-	}, cfg.Dockerfile.ExtraIgnores...)
-	dockerignore := strings.Join(dockerignoreLines, "\n") + "\n"
-
-	must.Succeed(os.WriteFile(".dockerignore", []byte(dockerignore), 0666))
+	t := template.Must(template.New(".dockerignore").Parse(dockerignoreTemplate))
+	var buf bytes.Buffer
+	must.Succeed(t.Execute(&buf, map[string]any{"ExtraIgnores": cfg.Dockerfile.ExtraIgnores}))
+	must.Succeed(os.WriteFile(".dockerignore", buf.Bytes(), 0666))
 }
