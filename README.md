@@ -28,6 +28,10 @@ We also support the usual Makefile invocations: `make`, `make check`, and `make 
 
 You usually want something like `make && sudo make install PREFIX=/usr/local`.
 
+### MacOS
+
+MacOS ships very old versions of GNU awk, GNU coreutils and GNU findutils. To make our lives easier, we use on Darwin the g prefixes variant on Darwin and end users are expected to install them via brew.
+
 ## Usage
 
 Put a `Makefile.maker.yaml` file in your Git repository's root directory, then run the following to generate Makefile and GitHub workflows:

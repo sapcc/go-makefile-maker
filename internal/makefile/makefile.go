@@ -394,6 +394,17 @@ endif
 		}
 		ignoreOptionsStr := strings.Join(append(ignoreOptions, "--"), " ")
 
+		// Darwin's sed does not support sed -i but sed -i ""
+		// xargs fails: command line cannot be assembled, too long
+		general.addDefinition(strings.TrimSpace(`
+UNAME_S := $(shell uname -s)
+SED = sed
+XARGS = xargs
+ifeq ($(UNAME_S),Darwin)
+	SED = gsed
+	XARGS = gxargs
+endif
+`))
 		dev.addRule(rule{
 			description:   "Add (or overwrite) license headers on all non-vendored source code files.",
 			target:        "license-headers",
@@ -401,9 +412,10 @@ endif
 			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense (for license headers on source code files)\e[0m\n"`,
-				fmt.Sprintf(`@printf "%%s\0" %s | xargs -0 -I{} bash -c 'year="$$(grep 'Copyright' {} | head -n1 | grep -E -o '[0-9]{4}')"; gawk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/}}; {if (!display && $$0 ~ /^(package |$$)/) {display=1} else { }}'"'"' {}; addlicense -c "SAP SE" -s=only -y "$$year" %s {}; sed -i '"'"'1s+// Copyright +// SPDX-FileCopyrightText: +'"'"' {}'`, allSourceFilesExpr, ignoreOptionsStr),
+				// We must use gawk to use gnu awk on Darwin
+				fmt.Sprintf(`@printf "%%s\0" %s | $(XARGS) -0 -I{} bash -c 'year="$$(grep 'Copyright' {} | head -n1 | grep -E -o '[0-9]{4}')"; gawk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/}}; {if (!display && $$0 ~ /^(package |$$)/) {display=1} else { }}'"'"' {}; addlicense -c "SAP SE" -s=only -y "$$year" %s {}; $(SED) -i '"'"'1s+// Copyright +// SPDX-FileCopyrightText: +'"'"' {}'`, allSourceFilesExpr, ignoreOptionsStr),
 				`@printf "\e[1;36m>> reuse annotate (for license headers on other files)\e[0m\n"`,
-				`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | grep -vw vendor | xargs reuse annotate -c 'SAP SE' -l Apache-2.0 --skip-unrecognised`,
+				`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | grep -vw vendor | $(XARGS) reuse annotate -c 'SAP SE' -l Apache-2.0 --skip-unrecognised`,
 				`@printf "\e[1;36m>> reuse download --all\e[0m\n"`,
 				`@reuse download --all`,
 				`@printf "\e[1;35mPlease review the changes. If *.license files were generated, consider instructing go-makefile-maker to add overrides to REUSE.toml instead.\e[0m\n"`,
