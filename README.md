@@ -28,6 +28,12 @@ We also support the usual Makefile invocations: `make`, `make check`, and `make 
 
 You usually want something like `make && sudo make install PREFIX=/usr/local`.
 
+### MacOS
+
+MacOS ships very old versions of awk, coreutils and findutils.
+To make our lives easier, we use the GNU variants (e.g. `gsed` instead of `sed`) on Darwin.
+Users are expected to provide these, e.g. via `brew install coreutils findutils gawk`.
+
 ## Usage
 
 Put a `Makefile.maker.yaml` file in your Git repository's root directory, then run the following to generate Makefile and GitHub workflows:
