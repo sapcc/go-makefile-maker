@@ -30,7 +30,9 @@ You usually want something like `make && sudo make install PREFIX=/usr/local`.
 
 ### MacOS
 
-MacOS ships very old versions of GNU awk, GNU coreutils and GNU findutils. To make our lives easier, we use on Darwin the g prefixes variant and end users are expected to install them via brew.
+MacOS ships very old versions of awk, coreutils and findutils.
+To make our lives easier, we use the GNU variants (e.g. `gsed` instead of `sed`) on Darwin.
+Users are expected to provide these, e.g. via `brew install coreutils findutils gawk`.
 
 ## Usage
 
