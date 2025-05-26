@@ -206,7 +206,7 @@ type RenovateConfig struct {
 	Assignees      []string      `yaml:"assignees"`
 	GoVersion      string        `yaml:"goVersion"`
 	PackageRules   []PackageRule `yaml:"packageRules"`
-	CustomManagers []interface{} `yaml:"customManagers"`
+	CustomManagers []any         `yaml:"customManagers"`
 }
 
 // DockerfileConfig appears in type Configuration.

@@ -63,7 +63,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 			logg.Fatal(string(output))
 		}
 
-		for _, dependencyString := range strings.Split(strings.TrimSpace(string(output)), "\n") {
+		for dependencyString := range strings.SplitSeq(strings.TrimSpace(string(output)), "\n") {
 			dependencyString = strings.TrimSpace(dependencyString)
 			if dependencyString == "" {
 				continue

@@ -28,7 +28,7 @@ type config struct {
 	OsvVulnerabilityAlerts                     bool               `json:"osvVulnerabilityAlerts,omitempty"`
 	PostUpdateOptions                          []string           `json:"postUpdateOptions,omitempty"`
 	PackageRules                               []core.PackageRule `json:"packageRules,omitempty"`
-	CustomManagers                             []interface{}      `json:"customManagers,omitempty"`
+	CustomManagers                             []any              `json:"customManagers,omitempty"`
 	PrHourlyLimit                              int                `json:"prHourlyLimit"`
 	Schedule                                   []string           `json:"schedule,omitempty"`
 	SemanticCommits                            string             `json:"semanticCommits,omitempty"`
