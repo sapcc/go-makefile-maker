@@ -97,7 +97,13 @@ endif
 			target:      "install-golangci-lint",
 			recipe:      installTool("golangci-lint", "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"),
 		})
-		prepareStaticRecipe = append(prepareStaticRecipe, "install-golangci-lint")
+		prepare.addRule(rule{
+			description: "Install modernize required by modernize/static-check",
+			phony:       true,
+			target:      "install-modernize",
+			recipe:      installTool("modernize", "golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@latest"),
+		})
+		prepareStaticRecipe = append(prepareStaticRecipe, "install-golangci-lint", "install-modernize")
 	}
 	if isSAPCC {
 		if isGolang {
@@ -289,6 +295,18 @@ endif
 			},
 		})
 
+		// add target to run modernize
+		test.addRule(rule{
+			description:   "Install and run modernize. Installing is used in CI, but you should probably install modernize using your package manager.",
+			phony:         true,
+			target:        "run-modernize",
+			prerequisites: []string{"install-modernize"},
+			recipe: []string{
+				`@printf "\e[1;36m>> modernize\e[0m\n"`,
+				`@modernize $(GO_TESTPKGS)`,
+			},
+		})
+
 		// add targets for test runner incl. coverage report
 		testRule := rule{
 			description: "Run tests and generate coverage report.",
@@ -462,7 +480,7 @@ endif
 
 	if isGolang {
 		// add target for static code checks
-		staticCheckPrerequisites := []string{"run-golangci-lint"}
+		staticCheckPrerequisites := []string{"run-golangci-lint", "run-modernize"}
 		if isSAPCC {
 			staticCheckPrerequisites = append(staticCheckPrerequisites, "check-dependency-licenses", "check-license-headers")
 		}
@@ -481,6 +499,17 @@ endif
 			recipe: []string{
 				fmt.Sprintf(`@printf "\e[1;36m>> goimports -w -local %s\e[0m\n"`, cfg.Metadata.URL),
 				fmt.Sprintf(`@goimports -w -local %s %s`, sr.ModulePath, allSourceFilesExpr),
+			},
+		})
+
+		dev.addRule(rule{
+			description:   "Run modernize on all non-vendored .go files",
+			phony:         true,
+			target:        "modernize",
+			prerequisites: []string{"install-modernize"},
+			recipe: []string{
+				`@printf "\e[1;36m>> modernize -fix ./...\e[0m\n"`,
+				`@modernize -fix ./...`,
 			},
 		})
 	}
