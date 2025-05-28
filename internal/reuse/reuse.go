@@ -55,12 +55,24 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 
 		_ = must.Return(exec.LookPath("go-licence-detector"))
 
-		cmd = exec.Command("sh", "-c",
-			"go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules .license-scan-rules.json -overrides .license-scan-overrides.jsonl -depsOut /dev/stdout -depsTemplate /dev/fd/3")
+		// Create temporary file for output
+		tmpOutput := must.Return(os.CreateTemp("", "go-makefile-maker-output-*"))
+		defer os.Remove(tmpOutput.Name())
+		tmpOutput.Close() // Close so external command can write to it
+
+		cmd = exec.Command("sh", "-c", //nolint:gosec // Command is run by the user
+			// On Linux we would just use /dev/stdout but that does not work on ✨ macOS ✨
+			fmt.Sprintf("go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules .license-scan-rules.json -overrides .license-scan-overrides.jsonl -depsOut %s -depsTemplate /dev/fd/3", tmpOutput.Name()))
 		cmd.ExtraFiles = []*os.File{tmpGLDT}
-		output, err = cmd.CombinedOutput()
+		output, err = cmd.CombinedOutput() // Capture output only in case of an error
 		if err != nil {
 			logg.Fatal(string(output))
+		}
+
+		// Read the output from temp file
+		output, err = os.ReadFile(tmpOutput.Name())
+		if err != nil {
+			logg.Fatal(err.Error())
 		}
 
 		for dependencyString := range strings.SplitSeq(strings.TrimSpace(string(output)), "\n") {
