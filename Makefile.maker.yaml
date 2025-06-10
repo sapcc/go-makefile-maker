@@ -24,6 +24,13 @@ renovate:
   assignees:
     - SuperSandro2000
 
+reuse:
+  annotations:
+    - paths:
+        - logo*.png
+      SPDX-FileCopyrightText: 'SAP SE or an SAP affiliate company'
+      SPDX-License-Identifier: Apache-2.0
+
 verbatim: |
   run: build/go-makefile-maker
     ./build/go-makefile-maker
