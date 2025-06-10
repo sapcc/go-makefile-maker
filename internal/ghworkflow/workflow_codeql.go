@@ -44,7 +44,7 @@ func codeQLWorkflow(cfg core.Configuration) {
 		Uses: initAction,
 		With: map[string]any{
 			"languages": "go",
-			"queries":   "security-extended",
+			"queries":   cfg.GitHubWorkflow.SecurityChecks.Queries.UnwrapOr("security-extended"),
 		},
 	})
 	j.addStep(jobStep{

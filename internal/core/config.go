@@ -179,7 +179,8 @@ type ReleaseWorkflowConfig struct {
 
 // SecurityChecksWorkflowConfig appears in type Configuration.
 type SecurityChecksWorkflowConfig struct {
-	Enabled Option[bool] `yaml:"enabled"`
+	Enabled Option[bool]   `yaml:"enabled"`
+	Queries Option[string] `yaml:"queries"`
 }
 
 // IsEnabled encodes that the default state for the Enabled field is `true`.
