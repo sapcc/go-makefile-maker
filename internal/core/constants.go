@@ -4,8 +4,8 @@
 package core
 
 const (
-	DefaultAlpineImage         = "3.21"
-	DefaultGoVersion           = "1.24.3"
+	DefaultAlpineImage         = "3.22"
+	DefaultGoVersion           = "1.24.4"
 	DefaultPostgresVersion     = "17"
 	DefaultLinkerdAwaitVersion = "0.2.7"
 	DefaultGitHubComRunsOn     = "ubuntu-latest"
