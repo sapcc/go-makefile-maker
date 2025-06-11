@@ -569,7 +569,10 @@ If `securityChecks` is enabled then it will generate the following workflows:
 ```yaml
 securityChecks:
   enabled: true
+  queries: security-extended
 ```
+
+`queries` is passed through to the GitHub Action. See the [GitHub Documentation](https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning#working-with-custom-configuration-files) for more information.
 
 #### `githubWorkflow.license`
 
