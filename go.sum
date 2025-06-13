@@ -1,7 +1,7 @@
 github.com/majewsky/gg v1.1.0 h1:rvbQAUVJ8Q0RWZF26k3BxQBbQnRj3CdIN+Aaqu1qaJo=
 github.com/majewsky/gg v1.1.0/go.mod h1:KC7qUlln1VBY90OE0jXMNjXW2b9B4jJ1heYQ08OzeAg=
-github.com/sapcc/go-bits v0.0.0-20250523091838-d2760e792019 h1:oKwhbKBoWC5cN0Vb0VpC/e9V1AmdHXsxGrj6Lec0ySw=
-github.com/sapcc/go-bits v0.0.0-20250523091838-d2760e792019/go.mod h1:/fZN48fSUp+Q5KxRymu0UYyIaPygc7XhiG6/+2K4iho=
+github.com/sapcc/go-bits v0.0.0-20250612150039-67ead56083c6 h1:xN2z2Kbc8t+5agEAS2nAWaNSmnuJAVtIbRR7pWwoVPk=
+github.com/sapcc/go-bits v0.0.0-20250612150039-67ead56083c6/go.mod h1:/E+XIJ82e8q3At34hUdDuXTQpt5Gsbw/6P8T8e82rcQ=
 golang.org/x/mod v0.24.0 h1:ZfthKaKaT4NrhGVZHO1/WDTwGES4De8KtWO0SIbNJMU=
 golang.org/x/mod v0.24.0/go.mod h1:IXM97Txy2VM4PJ3gI61r1YEk/gAj6zAHN3AdZt6S9Ww=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
