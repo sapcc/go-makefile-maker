@@ -5,7 +5,7 @@ github.com/majewsky/gg/option
 ## explicit; go 1.24
 github.com/sapcc/go-bits/logg
 github.com/sapcc/go-bits/must
-# golang.org/x/mod v0.24.0
+# golang.org/x/mod v0.25.0
 ## explicit; go 1.23.0
 golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/modfile
