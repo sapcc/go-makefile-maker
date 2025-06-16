@@ -37,11 +37,12 @@ func newMakefile(cfg core.Configuration, sr golang.ScanResult) *makefile {
 	}
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
 	isGolang := sr.GoVersion != ""
-	isSAPCC := strings.HasPrefix(cfg.Metadata.URL, "https://github.com/sapcc") ||
-		strings.HasPrefix(cfg.Metadata.URL, "https://github.com/cobaltcore-dev") ||
-		strings.HasPrefix(cfg.Metadata.URL, "https://github.com/ironcore-dev") ||
-		strings.HasPrefix(cfg.Metadata.URL, "https://github.wdf.sap.corp") ||
-		strings.HasPrefix(cfg.Metadata.URL, "https://github.tools.sap")
+	isSAPCC := strings.HasPrefix(cfg.Metadata.URL, "https://github.com/sapcc/") ||
+		strings.HasPrefix(cfg.Metadata.URL, "https://github.com/SAP-cloud-infrastructure/") ||
+		strings.HasPrefix(cfg.Metadata.URL, "https://github.com/cobaltcore-dev/") ||
+		strings.HasPrefix(cfg.Metadata.URL, "https://github.com/ironcore-dev/") ||
+		strings.HasPrefix(cfg.Metadata.URL, "https://github.wdf.sap.corp/") ||
+		strings.HasPrefix(cfg.Metadata.URL, "https://github.tools.sap/")
 
 	///////////////////////////////////////////////////////////////////////////
 	// General
