@@ -105,6 +105,16 @@ endif
 		})
 		prepareStaticRecipe = append(prepareStaticRecipe, "install-golangci-lint", "install-modernize")
 	}
+	if sr.UseGinkgo {
+		prepare.addRule(rule{
+			description: "Install ginkgo required when using it as test runner. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
+			phony:       true,
+			target:      "install-ginkgo",
+			recipe:      installTool("ginkgo", "github.com/onsi/ginkgo/v2/ginkgo@latest"),
+		})
+		prepareStaticRecipe = append(prepareStaticRecipe, "install-ginkgo")
+	}
+
 	if isSAPCC {
 		if isGolang {
 			prepare.addRule(rule{
@@ -144,15 +154,6 @@ endif
 			phony:       true,
 			target:      "install-setup-envtest",
 			recipe:      installTool("setup-envtest", "sigs.k8s.io/controller-runtime/tools/setup-envtest@latest"),
-		})
-	}
-
-	if sr.UseGinkgo {
-		prepare.addRule(rule{
-			description: "Install ginkgo required when using it as test runner. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
-			phony:       true,
-			target:      "install-ginkgo",
-			recipe:      installTool("ginkgo", "github.com/onsi/ginkgo/v2/ginkgo@latest"),
 		})
 	}
 
