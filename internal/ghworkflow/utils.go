@@ -24,19 +24,32 @@ func pushAndPRTriggers(defaultBranch string, ignorePaths []string) eventTrigger 
 	}
 }
 
-func baseJob(name string, isSelfHostedRunner bool) job {
+func baseJob(name string, cfg *core.GithubWorkflowConfiguration) job {
 	var (
-		runsOn any
-		envs   map[string]string
+		runsOn   any
+		envs     map[string]string
+		strategy JobStrategy
 	)
 
-	if isSelfHostedRunner {
-		runsOn = core.DefaultGitHubEnterpriseRunsOn
+	if cfg.IsSelfHostedRunner {
 		envs = map[string]string{
 			"NODE_EXTRA_CA_CERTS": "/etc/ssl/certs/ca-certificates.crt",
 		}
-	} else {
-		runsOn = core.DefaultGitHubComRunsOn
+	}
+
+	switch len(cfg.CI.RunsOn) {
+	case 0:
+		// If no runsOn is specified, we use reasonable defaults
+		if cfg.IsSelfHostedRunner {
+			runsOn = core.DefaultGitHubEnterpriseRunsOn
+		} else {
+			runsOn = core.DefaultGitHubComRunsOn
+		}
+	case 1:
+		runsOn = cfg.CI.RunsOn[0]
+	default: // > 2
+		runsOn = "${{ matrix.os }}"
+		strategy.Matrix.OS = cfg.CI.RunsOn
 	}
 
 	return job{
@@ -47,11 +60,12 @@ func baseJob(name string, isSelfHostedRunner bool) job {
 			Name: "Check out code",
 			Uses: core.CheckoutAction,
 		}},
+		Strategy: strategy,
 	}
 }
 
 func baseJobWithGo(name string, cfg core.Configuration) job {
-	j := baseJob(name, cfg.GitHubWorkflow.IsSelfHostedRunner)
+	j := baseJob(name, cfg.GitHubWorkflow)
 	j.addStep(jobStep{
 		Name: "Set up Go",
 		Uses: core.SetupGoAction,
