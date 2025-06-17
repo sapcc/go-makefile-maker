@@ -34,8 +34,11 @@ func main() {
 	must.Succeed(file.Close())
 	cfg.Validate()
 
-	if cfg.GitHubWorkflow != nil && !strings.HasPrefix(cfg.Metadata.URL, "https://github.com") {
+	if cfg.GitHubWorkflow != nil && !strings.HasPrefix(cfg.Metadata.URL, "https://github.com/") {
 		cfg.GitHubWorkflow.IsSelfHostedRunner = true
+		if strings.Contains(cfg.Metadata.URL, "/sap-cloud-infrastructure/") {
+			cfg.GitHubWorkflow.IsSugarRunner = true
+		}
 	}
 
 	if cfg.Golang.SetGoModVersion {

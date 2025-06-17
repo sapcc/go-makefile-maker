@@ -35,7 +35,7 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 
 	w.Jobs["build"] = build
 
-	testJob := buildOrTestBaseJob("Test", cfg)
+	testJob := baseJobWithGo("Test", cfg)
 	testJob.Needs = []string{"build"}
 	testCmd := []string{
 		"make build/cover.out",
@@ -53,7 +53,7 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 	})
 
 	if ghwCfg.CI.Coveralls && !ghwCfg.IsSelfHostedRunner {
-		multipleOS := len(ghwCfg.CI.RunnerType) > 1
+		multipleOS := len(ghwCfg.CI.RunsOn) > 1
 		env := map[string]string{
 			"GIT_BRANCH":      "${{ github.head_ref }}",
 			"COVERALLS_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
@@ -84,19 +84,4 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 	w.Jobs["test"] = testJob
 
 	writeWorkflowToFile(w)
-}
-
-func buildOrTestBaseJob(name string, cfg core.Configuration) job {
-	ghwCfg := cfg.GitHubWorkflow
-	j := baseJobWithGo(name, cfg)
-	switch len(ghwCfg.CI.RunnerType) {
-	case 0:
-		// baseJobWithGo() will set j.RunsOn to DefaultGitHubComRunnerType.
-	case 1:
-		j.RunsOn = ghwCfg.CI.RunnerType[0]
-	default:
-		j.RunsOn = "${{ matrix.os }}"
-		j.Strategy.Matrix.OS = ghwCfg.CI.RunnerType
-	}
-	return j
 }

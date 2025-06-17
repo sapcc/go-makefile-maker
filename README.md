@@ -508,8 +508,8 @@ ci:
   ignorePaths: []
 ```
 
-`runOn` specifies a list of machine(s) to run the `build` and `test` jobs on ([more
-info][ref-runs-on]). You can use this to ensure that your build compilation and tests are
+`runOn` specifies a list of machine(s) to run the `build` and `test` jobs on ([more info][ref-runs-on]).
+You can use this to ensure that your build compilation and tests are
 successful on multiple operating systems. Default value for this is `ubuntu-latest`.
 
 If `coveralls` is `true` then your test coverage report will be uploaded to [Coveralls]. Make sure that you have enabled Coveralls for your GitHub repo beforehand.

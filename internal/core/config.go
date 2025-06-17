@@ -140,7 +140,8 @@ type GithubWorkflowConfiguration struct {
 	} `yaml:"global"`
 
 	CI                  CIWorkflowConfig             `yaml:"ci"`
-	IsSelfHostedRunner  bool                         `yaml:"omit"`
+	IsSelfHostedRunner  bool                         `yaml:"-"`
+	IsSugarRunner       bool                         `yaml:"-"`
 	License             LicenseWorkflowConfig        `yaml:"license"`
 	PushContainerToGhcr PushContainerToGhcrConfig    `yaml:"pushContainerToGhcr"`
 	Release             ReleaseWorkflowConfig        `yaml:"release"`
@@ -153,7 +154,7 @@ type CIWorkflowConfig struct {
 	Coveralls         bool     `yaml:"coveralls"`
 	PrepareMakeTarget string   `yaml:"prepareMakeTarget"`
 	IgnorePaths       []string `yaml:"ignorePaths"`
-	RunnerType        []string `yaml:"runOn"`
+	RunsOn            []string `yaml:"runOn"`
 }
 
 // LicenseWorkflowConfig appears in type Configuration.
@@ -283,7 +284,7 @@ func (c *Configuration) Validate() {
 
 		// Validate CI workflow configuration.
 		if ghwCfg.CI.Enabled {
-			if len(ghwCfg.CI.RunnerType) > 1 && !strings.HasPrefix(ghwCfg.CI.RunnerType[0], "ubuntu") {
+			if len(ghwCfg.CI.RunsOn) > 1 && !strings.HasPrefix(ghwCfg.CI.RunsOn[0], "ubuntu") {
 				logg.Fatal("githubWorkflow.ci.runOn must only define a single Ubuntu based runner when githubWorkflow.ci.enabled is true")
 			}
 		}

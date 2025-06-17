@@ -115,14 +115,16 @@ type job struct {
 
 	// Strategy creates a build matrix for the job and allows different
 	// variations to run each job in.
-	Strategy struct {
-		Matrix struct {
-			OS []string `yaml:"os"`
-		} `yaml:"matrix"`
-	} `yaml:"strategy,omitempty"`
+	Strategy JobStrategy `yaml:"strategy,omitempty"`
 
 	// A map of <service_id> to their configuration(s).
 	Services map[string]jobService `yaml:"services,omitempty"`
+}
+
+type JobStrategy struct {
+	Matrix struct {
+		OS []string `yaml:"os"`
+	} `yaml:"matrix"`
 }
 
 // jobService is used to host service containers for a job in a workflow. The
