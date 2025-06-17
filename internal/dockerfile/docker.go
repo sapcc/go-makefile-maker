@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
@@ -54,6 +55,11 @@ func RenderConfig(cfg core.Configuration) {
 	var runVersionCommands []string
 	for _, binary := range cfg.Binaries {
 		if binary.InstallTo != "" {
+			if binary.InstallTo != "bin/" {
+				logg.Error("dockerfile: ignoring binary %q with custom install path %q, only 'bin/' is supported at the moment", binary.Name, binary.InstallTo)
+				continue
+			}
+
 			runVersionCommands = append(runVersionCommands, binary.Name+" --version 2>/dev/null")
 		}
 	}
