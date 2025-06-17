@@ -140,7 +140,8 @@ type GithubWorkflowConfiguration struct {
 	} `yaml:"global"`
 
 	CI                  CIWorkflowConfig             `yaml:"ci"`
-	IsSelfHostedRunner  bool                         `yaml:"omit"`
+	IsSelfHostedRunner  bool                         `yaml:"-"`
+	IsSugarRunner       bool                         `yaml:"-"`
 	License             LicenseWorkflowConfig        `yaml:"license"`
 	PushContainerToGhcr PushContainerToGhcrConfig    `yaml:"pushContainerToGhcr"`
 	Release             ReleaseWorkflowConfig        `yaml:"release"`

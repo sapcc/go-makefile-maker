@@ -14,6 +14,7 @@ const (
 var DefaultGitHubEnterpriseRunsOn = map[string]string{
 	"group": "organization/Default",
 }
+var SugarRunsOn = []string{"self-hosted"}
 
 const (
 	CheckoutAction = "actions/checkout@v4"
