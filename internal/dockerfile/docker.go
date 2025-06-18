@@ -55,6 +55,7 @@ func RenderConfig(cfg core.Configuration) {
 	var runVersionCommands []string
 	for _, binary := range cfg.Binaries {
 		if binary.InstallTo != "" {
+            # The binaries need to be in PATH which is only the case if they are installed to bin/
 			if binary.InstallTo != "bin/" {
 				logg.Error("dockerfile: ignoring binary %q with custom install path %q, only 'bin/' is supported at the moment", binary.Name, binary.InstallTo)
 				continue
