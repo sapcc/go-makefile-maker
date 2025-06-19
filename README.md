@@ -19,7 +19,7 @@ Generates a Makefile and optionally also GitHub workflows and a Dockerfile for y
   license headers.
 
 This project is based on the idea to have as many options as necessary but as little as possible.
-Not every part of the program is configurable (see #configuration), some things are hardcoded or implicit (see #implicit-configuration).
+Not every part of the program is configurable (see [#configuration](#configuration)), some things are hardcoded or implicit (see [#implicit-configuration](#implicit-configuration)).
 If more options are required or some assumptions are wrong, please get in touch.
 
 ## Installation
