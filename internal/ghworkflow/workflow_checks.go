@@ -27,6 +27,24 @@ func checksWorkflow(cfg core.Configuration) {
 		},
 	})
 
+	if cfg.ShellCheck.Enabled.UnwrapOr(true) {
+		shellcheckJob := jobStep{
+			Name: "Run shellcheck",
+			Uses: core.ShellCheckAction,
+		}
+		if cfg.ShellCheck.Opts != "" {
+			shellcheckJob.Env = map[string]string{
+				"SHELLCHECK_OPTS": cfg.ShellCheck.Opts,
+			}
+		}
+		if len(cfg.ShellCheck.IgnorePaths) > 0 {
+			shellcheckJob.With = map[string]any{
+				"ignore_paths": cfg.ShellCheck.IgnorePaths,
+			}
+		}
+		j.addStep(shellcheckJob)
+	}
+
 	if ghwCfg.SecurityChecks.IsEnabled() {
 		j.addStep(jobStep{
 			Name: "Dependency Licenses Review",

@@ -34,6 +34,7 @@ type Configuration struct {
 	Metadata       Metadata                     `yaml:"metadata"`
 	Nix            NixConfig                    `yaml:"nix"`
 	Renovate       RenovateConfig               `yaml:"renovate"`
+	ShellCheck     ShellCheckConfiguration      `yaml:"shellCheck"`
 	SpellCheck     SpellCheckConfiguration      `yaml:"spellCheck"`
 	Test           TestConfiguration            `yaml:"testPackages"`
 	Reuse          ReuseConfiguration           `yaml:"reuse"`
@@ -189,6 +190,13 @@ type SecurityChecksWorkflowConfig struct {
 // IsEnabled encodes that the default state for the Enabled field is `true`.
 func (s SecurityChecksWorkflowConfig) IsEnabled() bool {
 	return s.Enabled.UnwrapOr(true)
+}
+
+// ShellCheckConfiguration appears in type Configuration.
+type ShellCheckConfiguration struct {
+	Enabled     Option[bool] `yaml:"enabled"`
+	IgnorePaths []string     `yaml:"ignorePaths"`
+	Opts        string       `yaml:"opts"`
 }
 
 type PackageRule struct {

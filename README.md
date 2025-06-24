@@ -80,6 +80,7 @@ The config file has the following sections:
 * [metadata](#metadata)
 * [renovate](#renovate)
 * [nix](#nix)
+* [shellcheck](#shellcheck)
 * [spellCheck](#spellcheck)
 * [testPackages](#testpackages)
 * [variables](#variables)
@@ -385,6 +386,23 @@ customManagers:
     depNameTemplate: "kubernetes-sigs/controller-tools"
     extractVersionTemplate: "^envtest.v(?<version>.*)$"
 ```
+
+### `shellCheck`
+
+```yaml
+shellCheck:
+  enabled: true
+  ignorePaths:
+    - 'test/util/**'
+    - 'test/mock/**'
+  opts: '--shell=bash --external-sources -e SC1090,SC1091,SC2154'
+```
+
+Whether to run [`ShellCheck`](https://www.shellcheck.net/) on all shell scripts in the repository. It defaults to `true`.
+
+`ignorePaths` specifies a list of path patterns to ignore.
+
+`opts` specifies additional options to pass to `shellcheck`. The `-e` option can be used to ignore specific shellcheck warnings.
 
 ### `spellCheck`
 
