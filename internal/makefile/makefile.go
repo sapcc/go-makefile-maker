@@ -31,10 +31,7 @@ var scanOverrides []byte
 // rules, and definitions will appear in the exact order as they are defined.
 func newMakefile(cfg core.Configuration, sr golang.ScanResult) *makefile {
 	hasBinaries := len(cfg.Binaries) > 0
-	runControllerGen := sr.KubernetesController
-	if cfg.ControllerGen.Enabled != nil {
-		runControllerGen = *cfg.ControllerGen.Enabled
-	}
+	runControllerGen := cfg.ControllerGen.Enabled.UnwrapOr(sr.KubernetesController)
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
 	isGolang := sr.GoVersion != ""
 	isSAPCC := strings.HasPrefix(cfg.Metadata.URL, "https://github.com/sapcc/") ||

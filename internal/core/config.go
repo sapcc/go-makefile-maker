@@ -199,7 +199,7 @@ type PackageRule struct {
 	Extends           []string `yaml:"extends" json:"extends,omitempty"`
 	AllowedVersions   string   `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
 	AutoMerge         bool     `yaml:"automerge" json:"automerge,omitempty"`
-	EnableRenovate    *bool    `yaml:"enabled" json:"enabled,omitempty"`
+	Enabled           *bool    `yaml:"enabled" json:"enabled,omitempty"`
 	GroupName         string   `yaml:"groupName" json:"groupName,omitempty"`
 	MinimumReleaseAge string   `yaml:"minimumReleaseAge" json:"minimumReleaseAge,omitempty"`
 }
@@ -228,14 +228,14 @@ type DockerfileConfig struct {
 }
 
 type ControllerGen struct {
-	Enabled          *bool  `yaml:"enabled"`
-	CrdOutputPath    string `yaml:"crdOutputPath"`
-	ObjectHeaderFile string `yaml:"objectHeaderFile"`
-	RBACRoleName     string `yaml:"rbacRoleName"`
+	Enabled          Option[bool] `yaml:"enabled"`
+	CrdOutputPath    string       `yaml:"crdOutputPath"`
+	ObjectHeaderFile string       `yaml:"objectHeaderFile"`
+	RBACRoleName     string       `yaml:"rbacRoleName"`
 }
 
 type MakefileConfig struct {
-	Enabled *bool `yaml:"enabled"` // this is a pointer to bool to treat an absence as true for backwards compatibility
+	Enabled Option[bool] `yaml:"enabled"` // this is a pointer to bool to treat an absence as true for backwards compatibility
 }
 
 type Metadata struct {
