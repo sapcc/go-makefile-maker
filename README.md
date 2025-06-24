@@ -69,6 +69,7 @@ Take a look at `go-makefile-maker`'s [own config file](./Makefile.maker.yaml) fo
 The config file has the following sections:
 
 * [binaries](#binaries)
+* [controllerGen](#controllergen)
 * [coverageTest](#coveragetest)
 * [dockerfile](#dockerfile)
 * [golang](#golang)
@@ -78,6 +79,7 @@ The config file has the following sections:
 * [reuse](#reuse)
 * [metadata](#metadata)
 * [renovate](#renovate)
+* [nix](#nix)
 * [spellCheck](#spellcheck)
 * [testPackages](#testpackages)
 * [variables](#variables)
