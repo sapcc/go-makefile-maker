@@ -134,11 +134,14 @@ func (m *makefile) help() *rule {
 	var longestTargetCharCount int
 	for _, c := range m.categories {
 		for _, r := range c.rules {
-			if r.description != "" {
-				hasDescriptiveTarget[c.name] = true
-				if chars := len(r.target); chars > longestTargetCharCount {
-					longestTargetCharCount = chars
-				}
+			// duplicated with the code below
+			if r.hideTarget || r.description == "" {
+				continue
+			}
+
+			hasDescriptiveTarget[c.name] = true
+			if chars := len(r.target); chars > longestTargetCharCount {
+				longestTargetCharCount = chars
 			}
 		}
 	}
@@ -160,9 +163,12 @@ func (m *makefile) help() *rule {
 		}
 
 		for _, r := range c.rules {
-			if r.description != "" {
-				result.addRecipe(targetDescStr(longestTargetCharCount, r.target, r.description))
+			// duplicated with the logic for longestTargetCharCount
+			if r.hideTarget || r.description == "" {
+				continue
 			}
+
+			result.addRecipe(targetDescStr(longestTargetCharCount, r.target, r.description))
 		}
 	}
 
@@ -195,6 +201,7 @@ type rule struct {
 	definitions []string
 	phony       bool
 	target      string
+	hideTarget  bool // if true, the target will not be printed in the help output
 	recipe      []string
 
 	// See https://www.gnu.org/software/make/manual/make.html#Prerequisite-Types.

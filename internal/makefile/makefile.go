@@ -487,10 +487,17 @@ endif
 			staticCheckPrerequisites = append(staticCheckPrerequisites, "check-dependency-licenses", "check-license-headers")
 		}
 		test.addRule(rule{
-			description:   "Run static code checks",
+			description:   "Run static code checks (internal option to enforce --keep-going)",
 			phony:         true,
-			target:        "static-check",
+			target:        "__static-check",
+			hideTarget:    true,
 			prerequisites: staticCheckPrerequisites,
+		})
+		test.addRule(rule{
+			description: "Run static code checks",
+			phony:       true,
+			target:      "static-check",
+			recipe:      []string{`$(MAKE) --keep-going --no-print-directory __static-check`},
 		})
 
 		dev.addRule(rule{
