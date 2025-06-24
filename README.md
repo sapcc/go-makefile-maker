@@ -163,6 +163,7 @@ dockerfile:
     - curl
     - openssl
   runAsRoot: true
+  useBuildKit: true
   withLinkerdAwait: true
 ```
 
@@ -182,6 +183,7 @@ With [go-api-declarations](https://github.com/sapcc/go-api-declarations)'s [`bin
 * `extraIgnores` appends entries in `.dockerignore` to the default ones.
 * `extraPackages` installs extra Alpine packages in the final Docker layer. `ca-certificates` is always installed.
 * `runAsRoot` skips the privilege drop in the Dockerfile, i.e. the `USER appuser:appgroup` command is not added.
+* `useBuildKit` enables the use of Docker BuildKit for building the image. This is recommended for better performance and caching but requires the feature to be enabled via the `DOCKER_BUILDKIT=1` environment variable or in the Docker daemon config file.
 * `withLinkerdAwait` whether to download the binary and prepend linkerd-await to the entrypoint. For more details see <https://github.com/linkerd/linkerd-await>.
 
 ### `golang`
