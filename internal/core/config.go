@@ -221,6 +221,7 @@ type DockerfileConfig struct {
 	ExtraIgnores       []string `yaml:"extraIgnores"`
 	ExtraPackages      []string `yaml:"extraPackages"`
 	RunAsRoot          bool     `yaml:"runAsRoot"`
+	UseBuildKit        bool     `yaml:"useBuildKit"`
 	WithLinkerdAwait   bool     `yaml:"withLinkerdAwait"`
 }
 
