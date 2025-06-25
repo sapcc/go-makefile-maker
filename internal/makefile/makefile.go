@@ -433,11 +433,16 @@ endif
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense (for license headers on source code files)\e[0m\n"`,
 				// We must use gawk to use gnu awk on Darwin
-				fmt.Sprintf(`@printf "%%s\0" %s | $(XARGS) -0 -I{} bash -c 'year="$$(grep 'Copyright' {} | head -n1 | grep -E -o '"'"'[0-9]{4}(-[0-9]{4})?'"'"')"; `+
+				fmt.Sprintf(`@printf "%%s\0" %s | $(XARGS) -0 -I{} bash -c '`+
+					// Try to extract the copyright year
+					`year="$$(grep 'Copyright' {} | head -n1 | grep -E -o '"'"'[0-9]{4}(-[0-9]{4})?'"'"')"; `+
 					// If year is empty, set it to the current year
 					`if [[ -z "$$year" ]]; then year=$$(date +%%Y); fi; `+
+					// clean up old license headers
 					`gawk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/}}; {if (!display && $$0 ~ /^(package |$$)/) {display=1} else { }}'"'"' {}; `+
+					// Run addlicense tool, will be a no-op if the license header is already present
 					`addlicense -c "SAP SE or an SAP affiliate company" -s=only -y "$$year" %s {}; `+
+					// Replace "// Copyright" with "// SPDX-FileCopyrightText:" to fulfill reuse
 					`$(SED) -i '"'"'1s+// Copyright +// SPDX-FileCopyrightText: +'"'"' {}'`, allSourceFilesExpr, ignoreOptionsStr),
 				`@printf "\e[1;36m>> reuse annotate (for license headers on other files)\e[0m\n"`,
 				`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | grep -vw vendor | $(XARGS) reuse annotate -c 'SAP SE or an SAP affiliate company' -l Apache-2.0 --skip-unrecognised`,
