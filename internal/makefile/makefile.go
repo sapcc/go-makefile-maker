@@ -434,6 +434,8 @@ endif
 				`@printf "\e[1;36m>> addlicense (for license headers on source code files)\e[0m\n"`,
 				// We must use gawk to use gnu awk on Darwin
 				fmt.Sprintf(`@printf "%%s\0" %s | $(XARGS) -0 -I{} bash -c 'year="$$(grep 'Copyright' {} | head -n1 | grep -E -o '"'"'[0-9]{4}(-[0-9]{4})?'"'"')"; `+
+					// If year is empty, set it to the current year
+					`if [[ -z "$$year" ]]; then year=$$(date +%%Y); fi; `+
 					`gawk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/}}; {if (!display && $$0 ~ /^(package |$$)/) {display=1} else { }}'"'"' {}; `+
 					`addlicense -c "SAP SE or an SAP affiliate company" -s=only -y "$$year" %s {}; `+
 					`$(SED) -i '"'"'1s+// Copyright +// SPDX-FileCopyrightText: +'"'"' {}'`, allSourceFilesExpr, ignoreOptionsStr),
