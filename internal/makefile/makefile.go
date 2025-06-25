@@ -6,7 +6,6 @@ package makefile
 import (
 	_ "embed"
 	"fmt"
-	"os"
 	"path"
 	"path/filepath"
 	"sort"
@@ -16,6 +15,7 @@ import (
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/golang"
+	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
 //go:embed editorconfig
@@ -458,13 +458,13 @@ endif
 		})
 
 		if isGolang {
-			must.Succeed(os.WriteFile(".editorconfig", editorconfig, 0o666))
+			must.Succeed(util.WriteFile(".editorconfig", editorconfig))
 
 			licenseRulesFile := ".license-scan-rules.json"
-			must.Succeed(os.WriteFile(licenseRulesFile, licenseRules, 0o666))
+			must.Succeed(util.WriteFile(licenseRulesFile, licenseRules))
 
 			scanOverridesFile := ".license-scan-overrides.jsonl"
-			must.Succeed(os.WriteFile(scanOverridesFile, scanOverrides, 0o666))
+			must.Succeed(util.WriteFile(scanOverridesFile, scanOverrides))
 
 			dev.addRule(rule{
 				description:   "Check all dependency licenses using go-licence-detector.",

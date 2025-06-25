@@ -44,6 +44,14 @@ SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
 path = [
+  "vendor/github.com/spf13/pflag/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Other"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = [
   "vendor/golang.org/x/mod/**",
 ]
 precedence = "aggregate"

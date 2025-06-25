@@ -47,6 +47,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		_ = must.Return(tmpGLDT.Seek(0, 0))
 
 		// otherwise we might miss some direct dependencies which is really strange...
+		logg.Debug("-> running go-mod-tidy")
 		cmd := exec.Command("go", "mod", "tidy")
 		output, err := cmd.CombinedOutput()
 		if err != nil {
@@ -60,6 +61,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		defer os.Remove(tmpOutput.Name())
 		tmpOutput.Close() // Close so external command can write to it
 
+		logg.Debug("-> running go-licence-detector")
 		cmd = exec.Command("sh", "-c", //nolint:gosec // Command is run by the user
 			// On Linux we would just use /dev/stdout but that does not work on ✨ macOS ✨
 			fmt.Sprintf("go list -m -mod=readonly -json all | go-licence-detector -includeIndirect -rules .license-scan-rules.json -overrides .license-scan-overrides.jsonl -depsOut %s -depsTemplate /dev/fd/3", tmpOutput.Name()))

@@ -5,7 +5,6 @@ package goreleaser
 
 import (
 	"net/url"
-	"os"
 	"strings"
 
 	_ "embed"
@@ -72,5 +71,5 @@ func RenderConfig(cfg core.Configuration) {
 		"fromPackage":  cfg.Binaries[0].FromPackage,
 		"githubDomain": metadataURL,
 	}))
-	must.Succeed(os.WriteFile("RELEASE.md", []byte(releaseMD), 0666))
+	must.Succeed(util.WriteFile("RELEASE.md", []byte(releaseMD)))
 }

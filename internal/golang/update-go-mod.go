@@ -12,6 +12,7 @@ import (
 	"golang.org/x/mod/modfile"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
+	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
 // SetGoVersionInGoMod updates the go directive in the go.mod file unless some exceptions are met.
@@ -38,5 +39,5 @@ func SetGoVersionInGoMod() {
 	// otherwise update the version
 	rgx := regexp.MustCompile(`go \d\.\d+(\.\d+)?`)
 	modFileBytesReplaced := rgx.ReplaceAll(modFileBytes, []byte("go "+goVersion))
-	must.Succeed(os.WriteFile(ModFilename, modFileBytesReplaced, 0o666))
+	must.Succeed(util.WriteFile(ModFilename, modFileBytesReplaced))
 }
