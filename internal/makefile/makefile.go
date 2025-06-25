@@ -443,7 +443,8 @@ endif
 					// Run addlicense tool, will be a no-op if the license header is already present
 					`addlicense -c "SAP SE or an SAP affiliate company" -s=only -y "$$year" %s {}; `+
 					// Replace "// Copyright" with "// SPDX-FileCopyrightText:" to fulfill reuse
-					`$(SED) -i '"'"'1s+// Copyright +// SPDX-FileCopyrightText: +'"'"' {}'`, allSourceFilesExpr, ignoreOptionsStr),
+					`$(SED) -i '"'"'1s+// Copyright +// SPDX-FileCopyrightText: +'"'"' {}; `+
+					`'`, allSourceFilesExpr, ignoreOptionsStr),
 				`@printf "\e[1;36m>> reuse annotate (for license headers on other files)\e[0m\n"`,
 				`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | grep -vw vendor | $(XARGS) reuse annotate -c 'SAP SE or an SAP affiliate company' -l Apache-2.0 --skip-unrecognised`,
 				`@printf "\e[1;36m>> reuse download --all\e[0m\n"`,
