@@ -4,6 +4,7 @@
 package renovate
 
 import (
+	"bytes"
 	"encoding/json"
 	"os"
 	"strings"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/golang"
+	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
 type constraints struct {
@@ -144,14 +146,13 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 	// that are not detected by its other built-in package managers.
 	cfg.CustomManagers = append(cfg.CustomManagers, cfgRenovate.CustomManagers...)
 
-	must.Succeed(os.MkdirAll(".github", 0750))
-	must.Succeed(os.RemoveAll("renovate.json"))
-	f := must.Return(os.Create(".github/renovate.json"))
-
-	encoder := json.NewEncoder(f)
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
 	encoder.SetIndent("", "  ")
 	encoder.SetEscapeHTML(false) // in order to preserve `<` in allowedVersions field
 	must.Succeed(encoder.Encode(cfg))
 
-	must.Succeed(f.Close())
+	must.Succeed(os.MkdirAll(".github", 0750))
+	must.Succeed(os.RemoveAll("renovate.json"))
+	must.Succeed(util.WriteFile(".github/renovate.json", buf.Bytes()))
 }

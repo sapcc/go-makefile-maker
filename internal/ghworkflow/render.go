@@ -10,6 +10,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
@@ -41,7 +42,9 @@ func Render(cfg core.Configuration, sr golang.ScanResult) {
 }
 
 func writeWorkflowToFile(w *workflow) {
-	f := must.Return(os.Create(w.getPath()))
+	path := w.getPath()
+	logg.Debug("-> writing file %s", path)
+	f := must.Return(os.Create(path))
 	defer f.Close()
 
 	encoder := yaml.NewEncoder(f)

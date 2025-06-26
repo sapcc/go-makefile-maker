@@ -6,7 +6,6 @@ package nix
 import (
 	_ "embed"
 	"fmt"
-	"os"
 	"slices"
 	"strings"
 
@@ -61,5 +60,5 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 		"Packages":       packages,
 		"ExtraLibraries": cfg.Nix.ExtraLibraries,
 	}))
-	must.Succeed(os.WriteFile(".envrc", envrcTemplate, 0666))
+	must.Succeed(util.WriteFile(".envrc", envrcTemplate))
 }
