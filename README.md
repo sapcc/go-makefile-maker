@@ -190,6 +190,7 @@ With [go-api-declarations](https://github.com/sapcc/go-api-declarations)'s [`bin
 
 ```yaml
 golang:
+  autoupdateableDeps: '^github.com/(?:sap-cloud-infrastructure|sapcc)/'
   enableVendoring: true
   ldflags: -X "main.goversion={{.Env.GOVERSION}}"
   setGoModVersion: true
@@ -199,12 +200,15 @@ Set `golang.enableVendoring` to `true` if you vendor all dependencies in your re
 
 1. The default for `GO_BUILDFLAGS` is set to `-mod vendor`, so that build targets default to using vendored dependencies.
   This means that building binaries does not require a network connection.
-2. The `make tidy-deps` target is replaced by a `make vendor` target that runs `go mod tidy && go mod verify` just like `make tidy-deps`, but also runs `go
-  mod vendor`.
+2. The `make tidy-deps` target is replaced by a `make vendor` target that runs `go mod tidy && go mod verify` just like `make tidy-deps`, but also runs `go mod vendor`.
   This target can be used to get the vendor directory up-to-date before commits.
 
-If `golang.setGoModVersion` is set to `true` then `go.mod` will be automatically updated to the latest version.
-The `ldflags` option can be used to share flags between the Makefile and GoReleaser.
+If `golang.setGoModVersion` is set to `true`, then `go.mod` will be automatically updated to the latest version.
+
+The `golang.ldflags` option can be used to share flags between the Makefile and GoReleaser.
+
+If `golang.autoupdateableDeps` is filled with a [regular expression](https://pkg.go.dev/regexp/syntax), go-makefile-maker can be invoked with the `--autoupdate-deps` option to automatically upgrade all module dependencies matching that regex using `go get -u $MODULE@latest`.
+This is intended for automated `go-makefile-maker` runs inside CI jobs that want to bundle some dependency updates together with the `go-makefile-maker` run in order to reduce the amount of automated chore commits in the commit history.
 
 ### `golangciLint`
 

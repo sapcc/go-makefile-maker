@@ -68,8 +68,32 @@ SPDX-License-Identifier = "MIT"
 
 [[annotations]]
 path = [
+  "vendor/github.com/hashicorp/golang-lru/v2/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Other"
+SPDX-License-Identifier = "MPL-2.0"
+
+[[annotations]]
+path = [
+  "vendor/github.com/sergi/go-diff/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Other"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = [
   "vendor/gopkg.in/check.v1/**",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Other"
 SPDX-License-Identifier = "BSD-2-Clause"
+
+[[annotations]]
+path = [
+  "vendor/gopkg.in/yaml.v2/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Other"
+SPDX-License-Identifier = "Apache-2.0"

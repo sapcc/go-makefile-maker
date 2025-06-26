@@ -27,8 +27,10 @@ import (
 
 func main() {
 	var flags struct {
-		ShowHelp bool
+		AutoupdateDeps bool
+		ShowHelp       bool
 	}
+	pflag.BoolVar(&flags.AutoupdateDeps, "autoupdate-deps", false, "autoupdate dependencies matching the golang.autoupdateableDeps config option (if any)")
 	pflag.BoolVar(&logg.ShowDebug, "debug", false, "print debug logs")
 	pflag.BoolVar(&flags.ShowHelp, "help", false, "print this message")
 	pflag.Parse()
@@ -66,9 +68,13 @@ func main() {
 	logg.Debug("reading go.mod")
 	sr := golang.Scan()
 
-	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig.IsNone() && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled) || cfg.GoReleaser.ShouldCreateConfig()
+	if flags.AutoupdateDeps && cfg.Golang.AutoupdateableDepsRx != "" {
+		logg.Debug("autoupdating library dependencies")
+		golang.AutoupdateDependencies(sr, cfg.Golang)
+	}
 
 	logg.Debug("rendering configs for Nix")
+	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig.IsNone() && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled) || cfg.GoReleaser.ShouldCreateConfig()
 	nix.RenderShell(cfg, sr, renderGoreleaserConfig)
 
 	// Render Makefile

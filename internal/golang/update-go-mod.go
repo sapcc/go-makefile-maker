@@ -4,6 +4,7 @@
 package golang
 
 import (
+	"bytes"
 	"os"
 	"regexp"
 	"strings"
@@ -39,5 +40,7 @@ func SetGoVersionInGoMod() {
 	// otherwise update the version
 	rgx := regexp.MustCompile(`go \d\.\d+(\.\d+)?`)
 	modFileBytesReplaced := rgx.ReplaceAll(modFileBytes, []byte("go "+goVersion))
-	must.Succeed(util.WriteFile(ModFilename, modFileBytesReplaced))
+	if !bytes.Equal(modFileBytes, modFileBytesReplaced) {
+		must.Succeed(util.WriteFile(ModFilename, modFileBytesReplaced))
+	}
 }
