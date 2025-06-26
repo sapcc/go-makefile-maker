@@ -97,7 +97,7 @@ build/cover.html: build/cover.out
 	@printf "\e[1;36m>> go tool cover > build/cover.html\e[0m\n"
 	@go tool cover -html $< -o $@
 
-check-addlicense: FORCE install-addlicense vendor
+check-addlicense: FORCE install-addlicense
 	@printf "\e[1;36m>> addlicense --check\e[0m\n"
 	@addlicense --check -- $(patsubst $(shell awk '$$1 == "module" {print $$2}' go.mod)%,.%/*.go,$(shell go list ./...))
 

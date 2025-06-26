@@ -453,16 +453,11 @@ endif
 			},
 		})
 
-		tidyTarget := "tidy-deps"
-		if cfg.Golang.EnableVendoring {
-			tidyTarget = "vendor"
-		}
-
 		test.addRule(rule{
 			description:   "Check license headers in all non-vendored .go files with addlicense.",
 			target:        "check-addlicense",
 			phony:         true,
-			prerequisites: []string{"install-addlicense", tidyTarget},
+			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense --check\e[0m\n"`,
 				fmt.Sprintf(`@addlicense --check %s %s`, ignoreOptionsStr, allSourceFilesExpr),
