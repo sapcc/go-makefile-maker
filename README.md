@@ -80,7 +80,7 @@ The config file has the following sections:
 * [metadata](#metadata)
 * [renovate](#renovate)
 * [nix](#nix)
-* [shellcheck](#shellcheck)
+* [shellCheck](#shellCheck)
 * [spellCheck](#spellcheck)
 * [testPackages](#testpackages)
 * [variables](#variables)
