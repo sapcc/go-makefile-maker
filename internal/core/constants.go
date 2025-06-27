@@ -34,4 +34,5 @@ const (
 	GoreleaserAction   = "goreleaser/goreleaser-action@v6"
 	MisspellAction     = "reviewdog/action-misspell@v1"
 	ReuseAction        = "fsfe/reuse-action@v5"
+	ShellCheckAction   = "ludeeus/action-shellcheck@2.0.0"
 )

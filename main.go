@@ -78,7 +78,7 @@ func main() {
 	nix.RenderShell(cfg, sr, renderGoreleaserConfig)
 
 	// Render Makefile
-	if cfg.Makefile.Enabled == nil || *cfg.Makefile.Enabled {
+	if cfg.Makefile.Enabled.UnwrapOr(true) {
 		logg.Debug("rendering Makefile")
 		for _, bin := range cfg.Binaries {
 			if !strings.HasPrefix(bin.FromPackage, ".") {
