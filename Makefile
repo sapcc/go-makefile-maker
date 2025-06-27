@@ -97,7 +97,10 @@ build/cover.html: build/cover.out
 	@printf "\e[1;36m>> go tool cover > build/cover.html\e[0m\n"
 	@go tool cover -html $< -o $@
 
-static-check: FORCE run-golangci-lint run-modernize check-dependency-licenses check-license-headers
+__static-check: FORCE run-golangci-lint run-modernize check-dependency-licenses check-license-headers
+
+static-check: FORCE
+	$(MAKE) --keep-going --no-print-directory __static-check
 
 build:
 	@mkdir $@
@@ -148,6 +151,7 @@ vars: FORCE
 	@printf "GO_LDFLAGS=$(GO_LDFLAGS)\n"
 	@printf "GO_TESTENV=$(GO_TESTENV)\n"
 	@printf "GO_TESTPKGS=$(GO_TESTPKGS)\n"
+	@printf "MAKE=$(MAKE)\n"
 	@printf "PREFIX=$(PREFIX)\n"
 	@printf "SED=$(SED)\n"
 	@printf "UNAME_S=$(UNAME_S)\n"
