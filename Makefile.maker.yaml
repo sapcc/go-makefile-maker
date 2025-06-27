@@ -19,6 +19,8 @@ githubWorkflow:
   ci:
     enabled: true
     coveralls: true
+  global:
+    defaultBranch: main # only defined here so that the "Run go-makefile-maker" Action knows it
 
 renovate:
   enabled: true
