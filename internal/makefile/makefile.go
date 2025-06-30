@@ -496,19 +496,31 @@ endif
 			},
 		})
 
-		tidyTarget := "tidy-deps"
-		if cfg.Golang.EnableVendoring {
-			tidyTarget = "vendor"
-		}
-		dev.addRule(rule{
-			description:   "Check license headers in all non-vendored .go files.",
-			target:        "check-license-headers",
+		test.addRule(rule{
+			description:   "Check license headers in all non-vendored .go files with addlicense.",
+			target:        "check-addlicense",
 			phony:         true,
-			prerequisites: []string{"install-addlicense", tidyTarget},
+			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense --check\e[0m\n"`,
 				fmt.Sprintf(`@addlicense --check %s %s`, ignoreOptionsStr, allSourceFilesExpr),
 			},
+		})
+		test.addRule(rule{
+			description: "Check reuse compliance",
+			target:      "check-reuse",
+			phony:       true,
+			recipe: []string{
+				`@printf "\e[1;36m>> reuse lint\e[0m\n"`,
+				// reuse is very verbose, so we only show the output if there are problems
+				`@if ! reuse lint -q; then reuse lint; fi`,
+			},
+		})
+		test.addRule(rule{
+			description:   "Run static code checks",
+			phony:         true,
+			target:        "check-license-headers",
+			prerequisites: []string{"check-addlicense", "check-reuse"},
 		})
 
 		if isGolang {

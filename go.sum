@@ -2,8 +2,8 @@ github.com/hashicorp/golang-lru/v2 v2.0.7 h1:a+bsQ5rvGLjzHuww6tVxozPZFVghXaHOwFs
 github.com/hashicorp/golang-lru/v2 v2.0.7/go.mod h1:QeFd9opnmA6QUJc5vARoKUSoFhyfM2/ZepoAG6RGpeM=
 github.com/majewsky/gg v1.1.0 h1:rvbQAUVJ8Q0RWZF26k3BxQBbQnRj3CdIN+Aaqu1qaJo=
 github.com/majewsky/gg v1.1.0/go.mod h1:KC7qUlln1VBY90OE0jXMNjXW2b9B4jJ1heYQ08OzeAg=
-github.com/sapcc/go-bits v0.0.0-20250619083208-447294241e22 h1:fJEtrgn5ECi/1muZ8DxuS75pBR1wVwQ88v3qId+1i6Q=
-github.com/sapcc/go-bits v0.0.0-20250619083208-447294241e22/go.mod h1:MsEyujjMUUhGfpG4zrE94eeaNwURajMBElZe8MfPabE=
+github.com/sapcc/go-bits v0.0.0-20250626145224-6afa1101f97e h1:7fUg54eb9KndmGTMpVSfp95ufDl+1zQnNJhg0oZwRd8=
+github.com/sapcc/go-bits v0.0.0-20250626145224-6afa1101f97e/go.mod h1:PBAahURDrSPj1Dn39T34ZXLu4chnrPgH0HEzTLQNvtw=
 github.com/sergi/go-diff v1.4.0 h1:n/SP9D5ad1fORl+llWyN+D6qoUETXNZARKjyY2/KVCw=
 github.com/sergi/go-diff v1.4.0/go.mod h1:A0bzQcvG0E7Rwjx0REVgAGH58e96+X0MeOfepqsbeW4=
 github.com/spf13/pflag v1.0.6 h1:jFzHGLGAlb3ruxLB8MhbI6A8+AQX/2eW4qeyNZXNp2o=
