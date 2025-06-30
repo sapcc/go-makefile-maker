@@ -27,22 +27,28 @@ func checksWorkflow(cfg core.Configuration) {
 		},
 	})
 
+	if cfg.ShellCheck.Enabled.UnwrapOr(true) {
+		shellcheckJob := jobStep{
+			Name: "Run shellcheck",
+			Uses: core.ShellCheckAction,
+		}
+		if cfg.ShellCheck.Opts != "" {
+			shellcheckJob.Env = map[string]string{
+				"SHELLCHECK_OPTS": cfg.ShellCheck.Opts,
+			}
+		}
+		if len(cfg.ShellCheck.IgnorePaths) > 0 {
+			shellcheckJob.With = map[string]any{
+				"ignore_paths": cfg.ShellCheck.IgnorePaths,
+			}
+		}
+		j.addStep(shellcheckJob)
+	}
+
 	if ghwCfg.SecurityChecks.IsEnabled() {
 		j.addStep(jobStep{
 			Name: "Dependency Licenses Review",
 			Run:  "make check-dependency-licenses",
-		})
-
-		// we are not using golang/govulncheck-action because that always wants to install go again
-		// https://github.com/golang/govulncheck-action/blob/master/action.yml
-		j.addStep(jobStep{
-			Name: "Install govulncheck",
-			Run:  "go install golang.org/x/vuln/cmd/govulncheck@latest",
-		})
-
-		j.addStep(jobStep{
-			Name: "Run govulncheck",
-			Run:  "govulncheck -format text ./...",
 		})
 	}
 
@@ -78,6 +84,20 @@ func checksWorkflow(cfg core.Configuration) {
 		j.addStep(jobStep{
 			Name: "REUSE Compliance Check",
 			Uses: core.ReuseAction,
+		})
+	}
+
+	if ghwCfg.SecurityChecks.IsEnabled() {
+		// we are not using golang/govulncheck-action because that always wants to install go again
+		// https://github.com/golang/govulncheck-action/blob/master/action.yml
+		j.addStep(jobStep{
+			Name: "Install govulncheck",
+			Run:  "go install golang.org/x/vuln/cmd/govulncheck@latest",
+		})
+
+		j.addStep(jobStep{
+			Name: "Run govulncheck",
+			Run:  "govulncheck -format text ./...",
 		})
 	}
 

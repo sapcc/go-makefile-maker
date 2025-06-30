@@ -34,6 +34,7 @@ type Configuration struct {
 	Metadata       Metadata                     `yaml:"metadata"`
 	Nix            NixConfig                    `yaml:"nix"`
 	Renovate       RenovateConfig               `yaml:"renovate"`
+	ShellCheck     ShellCheckConfiguration      `yaml:"shellCheck"`
 	SpellCheck     SpellCheckConfiguration      `yaml:"spellCheck"`
 	Test           TestConfiguration            `yaml:"testPackages"`
 	Reuse          ReuseConfiguration           `yaml:"reuse"`
@@ -191,6 +192,13 @@ func (s SecurityChecksWorkflowConfig) IsEnabled() bool {
 	return s.Enabled.UnwrapOr(true)
 }
 
+// ShellCheckConfiguration appears in type Configuration.
+type ShellCheckConfiguration struct {
+	Enabled     Option[bool] `yaml:"enabled"`
+	IgnorePaths []string     `yaml:"ignorePaths"`
+	Opts        string       `yaml:"opts"`
+}
+
 type PackageRule struct {
 	MatchPackageNames []string `yaml:"matchPackageNames" json:"matchPackageNames,omitempty"`
 	MatchUpdateTypes  []string `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
@@ -199,7 +207,7 @@ type PackageRule struct {
 	Extends           []string `yaml:"extends" json:"extends,omitempty"`
 	AllowedVersions   string   `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
 	AutoMerge         bool     `yaml:"automerge" json:"automerge,omitempty"`
-	EnableRenovate    *bool    `yaml:"enabled" json:"enabled,omitempty"`
+	Enabled           *bool    `yaml:"enabled" json:"enabled,omitempty"`
 	GroupName         string   `yaml:"groupName" json:"groupName,omitempty"`
 	MinimumReleaseAge string   `yaml:"minimumReleaseAge" json:"minimumReleaseAge,omitempty"`
 }
@@ -228,14 +236,14 @@ type DockerfileConfig struct {
 }
 
 type ControllerGen struct {
-	Enabled          *bool  `yaml:"enabled"`
-	CrdOutputPath    string `yaml:"crdOutputPath"`
-	ObjectHeaderFile string `yaml:"objectHeaderFile"`
-	RBACRoleName     string `yaml:"rbacRoleName"`
+	Enabled          Option[bool] `yaml:"enabled"`
+	CrdOutputPath    string       `yaml:"crdOutputPath"`
+	ObjectHeaderFile string       `yaml:"objectHeaderFile"`
+	RBACRoleName     string       `yaml:"rbacRoleName"`
 }
 
 type MakefileConfig struct {
-	Enabled *bool `yaml:"enabled"` // this is a pointer to bool to treat an absence as true for backwards compatibility
+	Enabled Option[bool] `yaml:"enabled"` // this is a pointer to bool to treat an absence as true for backwards compatibility
 }
 
 type Metadata struct {

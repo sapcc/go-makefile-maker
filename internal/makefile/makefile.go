@@ -31,10 +31,7 @@ var scanOverrides []byte
 // rules, and definitions will appear in the exact order as they are defined.
 func newMakefile(cfg core.Configuration, sr golang.ScanResult) *makefile {
 	hasBinaries := len(cfg.Binaries) > 0
-	runControllerGen := sr.KubernetesController
-	if cfg.ControllerGen.Enabled != nil {
-		runControllerGen = *cfg.ControllerGen.Enabled
-	}
+	runControllerGen := cfg.ControllerGen.Enabled.UnwrapOr(sr.KubernetesController)
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
 	isGolang := sr.GoVersion != ""
 	isSAPCC := strings.HasPrefix(cfg.Metadata.URL, "https://github.com/sapcc/") ||
@@ -99,13 +96,36 @@ endif
 			recipe:      installTool("golangci-lint", "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"),
 		})
 		prepare.addRule(rule{
-			description: "Install modernize required by modernize/static-check",
+			description: "Install modernize required by run-modernize/static-check",
 			phony:       true,
 			target:      "install-modernize",
 			recipe:      installTool("modernize", "golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@latest"),
 		})
 		prepareStaticRecipe = append(prepareStaticRecipe, "install-golangci-lint", "install-modernize")
 	}
+
+	if cfg.ShellCheck.Enabled.UnwrapOr(true) {
+		prepare.addRule(rule{
+			description: "Install shellcheck required by run-shellcheck/static-check",
+			phony:       true,
+			target:      "install-shellcheck",
+			recipe: []string{
+				`@if ! hash shellcheck 2>/dev/null; then` +
+					` printf "\e[1;36m>> Installing shellcheck...\e[0m\n";` +
+					` SHELLCHECK_ARCH=$(shell uname -m);` +
+					` SHELLCHECK_OS=$(shell uname -s | tr '[:upper:]' '[:lower:]');` +
+					` if [[ "$$SHELLCHECK_OS" == "darwin" ]]; then SHELLCHECK_OS=macos; fi;` +
+					` SHELLCHECK_VERSION="stable";` +
+					` curl -sLo- "https://github.com/koalaman/shellcheck/releases/download/$$SHELLCHECK_VERSION/shellcheck-$$SHELLCHECK_VERSION.$$SHELLCHECK_OS.$$SHELLCHECK_ARCH.tar.xz" | tar -Jxf -;` +
+					// hardcoding go here is not nice but since we mainly target go it should be acceptable
+					` BIN=$(go env GOBIN); if [[ -z $$BIN ]]; then BIN=$$(go env GOPATH)/bin; fi;` +
+					` install -Dm755 shellcheck-$$SHELLCHECK_VERSION/shellcheck -t "$$BIN";` +
+					` rm -rf shellcheck-$$SHELLCHECK_VERSION; fi`,
+			},
+		})
+		prepareStaticRecipe = append(prepareStaticRecipe, "install-shellcheck")
+	}
+
 	if sr.UseGinkgo {
 		prepare.addRule(rule{
 			description: "Install ginkgo required when using it as test runner. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
@@ -309,6 +329,29 @@ endif
 			},
 		})
 
+		if cfg.ShellCheck.Enabled.UnwrapOr(true) {
+			// add target to run shellcheck
+			ignorePaths := "find ."
+			for _, path := range cfg.ShellCheck.IgnorePaths {
+				// https://github.com/ludeeus/action-shellcheck/blob/master/action.yaml#L120-L124
+				ignorePaths += fmt.Sprintf(" ! -path *./%s/*", path)
+				ignorePaths += fmt.Sprintf(" ! -path */%s/*", path)
+				ignorePaths += " ! -path " + path
+			}
+			// partly taken from https://github.com/ludeeus/action-shellcheck/blob/master/action.yaml#L164-L196
+			ignorePaths += " -type f -name '*.bash' -o -name '*.ksh' -o -name '*.zsh' -o -name '*.sh' -o -name '*.shlib'"
+			test.addRule(rule{
+				description:   "Install and run shellcheck. Installing is used in CI, but you should probably install shellcheck using your package manager.",
+				phony:         true,
+				target:        "run-shellcheck",
+				prerequisites: []string{"install-shellcheck"},
+				recipe: []string{
+					`@printf "\e[1;36m>> shellcheck\e[0m\n"`,
+					strings.TrimSpace(fmt.Sprintf(`@files=$$(%s); if [[ $$files == "" ]]; then exit 0; else shellcheck %s "$$files"; fi`, ignorePaths, cfg.ShellCheck.Opts)),
+				},
+			})
+		}
+
 		// add targets for test runner incl. coverage report
 		testRule := rule{
 			description: "Run tests and generate coverage report.",
@@ -505,7 +548,7 @@ endif
 
 	if isGolang {
 		// add target for static code checks
-		staticCheckPrerequisites := []string{"run-golangci-lint", "run-modernize"}
+		staticCheckPrerequisites := []string{"run-shellcheck", "run-golangci-lint", "run-modernize"}
 		if isSAPCC {
 			staticCheckPrerequisites = append(staticCheckPrerequisites, "check-dependency-licenses", "check-license-headers")
 		}

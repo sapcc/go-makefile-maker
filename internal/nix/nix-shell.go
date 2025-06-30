@@ -38,10 +38,7 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 	if renderGoreleaserConfig {
 		packages = append(packages, "goreleaser")
 	}
-	runControllerGen := sr.KubernetesController
-	if cfg.ControllerGen.Enabled != nil {
-		runControllerGen = *cfg.ControllerGen.Enabled
-	}
+	runControllerGen := cfg.ControllerGen.Enabled.UnwrapOr(sr.KubernetesController)
 	if runControllerGen {
 		packages = append(packages, "kubernetes-controller-tools # controller-gen")
 		packages = append(packages, "setup-envtest")
