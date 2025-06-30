@@ -9,6 +9,8 @@ import (
 	"os"
 	"strings"
 	"text/template"
+
+	"github.com/sapcc/go-bits/logg"
 )
 
 // WriteFileFromTemplate generates and writes the contents of `fileName` by
@@ -35,5 +37,11 @@ func WriteFileFromTemplate(fileName, templateCode string, data map[string]any) e
 		return fmt.Errorf("could not render %s: %w", fileName, err)
 	}
 
-	return os.WriteFile(fileName, buf.Bytes(), 0o666)
+	return WriteFile(fileName, buf.Bytes())
+}
+
+// WriteFile is like os.WriteFile, but it also writes a debug log about which file is being written.
+func WriteFile(fileName string, contents []byte) error {
+	logg.Debug("-> writing file %s", fileName)
+	return os.WriteFile(fileName, contents, 0o666)
 }

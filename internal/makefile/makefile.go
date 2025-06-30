@@ -6,7 +6,6 @@ package makefile
 import (
 	_ "embed"
 	"fmt"
-	"os"
 	"path"
 	"path/filepath"
 	"sort"
@@ -16,6 +15,7 @@ import (
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/golang"
+	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
 //go:embed editorconfig
@@ -433,7 +433,18 @@ endif
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense (for license headers on source code files)\e[0m\n"`,
 				// We must use gawk to use gnu awk on Darwin
-				fmt.Sprintf(`@printf "%%s\0" %s | $(XARGS) -0 -I{} bash -c 'year="$$(grep 'Copyright' {} | head -n1 | grep -E -o '"'"'[0-9]{4}(-[0-9]{4})?'"'"')"; gawk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/}}; {if (!display && $$0 ~ /^(package |$$)/) {display=1} else { }}'"'"' {}; addlicense -c "SAP SE or an SAP affiliate company" -s=only -y "$$year" %s {}; $(SED) -i '"'"'1s+// Copyright +// SPDX-FileCopyrightText: +'"'"' {}'`, allSourceFilesExpr, ignoreOptionsStr),
+				fmt.Sprintf(`@printf "%%s\0" %s | $(XARGS) -0 -I{} bash -c '`+
+					// Try to extract the copyright year
+					`year="$$(grep 'Copyright' {} | head -n1 | grep -E -o '"'"'[0-9]{4}(-[0-9]{4})?'"'"')"; `+
+					// If year is empty, set it to the current year
+					`if [[ -z "$$year" ]]; then year=$$(date +%%Y); fi; `+
+					// clean up old license headers
+					`gawk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/}}; {if (!display && $$0 ~ /^(package |$$)/) {display=1} else { }}'"'"' {}; `+
+					// Run addlicense tool, will be a no-op if the license header is already present
+					`addlicense -c "SAP SE or an SAP affiliate company" -s=only -y "$$year" %s {}; `+
+					// Replace "// Copyright" with "// SPDX-FileCopyrightText:" to fulfill reuse
+					`$(SED) -i '"'"'1s+// Copyright +// SPDX-FileCopyrightText: +'"'"' {}; `+
+					`'`, allSourceFilesExpr, ignoreOptionsStr),
 				`@printf "\e[1;36m>> reuse annotate (for license headers on other files)\e[0m\n"`,
 				`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | grep -vw vendor | $(XARGS) reuse annotate -c 'SAP SE or an SAP affiliate company' -l Apache-2.0 --skip-unrecognised`,
 				`@printf "\e[1;36m>> reuse download --all\e[0m\n"`,
@@ -442,29 +453,41 @@ endif
 			},
 		})
 
-		tidyTarget := "tidy-deps"
-		if cfg.Golang.EnableVendoring {
-			tidyTarget = "vendor"
-		}
-		dev.addRule(rule{
-			description:   "Check license headers in all non-vendored .go files.",
-			target:        "check-license-headers",
+		test.addRule(rule{
+			description:   "Check license headers in all non-vendored .go files with addlicense.",
+			target:        "check-addlicense",
 			phony:         true,
-			prerequisites: []string{"install-addlicense", tidyTarget},
+			prerequisites: []string{"install-addlicense"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense --check\e[0m\n"`,
 				fmt.Sprintf(`@addlicense --check %s %s`, ignoreOptionsStr, allSourceFilesExpr),
 			},
 		})
+		test.addRule(rule{
+			description: "Check reuse compliance",
+			target:      "check-reuse",
+			phony:       true,
+			recipe: []string{
+				`@printf "\e[1;36m>> reuse lint\e[0m\n"`,
+				// reuse is very verbose, so we only show the output if there are problems
+				`@if ! reuse lint -q; then reuse lint; fi`,
+			},
+		})
+		test.addRule(rule{
+			description:   "Run static code checks",
+			phony:         true,
+			target:        "check-license-headers",
+			prerequisites: []string{"check-addlicense", "check-reuse"},
+		})
 
 		if isGolang {
-			must.Succeed(os.WriteFile(".editorconfig", editorconfig, 0o666))
+			must.Succeed(util.WriteFile(".editorconfig", editorconfig))
 
 			licenseRulesFile := ".license-scan-rules.json"
-			must.Succeed(os.WriteFile(licenseRulesFile, licenseRules, 0o666))
+			must.Succeed(util.WriteFile(licenseRulesFile, licenseRules))
 
 			scanOverridesFile := ".license-scan-overrides.jsonl"
-			must.Succeed(os.WriteFile(scanOverridesFile, scanOverrides, 0o666))
+			must.Succeed(util.WriteFile(scanOverridesFile, scanOverrides))
 
 			dev.addRule(rule{
 				description:   "Check all dependency licenses using go-licence-detector.",

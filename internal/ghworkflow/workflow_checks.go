@@ -70,7 +70,7 @@ func checksWorkflow(cfg core.Configuration) {
 	if ghwCfg.License.IsEnabled() {
 		j.addStep(jobStep{
 			Name: "Check if source code files have license header",
-			Run:  "make check-license-headers",
+			Run:  "make check-addlicense",
 		})
 	}
 

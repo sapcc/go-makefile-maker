@@ -4,13 +4,14 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
-	"gopkg.in/yaml.v3"
-
 	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
+	"github.com/spf13/pflag"
+	"gopkg.in/yaml.v3"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/dockerfile"
@@ -25,8 +26,21 @@ import (
 )
 
 func main() {
-	file := must.Return(os.Open("Makefile.maker.yaml"))
+	var flags struct {
+		AutoupdateDeps bool
+		ShowHelp       bool
+	}
+	pflag.BoolVar(&flags.AutoupdateDeps, "autoupdate-deps", false, "autoupdate dependencies matching the golang.autoupdateableDeps config option (if any)")
+	pflag.BoolVar(&logg.ShowDebug, "debug", false, "print debug logs")
+	pflag.BoolVar(&flags.ShowHelp, "help", false, "print this message")
+	pflag.Parse()
+	if flags.ShowHelp {
+		fmt.Print("Usage of go-makefile-maker:\n", pflag.CommandLine.FlagUsages())
+		return
+	}
 
+	logg.Debug("reading Makefile.maker.yaml")
+	file := must.Return(os.Open("Makefile.maker.yaml"))
 	var cfg core.Configuration
 	dec := yaml.NewDecoder(file)
 	dec.KnownFields(true)
@@ -42,6 +56,7 @@ func main() {
 	}
 
 	if cfg.Golang.SetGoModVersion {
+		logg.Debug("checking Go version in go.mod")
 		golang.SetGoVersionInGoMod()
 	}
 
@@ -50,14 +65,21 @@ func main() {
 	}
 
 	// Scan go.mod file for additional context information.
+	logg.Debug("reading go.mod")
 	sr := golang.Scan()
 
-	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig.IsNone() && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled) || cfg.GoReleaser.ShouldCreateConfig()
+	if flags.AutoupdateDeps && cfg.Golang.AutoupdateableDepsRx != "" {
+		logg.Debug("autoupdating library dependencies")
+		golang.AutoupdateDependencies(sr, cfg.Golang)
+	}
 
+	logg.Debug("rendering configs for Nix")
+	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig.IsNone() && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled) || cfg.GoReleaser.ShouldCreateConfig()
 	nix.RenderShell(cfg, sr, renderGoreleaserConfig)
 
 	// Render Makefile
 	if cfg.Makefile.Enabled == nil || *cfg.Makefile.Enabled {
+		logg.Debug("rendering Makefile")
 		for _, bin := range cfg.Binaries {
 			if !strings.HasPrefix(bin.FromPackage, ".") {
 				logg.Fatal("binaries[].fromPackage must begin with a dot, %q is not allowed!", bin.FromPackage)
@@ -68,21 +90,25 @@ func main() {
 
 	// Render Dockerfile
 	if cfg.Dockerfile.Enabled {
+		logg.Debug("rendering Dockerfile")
 		dockerfile.RenderConfig(cfg)
 	}
 
 	// Render golangci-lint config file
 	if cfg.GolangciLint.CreateConfig {
+		logg.Debug("rendering golangci-lint configuration")
 		golangcilint.RenderConfig(cfg, sr)
 	}
 
 	// Render Goreleaser config file
 	if renderGoreleaserConfig {
+		logg.Debug("rendering goreleaser configuration")
 		goreleaser.RenderConfig(cfg)
 	}
 
 	// Render GitHub workflows
 	if cfg.GitHubWorkflow != nil {
+		logg.Debug("rendering GitHub Actions workflows")
 		// consider different fallbacks when no explicit go version is set
 		if cfg.GitHubWorkflow.Global.GoVersion == "" {
 			// default to the version in go.mod
@@ -100,6 +126,7 @@ func main() {
 
 	// Render Renovate config
 	if cfg.Renovate.Enabled {
+		logg.Debug("rendering Renovate configuration")
 		if cfg.Renovate.GoVersion == "" {
 			cfg.Renovate.GoVersion = sr.GoVersionMajorMinor
 		}
@@ -110,6 +137,7 @@ func main() {
 
 	// Render REUSE config file
 	if cfg.Reuse.IsEnabled() {
+		logg.Debug("rendering REUSE configuration")
 		reuse.RenderConfig(cfg, sr)
 	}
 }

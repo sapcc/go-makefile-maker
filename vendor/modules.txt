@@ -1,10 +1,19 @@
+# github.com/hashicorp/golang-lru/v2 v2.0.7
+## explicit; go 1.18
+github.com/hashicorp/golang-lru/v2
+github.com/hashicorp/golang-lru/v2/internal
+github.com/hashicorp/golang-lru/v2/simplelru
 # github.com/majewsky/gg v1.1.0
 ## explicit; go 1.24
 github.com/majewsky/gg/option
-# github.com/sapcc/go-bits v0.0.0-20250619083208-447294241e22
+# github.com/sapcc/go-bits v0.0.0-20250626145224-6afa1101f97e
 ## explicit; go 1.24
 github.com/sapcc/go-bits/logg
 github.com/sapcc/go-bits/must
+github.com/sapcc/go-bits/regexpext
+# github.com/spf13/pflag v1.0.6
+## explicit; go 1.12
+github.com/spf13/pflag
 # golang.org/x/mod v0.25.0
 ## explicit; go 1.23.0
 golang.org/x/mod/internal/lazyregexp

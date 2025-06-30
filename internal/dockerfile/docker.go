@@ -74,6 +74,7 @@ func RenderConfig(cfg core.Configuration) {
 		"Entrypoint":         entrypoint,
 		"RunCommands":        strings.Join(commands, " \\\n  && "),
 		"RunVersionCommands": strings.Join(runVersionCommands, " \\\n  && "),
+		"UseBuildKit":        cfg.Dockerfile.UseBuildKit,
 	}))
 	must.Succeed(util.WriteFileFromTemplate(".dockerignore", dockerignoreTemplate, map[string]any{
 		"ExtraIgnores": cfg.Dockerfile.ExtraIgnores,
