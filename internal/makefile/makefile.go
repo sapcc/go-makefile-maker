@@ -331,15 +331,16 @@ endif
 
 		if cfg.ShellCheck.Enabled.UnwrapOr(true) {
 			// add target to run shellcheck
-			ignorePaths := "find ."
-			for _, path := range cfg.ShellCheck.IgnorePaths {
+			ignorePathArgs := ""
+			for _, path := range cfg.ShellCheck.AllIgnorePaths(cfg.Golang) {
 				// https://github.com/ludeeus/action-shellcheck/blob/master/action.yaml#L120-L124
-				ignorePaths += fmt.Sprintf(" ! -path *./%s/*", path)
-				ignorePaths += fmt.Sprintf(" ! -path */%s/*", path)
-				ignorePaths += " ! -path " + path
+				if !strings.HasPrefix(path, "./") {
+					ignorePathArgs += fmt.Sprintf(" ! -path '*./%s/*'", path)
+					ignorePathArgs += fmt.Sprintf(" ! -path '*/%s/*'", path)
+				}
+				ignorePathArgs += fmt.Sprintf(" ! -path '%s'", path)
 			}
 			// partly taken from https://github.com/ludeeus/action-shellcheck/blob/master/action.yaml#L164-L196
-			ignorePaths += " -type f -name '*.bash' -o -name '*.ksh' -o -name '*.zsh' -o -name '*.sh' -o -name '*.shlib'"
 			test.addRule(rule{
 				description:   "Install and run shellcheck. Installing is used in CI, but you should probably install shellcheck using your package manager.",
 				phony:         true,
@@ -347,7 +348,7 @@ endif
 				prerequisites: []string{"install-shellcheck"},
 				recipe: []string{
 					`@printf "\e[1;36m>> shellcheck\e[0m\n"`,
-					strings.TrimSpace(fmt.Sprintf(`@files=$$(%s); if [[ $$files == "" ]]; then exit 0; else shellcheck %s "$$files"; fi`, ignorePaths, cfg.ShellCheck.Opts)),
+					fmt.Sprintf(`@find . %s -type f \( -name '*.bash' -o -name '*.ksh' -o -name '*.zsh' -o -name '*.sh' -o -name '*.shlib' \) -exec shellcheck %s {} +`, strings.TrimSpace(ignorePathArgs), cfg.ShellCheck.Opts),
 				},
 			})
 		}
