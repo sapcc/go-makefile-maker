@@ -37,9 +37,10 @@ func checksWorkflow(cfg core.Configuration) {
 				"SHELLCHECK_OPTS": cfg.ShellCheck.Opts,
 			}
 		}
-		if len(cfg.ShellCheck.IgnorePaths) > 0 {
+		ignorePaths := cfg.ShellCheck.AllIgnorePaths(cfg.Golang)
+		if len(ignorePaths) > 0 {
 			shellcheckJob.With = map[string]any{
-				"ignore_paths": cfg.ShellCheck.IgnorePaths,
+				"ignore_paths": strings.Join(ignorePaths, " "),
 			}
 		}
 		j.addStep(shellcheckJob)

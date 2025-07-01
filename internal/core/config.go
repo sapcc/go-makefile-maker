@@ -6,6 +6,7 @@ package core
 import (
 	_ "embed"
 	"os/exec"
+	"slices"
 	"strings"
 	"time"
 
@@ -197,6 +198,13 @@ type ShellCheckConfiguration struct {
 	Enabled     Option[bool] `yaml:"enabled"`
 	IgnorePaths []string     `yaml:"ignorePaths"`
 	Opts        string       `yaml:"opts"`
+}
+
+func (s ShellCheckConfiguration) AllIgnorePaths(g GolangConfiguration) []string {
+	if g.EnableVendoring {
+		return append(slices.Clone(s.IgnorePaths), "./vendor/**")
+	}
+	return s.IgnorePaths
 }
 
 type PackageRule struct {
