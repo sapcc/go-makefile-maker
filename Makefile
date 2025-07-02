@@ -94,7 +94,7 @@ run-modernize: FORCE install-modernize
 
 run-shellcheck: FORCE install-shellcheck
 	@printf "\e[1;36m>> shellcheck\e[0m\n"
-	@files=$$(find . -type f -name '*.bash' -o -name '*.ksh' -o -name '*.zsh' -o -name '*.sh' -o -name '*.shlib'); if [[ $$files == "" ]]; then exit 0; else shellcheck  "$$files"; fi
+	@find . ! -path './vendor/**' -type f \( -name '*.bash' -o -name '*.ksh' -o -name '*.zsh' -o -name '*.sh' -o -name '*.shlib' \) -exec shellcheck  {} +
 
 build/cover.out: FORCE | build
 	@printf "\e[1;36m>> Running tests\e[0m\n"
