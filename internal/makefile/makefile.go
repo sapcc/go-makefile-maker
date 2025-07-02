@@ -118,7 +118,7 @@ endif
 					` SHELLCHECK_VERSION="stable";` +
 					` curl -sLo- "https://github.com/koalaman/shellcheck/releases/download/$$SHELLCHECK_VERSION/shellcheck-$$SHELLCHECK_VERSION.$$SHELLCHECK_OS.$$SHELLCHECK_ARCH.tar.xz" | tar -Jxf -;` +
 					// hardcoding go here is not nice but since we mainly target go it should be acceptable
-					` BIN=$(go env GOBIN); if [[ -z $$BIN ]]; then BIN=$$(go env GOPATH)/bin; fi;` +
+					` BIN=$$(go env GOBIN); if [[ -z $$BIN ]]; then BIN=$$(go env GOPATH)/bin; fi;` +
 					` install -Dm755 shellcheck-$$SHELLCHECK_VERSION/shellcheck -t "$$BIN";` +
 					` rm -rf shellcheck-$$SHELLCHECK_VERSION; fi`,
 			},
