@@ -564,7 +564,7 @@ endif
 			description: "Run static code checks",
 			phony:       true,
 			target:      "static-check",
-			recipe:      []string{`$(MAKE) --keep-going --no-print-directory __static-check`},
+			recipe:      []string{`@$(MAKE) --keep-going --no-print-directory __static-check`},
 		})
 
 		dev.addRule(rule{

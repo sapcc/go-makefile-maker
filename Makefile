@@ -117,7 +117,7 @@ check-license-headers: FORCE check-addlicense check-reuse
 __static-check: FORCE run-shellcheck run-golangci-lint run-modernize check-dependency-licenses check-license-headers
 
 static-check: FORCE
-	$(MAKE) --keep-going --no-print-directory __static-check
+	@$(MAKE) --keep-going --no-print-directory __static-check
 
 build:
 	@mkdir $@
