@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	//go:embed RELEASE.md
-	releaseMD string
+	//go:embed RELEASE.md.tmpl
+	releaseMDTemplate string
 
 	//go:embed goreleaser.yaml.tmpl
 	goreleaserTemplate string
@@ -61,6 +61,11 @@ func RenderConfig(cfg core.Configuration) {
 		}
 	}
 
+	branch := "master"
+	if cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Global.DefaultBranch != "" {
+		branch = cfg.GitHubWorkflow.Global.DefaultBranch
+	}
+
 	must.Succeed(util.WriteFileFromTemplate(".goreleaser.yaml", goreleaserTemplate, map[string]any{
 		"nameTemplate": nameTemplate,
 		"format":       cfg.GoReleaser.Format,
@@ -71,5 +76,7 @@ func RenderConfig(cfg core.Configuration) {
 		"fromPackage":  cfg.Binaries[0].FromPackage,
 		"githubDomain": metadataURL,
 	}))
-	must.Succeed(util.WriteFile("RELEASE.md", []byte(releaseMD)))
+	must.Succeed(util.WriteFileFromTemplate("RELEASE.md", releaseMDTemplate, map[string]any{
+		"branch": branch,
+	}))
 }
