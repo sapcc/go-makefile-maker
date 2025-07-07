@@ -36,6 +36,14 @@ SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
 path = [
+  "vendor/github.com/sapcc/go-api-declarations/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Other"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = [
   "vendor/github.com/sapcc/go-bits/**",
 ]
 precedence = "aggregate"

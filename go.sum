@@ -2,6 +2,8 @@ github.com/hashicorp/golang-lru/v2 v2.0.7 h1:a+bsQ5rvGLjzHuww6tVxozPZFVghXaHOwFs
 github.com/hashicorp/golang-lru/v2 v2.0.7/go.mod h1:QeFd9opnmA6QUJc5vARoKUSoFhyfM2/ZepoAG6RGpeM=
 github.com/majewsky/gg v1.1.0 h1:rvbQAUVJ8Q0RWZF26k3BxQBbQnRj3CdIN+Aaqu1qaJo=
 github.com/majewsky/gg v1.1.0/go.mod h1:KC7qUlln1VBY90OE0jXMNjXW2b9B4jJ1heYQ08OzeAg=
+github.com/sapcc/go-api-declarations v1.16.0 h1:uMB6SFPBAClusbAWwmeMeUi5eHVf9FpZWWf3VwPrsIg=
+github.com/sapcc/go-api-declarations v1.16.0/go.mod h1:MWmLjmvjftgyAugNUfIhsDsHIzXH1pn32cWLZpiluKg=
 github.com/sapcc/go-bits v0.0.0-20250707110230-434311affb05 h1:D1QqsMSJ4zsC8RSPj6Oj4gTx7sD9wLJEDN9xZbDewjM=
 github.com/sapcc/go-bits v0.0.0-20250707110230-434311affb05/go.mod h1:PBAahURDrSPj1Dn39T34ZXLu4chnrPgH0HEzTLQNvtw=
 github.com/sergi/go-diff v1.4.0 h1:n/SP9D5ad1fORl+llWyN+D6qoUETXNZARKjyY2/KVCw=
