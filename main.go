@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/sapcc/go-api-declarations/bininfo"
 	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
 	"github.com/spf13/pflag"
@@ -26,6 +27,8 @@ import (
 )
 
 func main() {
+	bininfo.HandleVersionArgument()
+
 	var flags struct {
 		AutoupdateDeps bool
 		ShowHelp       bool

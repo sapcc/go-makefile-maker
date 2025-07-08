@@ -4,6 +4,7 @@ go 1.24
 
 require (
 	github.com/majewsky/gg v1.1.0
+	github.com/sapcc/go-api-declarations v1.16.0
 	github.com/sapcc/go-bits v0.0.0-20250707110230-434311affb05
 	github.com/spf13/pflag v1.0.6
 	golang.org/x/mod v0.25.0
