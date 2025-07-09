@@ -618,7 +618,7 @@ license:
 `ignorePatterns` specifies a list of file patterns to check. You can use any pattern
 [supported by doublestar][doublestar-pattern]. See `addlicense`'s [README][addlicense] for more info.
 
-**Hint**: You can also use `addlicense` to add license headers to all unignored Go files by running `make license-headers`.
+**Hint**: You can also use `addlicense` to add license headers to all unignored Go files by running `make license-headers`. The copyright text used is customizable by setting `license.copyright` in the `Makefile.maker.yaml` file.
 
 [codeql]: https://codeql.github.com/
 [coveralls]: https://coveralls.io
