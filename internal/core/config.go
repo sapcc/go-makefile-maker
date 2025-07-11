@@ -252,7 +252,7 @@ type ControllerGen struct {
 }
 
 type LicenseConfig struct {
-	Copyright string `yaml:"copyright"`
+	Copyright Option[string] `yaml:"copyright"`
 }
 
 type MakefileConfig struct {

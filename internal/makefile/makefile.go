@@ -469,10 +469,7 @@ ifeq ($(UNAME_S),Darwin)
 	XARGS = gxargs
 endif
 `))
-		copyright := "SAP SE or an SAP affiliate company"
-		if cfg.License.Copyright != "" {
-			copyright = cfg.License.Copyright
-		}
+		copyright := cfg.License.Copyright.UnwrapOr("SAP SE or an SAP affiliate company")
 
 		dev.addRule(rule{
 			description:   "Add (or overwrite) license headers on all non-vendored source code files.",
