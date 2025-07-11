@@ -154,6 +154,23 @@ endif
 			recipe:      installTool("addlicense", "github.com/google/addlicense@latest"),
 		})
 		prepareStaticRecipe = append(prepareStaticRecipe, "install-addlicense")
+
+		prepare.addRule(rule{
+			description: "Install reuse required by license-headers/check-reuse",
+			phony:       true,
+			target:      "install-reuse",
+			recipe: []string{
+				`@if ! hash reuse 2>/dev/null; then` +
+					` if ! hash pip3 2>/dev/null; then` +
+					` printf "\e[1;31m>> Cannot install reuse because no pip3 was found. Either install it using your package manager or install pip3\e[0m\n";` +
+					` else` +
+					` printf "\e[1;36m>> Installing reuse...\e[0m\n";` +
+					` pip3 install --user reuse;` +
+					` fi;` +
+					` fi`,
+			},
+		})
+		prepareStaticRecipe = append(prepareStaticRecipe, "install-reuse")
 	}
 	// add target for installing dependencies for `make static-check`
 	prepare.addRule(rule{
@@ -476,7 +493,7 @@ endif
 			description:   "Add (or overwrite) license headers on all non-vendored source code files.",
 			target:        "license-headers",
 			phony:         true,
-			prerequisites: []string{"install-addlicense"},
+			prerequisites: []string{"install-addlicense", "install-reuse"},
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense (for license headers on source code files)\e[0m\n"`,
 				// We must use gawk to use gnu awk on Darwin
@@ -511,9 +528,10 @@ endif
 			},
 		})
 		test.addRule(rule{
-			description: "Check reuse compliance",
-			target:      "check-reuse",
-			phony:       true,
+			description:   "Check reuse compliance",
+			target:        "check-reuse",
+			phony:         true,
+			prerequisites: []string{"install-reuse"},
 			recipe: []string{
 				`@printf "\e[1;36m>> reuse lint\e[0m\n"`,
 				// reuse is very verbose, so we only show the output if there are problems
