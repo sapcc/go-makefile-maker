@@ -139,8 +139,8 @@ type GithubWorkflowConfiguration struct {
 	// These global-level settings are applicable for all workflows. They are
 	// superseded by their workflow-level counterpart(s).
 	Global struct {
-		DefaultBranch string `yaml:"defaultBranch"`
-		GoVersion     string `yaml:"goVersion"`
+		DefaultBranch string         `yaml:"defaultBranch"`
+		GoVersion     Option[string] `yaml:"goVersion"`
 	} `yaml:"global"`
 
 	CI                  CIWorkflowConfig             `yaml:"ci"`

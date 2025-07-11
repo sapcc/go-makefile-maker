@@ -32,7 +32,7 @@ func Render(cfg core.Configuration, sr golang.ScanResult) {
 	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "spell.yaml")))
 
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
-	if cfg.GitHubWorkflow.Global.GoVersion != "" {
+	if sr.GoVersion != "" {
 		checksWorkflow(cfg)
 		ciWorkflow(cfg, sr)
 		codeQLWorkflow(cfg)

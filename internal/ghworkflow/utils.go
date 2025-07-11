@@ -74,7 +74,7 @@ func baseJobWithGo(name string, cfg core.Configuration) job {
 		Name: "Set up Go",
 		Uses: core.SetupGoAction,
 		With: map[string]any{
-			"go-version":   cfg.GitHubWorkflow.Global.GoVersion,
+			"go-version":   cfg.GitHubWorkflow.Global.GoVersion.UnwrapOr(core.DefaultGoVersion),
 			"check-latest": true,
 		},
 	})

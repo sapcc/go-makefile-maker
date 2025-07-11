@@ -112,18 +112,6 @@ func main() {
 	// Render GitHub workflows
 	if cfg.GitHubWorkflow != nil {
 		logg.Debug("rendering GitHub Actions workflows")
-		// consider different fallbacks when no explicit go version is set
-		if cfg.GitHubWorkflow.Global.GoVersion == "" {
-			// default to the version in go.mod
-			goVersion := sr.GoVersion
-
-			// overwrite it, we want to use the latest go version
-			if cfg.Golang.SetGoModVersion {
-				goVersion = core.DefaultGoVersion
-			}
-
-			cfg.GitHubWorkflow.Global.GoVersion = goVersion
-		}
 		ghworkflow.Render(cfg, sr)
 	}
 
