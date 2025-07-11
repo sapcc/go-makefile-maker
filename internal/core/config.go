@@ -31,6 +31,7 @@ type Configuration struct {
 	Golang         GolangConfiguration          `yaml:"golang"`
 	GolangciLint   GolangciLintConfiguration    `yaml:"golangciLint"`
 	GoReleaser     GoReleaserConfiguration      `yaml:"goReleaser"`
+	License        LicenseConfig                `yaml:"license"`
 	Makefile       MakefileConfig               `yaml:"makefile"`
 	Metadata       Metadata                     `yaml:"metadata"`
 	Nix            NixConfig                    `yaml:"nix"`
@@ -248,6 +249,10 @@ type ControllerGen struct {
 	CrdOutputPath    string       `yaml:"crdOutputPath"`
 	ObjectHeaderFile string       `yaml:"objectHeaderFile"`
 	RBACRoleName     string       `yaml:"rbacRoleName"`
+}
+
+type LicenseConfig struct {
+	Copyright Option[string] `yaml:"copyright"`
 }
 
 type MakefileConfig struct {

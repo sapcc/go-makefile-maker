@@ -470,6 +470,8 @@ ifeq ($(UNAME_S),Darwin)
 	XARGS = gxargs
 endif
 `))
+		copyright := cfg.License.Copyright.UnwrapOr("SAP SE or an SAP affiliate company")
+
 		dev.addRule(rule{
 			description:   "Add (or overwrite) license headers on all non-vendored source code files.",
 			target:        "license-headers",
@@ -486,12 +488,12 @@ endif
 					// clean up old license headers
 					`gawk -i inplace '"'"'{if (display) {print} else {!/^\/\*/ && !/^\*/}}; {if (!display && $$0 ~ /^(package |$$)/) {display=1} else { }}'"'"' {}; `+
 					// Run addlicense tool, will be a no-op if the license header is already present
-					`addlicense -c "SAP SE or an SAP affiliate company" -s=only -y "$$year" %s {}; `+
+					`addlicense -c "%s" -s=only -y "$$year" %s {}; `+
 					// Replace "// Copyright" with "// SPDX-FileCopyrightText:" to fulfill reuse
 					`$(SED) -i '"'"'1s+// Copyright +// SPDX-FileCopyrightText: +'"'"' {}; `+
-					`'`, allSourceFilesExpr, ignoreOptionsStr),
+					`'`, allSourceFilesExpr, copyright, ignoreOptionsStr),
 				`@printf "\e[1;36m>> reuse annotate (for license headers on other files)\e[0m\n"`,
-				`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | grep -vw vendor | $(XARGS) reuse annotate -c 'SAP SE or an SAP affiliate company' -l Apache-2.0 --skip-unrecognised`,
+				fmt.Sprintf(`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | grep -vw vendor | $(XARGS) reuse annotate -c '%s' -l Apache-2.0 --skip-unrecognised`, copyright),
 				`@printf "\e[1;36m>> reuse download --all\e[0m\n"`,
 				`@reuse download --all`,
 				`@printf "\e[1;35mPlease review the changes. If *.license files were generated, consider instructing go-makefile-maker to add overrides to REUSE.toml instead.\e[0m\n"`,
