@@ -353,10 +353,9 @@ endif
 			for _, path := range cfg.ShellCheck.AllIgnorePaths(cfg.Golang) {
 				// https://github.com/ludeeus/action-shellcheck/blob/master/action.yaml#L120-L124
 				if !strings.HasPrefix(path, "./") {
-					ignorePathArgs += fmt.Sprintf(" ! -path '*./%s/*'", path)
-					ignorePathArgs += fmt.Sprintf(" ! -path '*/%s/*'", path)
+					ignorePathArgs += fmt.Sprintf(" \\( -path '*./%s/*' -prune \\) -o", path)
 				}
-				ignorePathArgs += fmt.Sprintf(" ! -path '%s'", path)
+				ignorePathArgs += fmt.Sprintf(" \\( -path '%s' -prune \\) -o", path)
 			}
 			// partly taken from https://github.com/ludeeus/action-shellcheck/blob/master/action.yaml#L164-L196
 			test.addRule(rule{
