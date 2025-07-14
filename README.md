@@ -225,6 +225,7 @@ golangciLint:
     - (*net/http.Client).Do
   skipDirs:
     - easypg/migrate/*
+  timeout: 3m
 ```
 
 The `make check` and `make static-check` targets use [`golangci-lint`](https://golangci-lint.run) to lint your code.
@@ -237,6 +238,8 @@ Additionally, if `createConfig` is `true`, you can specify a list of files skipp
 and a list of functions to be excluded from `errcheck` linter in `errcheckExcludes` field.
 Refer to [`errcheck`'s README](https://github.com/kisielk/errcheck#excluding-functions) for info on the format
 for function signatures that `errcheck` accepts.
+
+`timeout` changes the `run.timeout` option. This should only be necessary to bump when in big projects like ones that use Kubernetes.
 
 Take a look at `go-makefile-maker`'s own [`golangci-lint` config file](./.golangci.yaml) for an up-to-date example of what the generated config would look like.
 
