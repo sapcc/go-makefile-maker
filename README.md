@@ -396,14 +396,14 @@ If in doubt, always run `make license-headers` first, then only add entries to `
 shellCheck:
   enabled: true
   ignorePaths:
-    - 'test/util/**'
-    - 'test/mock/**'
+    - 'test/util/*'
+    - 'test/mock/*'
   opts: '--shell=bash --external-sources -e SC1090,SC1091,SC2154'
 ```
 
 Whether to run [`ShellCheck`](https://www.shellcheck.net/) on all shell scripts in the repository. It defaults to `true`.
 
-`ignorePaths` specifies a list of path patterns to ignore.
+`ignorePaths` specifies a list of path patterns to ignore. This accepts paths (eg. `test/util/*` or `./test/first.test`) and files (eg. `test_*.sh`).
 
 `opts` specifies additional options to pass to `shellcheck`. The `-e` option can be used to ignore specific shellcheck warnings.
 
