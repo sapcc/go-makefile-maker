@@ -11,6 +11,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
@@ -351,6 +352,10 @@ endif
 			// add target to run shellcheck
 			ignorePathArgs := ""
 			for _, path := range cfg.ShellCheck.AllIgnorePaths(cfg.Golang) {
+				if strings.HasPrefix(path, "/") {
+					logg.Fatal("ShellCheck ignore paths must not start with a slash, got: %s", path)
+				}
+
 				// https://github.com/ludeeus/action-shellcheck/blob/master/action.yaml#L120-L124
 				if !strings.HasPrefix(path, "./") {
 					ignorePathArgs += fmt.Sprintf(" \\( -path '*./%s/*' -prune \\) -o", path)
