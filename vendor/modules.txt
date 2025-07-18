@@ -14,7 +14,7 @@ github.com/sapcc/go-api-declarations/bininfo
 github.com/sapcc/go-bits/logg
 github.com/sapcc/go-bits/must
 github.com/sapcc/go-bits/regexpext
-# github.com/spf13/pflag v1.0.6
+# github.com/spf13/pflag v1.0.7
 ## explicit; go 1.12
 github.com/spf13/pflag
 # golang.org/x/mod v0.26.0
