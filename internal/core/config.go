@@ -203,7 +203,7 @@ type ShellCheckConfiguration struct {
 
 func (s ShellCheckConfiguration) AllIgnorePaths(g GolangConfiguration) []string {
 	if g.EnableVendoring {
-		return append(slices.Clone(s.IgnorePaths), "./vendor/**")
+		return append(slices.Clone(s.IgnorePaths), "./vendor/*")
 	}
 	return s.IgnorePaths
 }
