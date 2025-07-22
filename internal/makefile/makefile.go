@@ -127,16 +127,6 @@ endif
 		prepareStaticRecipe = append(prepareStaticRecipe, "install-shellcheck")
 	}
 
-	if sr.UseGinkgo {
-		prepare.addRule(rule{
-			description: "Install ginkgo required when using it as test runner. This is used in CI before dropping privileges, you should probably install all the tools using your package manager",
-			phony:       true,
-			target:      "install-ginkgo",
-			recipe:      installTool("ginkgo", "github.com/onsi/ginkgo/v2/ginkgo@latest"),
-		})
-		prepareStaticRecipe = append(prepareStaticRecipe, "install-ginkgo")
-	}
-
 	if isSAPCC {
 		if isGolang {
 			prepare.addRule(rule{
@@ -385,8 +375,7 @@ endif
 
 		testRunner := "go test -shuffle=on -p 1 -coverprofile=$@"
 		if sr.UseGinkgo {
-			testRunner = "ginkgo run --randomize-all -output-dir=build"
-			testRule.prerequisites = append(testRule.prerequisites, "install-ginkgo")
+			testRunner = "go run github.com/onsi/ginkgo/v2/ginkgo run --randomize-all -output-dir=build"
 		}
 		goTest := fmt.Sprintf(`%s $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
 			testRunner, makeDefaultLinkerFlags(path.Base(sr.ModulePath), sr))
