@@ -77,7 +77,7 @@ func main() {
 	}
 
 	logg.Debug("rendering configs for Nix")
-	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig.IsNone() && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled) || cfg.GoReleaser.ShouldCreateConfig()
+	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig.IsNone() && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled.UnwrapOr(false)) || cfg.GoReleaser.ShouldCreateConfig()
 	nix.RenderShell(cfg, sr, renderGoreleaserConfig)
 
 	// Render Makefile

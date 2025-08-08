@@ -180,7 +180,7 @@ type PushContainerToGhcrConfig struct {
 }
 
 type ReleaseWorkflowConfig struct {
-	Enabled bool `yaml:"enabled"`
+	Enabled Option[bool] `yaml:"enabled"`
 }
 
 // SecurityChecksWorkflowConfig appears in type Configuration.
