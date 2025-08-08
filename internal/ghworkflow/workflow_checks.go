@@ -28,22 +28,10 @@ func checksWorkflow(cfg core.Configuration) {
 	})
 
 	if cfg.ShellCheck.Enabled.UnwrapOr(true) {
-		shellcheckJob := jobStep{
+		j.addStep(jobStep{
 			Name: "Run shellcheck",
-			Uses: core.ShellCheckAction,
-		}
-		if cfg.ShellCheck.Opts != "" {
-			shellcheckJob.Env = map[string]string{
-				"SHELLCHECK_OPTS": cfg.ShellCheck.Opts,
-			}
-		}
-		ignorePaths := cfg.ShellCheck.AllIgnorePaths(cfg.Golang)
-		if len(ignorePaths) > 0 {
-			shellcheckJob.With = map[string]any{
-				"ignore_paths": strings.Join(ignorePaths, " "),
-			}
-		}
-		j.addStep(shellcheckJob)
+			Run:  "make run-shellcheck",
+		})
 	}
 
 	if ghwCfg.SecurityChecks.IsEnabled() {

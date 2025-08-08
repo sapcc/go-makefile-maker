@@ -225,6 +225,7 @@ golangciLint:
     - (*net/http.Client).Do
   skipDirs:
     - easypg/migrate/*
+  timeout: 3m
 ```
 
 The `make check` and `make static-check` targets use [`golangci-lint`](https://golangci-lint.run) to lint your code.
@@ -237,6 +238,8 @@ Additionally, if `createConfig` is `true`, you can specify a list of files skipp
 and a list of functions to be excluded from `errcheck` linter in `errcheckExcludes` field.
 Refer to [`errcheck`'s README](https://github.com/kisielk/errcheck#excluding-functions) for info on the format
 for function signatures that `errcheck` accepts.
+
+`timeout` changes the `run.timeout` option. This should only be necessary to bump when in big projects like ones that use Kubernetes.
 
 Take a look at `go-makefile-maker`'s own [`golangci-lint` config file](./.golangci.yaml) for an up-to-date example of what the generated config would look like.
 
@@ -393,14 +396,14 @@ If in doubt, always run `make license-headers` first, then only add entries to `
 shellCheck:
   enabled: true
   ignorePaths:
-    - 'test/util/**'
-    - 'test/mock/**'
+    - 'test/util/*'
+    - 'test/mock/*'
   opts: '--shell=bash --external-sources -e SC1090,SC1091,SC2154'
 ```
 
 Whether to run [`ShellCheck`](https://www.shellcheck.net/) on all shell scripts in the repository. It defaults to `true`.
 
-`ignorePaths` specifies a list of path patterns to ignore.
+`ignorePaths` specifies a list of path patterns to ignore. This accepts paths (eg. `test/util/*` or `./test/first.test`) and files (eg. `test_*.sh`).
 
 `opts` specifies additional options to pass to `shellcheck`. The `-e` option can be used to ignore specific shellcheck warnings.
 
