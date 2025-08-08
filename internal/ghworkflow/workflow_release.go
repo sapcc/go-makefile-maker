@@ -10,7 +10,7 @@ func releaseWorkflow(cfg core.Configuration) {
 	ghwCfg := cfg.GitHubWorkflow
 	w := newWorkflow("goreleaser", ghwCfg.Global.DefaultBranch, nil)
 
-	if w.deleteIf(ghwCfg.Release.Enabled) {
+	if w.deleteIf(ghwCfg.Release.Enabled.UnwrapOr(cfg.GoReleaser.ShouldCreateConfig())) {
 		return
 	}
 
