@@ -358,7 +358,7 @@ endif
 
 				// https://github.com/ludeeus/action-shellcheck/blob/master/action.yaml#L120-L124
 				if !strings.HasPrefix(path, "./") {
-					ignorePathArgs += fmt.Sprintf(" \\( -path '*./%s/*' -prune \\) -o", path)
+					ignorePathArgs += fmt.Sprintf(" \\( -path '*/%s/*' -prune \\) -o", path)
 				}
 				ignorePathArgs += fmt.Sprintf(" \\( -path '%s' -prune \\) -o", path)
 			}
