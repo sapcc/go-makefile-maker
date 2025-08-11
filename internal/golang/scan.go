@@ -64,7 +64,7 @@ func Scan() ScanResult {
 		if v.Mod.Path == "github.com/lib/pq" {
 			usesPostgres = true
 		}
-		if strings.HasPrefix(v.Mod.Path, "github.com/onsi/ginkgo") {
+		if !v.Indirect && strings.HasPrefix(v.Mod.Path, "github.com/onsi/ginkgo") {
 			useGinkgo = true
 		}
 		if v.Mod.Path == "k8s.io/api" {
