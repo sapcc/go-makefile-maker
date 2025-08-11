@@ -28,6 +28,11 @@ func checksWorkflow(cfg core.Configuration) {
 	})
 
 	if cfg.ShellCheck.Enabled.UnwrapOr(true) {
+		// delete the pretty out of date installed version of shellcheck so that make install-shellcheck installs the current version
+		j.addStep(jobStep{
+			Name: "Delete pre-installed shellcheck",
+			Run:  "sudo rm -f $(which shellcheck)",
+		})
 		j.addStep(jobStep{
 			Name: "Run shellcheck",
 			Run:  "make run-shellcheck",
