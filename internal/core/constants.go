@@ -17,7 +17,7 @@ var DefaultGitHubEnterpriseRunsOn = map[string]string{
 var SugarRunsOn = []string{"self-hosted"}
 
 const (
-	CheckoutAction = "actions/checkout@v4"
+	CheckoutAction = "actions/checkout@v5"
 	SetupGoAction  = "actions/setup-go@v5"
 
 	DockerLoginAction     = "docker/login-action@v3"
