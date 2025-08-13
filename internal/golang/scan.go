@@ -5,6 +5,7 @@ package golang
 
 import (
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/sapcc/go-bits/must"
@@ -61,7 +62,7 @@ func Scan() ScanResult {
 				hasBinInfo = true
 			}
 		}
-		if v.Mod.Path == "github.com/lib/pq" {
+		if slices.Contains([]string{"github.com/lib/pq", "github.com/jackc/pgx/v5"}, v.Mod.Path) {
 			usesPostgres = true
 		}
 		if !v.Indirect && strings.HasPrefix(v.Mod.Path, "github.com/onsi/ginkgo") {
