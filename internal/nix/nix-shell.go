@@ -49,6 +49,9 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 	if sr.UsesPostgres {
 		packages = append(packages, "postgresql_"+core.DefaultPostgresVersion)
 	}
+	if cfg.Reuse.Enabled.UnwrapOr(true) {
+		packages = append(packages, "reuse")
+	}
 	packages = append(packages, cfg.Nix.ExtraPackages...)
 
 	slices.Sort(packages)
