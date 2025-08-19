@@ -27,6 +27,10 @@ func releaseWorkflow(cfg core.Configuration) {
 		"fetch-depth": 0,
 	}
 	j.addStep(jobStep{
+		Name: "Inbstall syft",
+		Uses: core.DownloadSyftAction,
+	})
+	j.addStep(jobStep{
 		Name: "Generate release info",
 		Run: makeMultilineYAMLString([]string{
 			"go install github.com/sapcc/go-bits/tools/release-info@latest",

@@ -36,7 +36,7 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 		packages = append(packages, "golangci-lint")
 	}
 	if renderGoreleaserConfig {
-		packages = append(packages, "goreleaser")
+		packages = append(packages, "goreleaser", "syft")
 	}
 	runControllerGen := cfg.ControllerGen.Enabled.UnwrapOr(sr.KubernetesController)
 	if runControllerGen {

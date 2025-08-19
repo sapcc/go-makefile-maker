@@ -57,5 +57,9 @@ release:
   make_latest: true
   prerelease: auto
 
+sboms:
+  - id: archive
+    artifacts: archive
+
 snapshot:
   version_template: "{{`{{ .Tag }}`}}-next"

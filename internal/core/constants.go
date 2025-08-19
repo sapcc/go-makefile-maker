@@ -30,6 +30,7 @@ const (
 	CodeqlAnalyzeAction   = "github/codeql-action/analyze@v3"
 	CodeqlAutobuildAction = "github/codeql-action/autobuild@v3"
 
+	DownloadSyftAction = "anchore/sbom-action/download-syft@v0.20.5"
 	GolangciLintAction = "golangci/golangci-lint-action@v8"
 	GoreleaserAction   = "goreleaser/goreleaser-action@v6"
 	MisspellAction     = "reviewdog/action-misspell@v1"
