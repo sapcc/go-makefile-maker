@@ -27,7 +27,7 @@ func releaseWorkflow(cfg core.Configuration) {
 		"fetch-depth": 0,
 	}
 	j.addStep(jobStep{
-		Name: "Inbstall syft",
+		Name: "Install syft",
 		Uses: core.DownloadSyftAction,
 	})
 	j.addStep(jobStep{
