@@ -17,8 +17,9 @@ var DefaultGitHubEnterpriseRunsOn = map[string]string{
 var SugarRunsOn = []string{"self-hosted"}
 
 const (
-	CheckoutAction = "actions/checkout@v5"
-	SetupGoAction  = "actions/setup-go@v5"
+	CheckoutAction       = "actions/checkout@v5"
+	SetupGoAction        = "actions/setup-go@v5"
+	UploadArtifactAction = "actions/upload-artifact@v4"
 
 	DockerLoginAction     = "docker/login-action@v3"
 	DockerMetadataAction  = "docker/metadata-action@v5"
@@ -30,9 +31,10 @@ const (
 	CodeqlAnalyzeAction   = "github/codeql-action/analyze@v3"
 	CodeqlAutobuildAction = "github/codeql-action/autobuild@v3"
 
-	DownloadSyftAction = "anchore/sbom-action/download-syft@v0.20.5"
-	GolangciLintAction = "golangci/golangci-lint-action@v8"
-	GoreleaserAction   = "goreleaser/goreleaser-action@v6"
-	MisspellAction     = "reviewdog/action-misspell@v1"
-	ReuseAction        = "fsfe/reuse-action@v5"
+	DownloadSyftAction     = "anchore/sbom-action/download-syft@v0.20"
+	GoCoverageReportAction = "fgrosse/go-coverage-report@v1.2.0"
+	GolangciLintAction     = "golangci/golangci-lint-action@v8"
+	GoreleaserAction       = "goreleaser/goreleaser-action@v6"
+	MisspellAction         = "reviewdog/action-misspell@v1"
+	ReuseAction            = "fsfe/reuse-action@v5"
 )
