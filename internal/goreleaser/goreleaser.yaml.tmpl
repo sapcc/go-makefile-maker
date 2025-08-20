@@ -16,9 +16,6 @@ archives:
       - {{ . }}
 {{- end }}
 
-checksum:
-  name_template: "checksums.txt"
-
 builds:
   - binary: '{{ .binaryName }}'
     env:
@@ -46,9 +43,8 @@ builds:
     # Set the modified timestamp on the output binary to ensure that builds are reproducible.
     mod_timestamp: "{{`{{ .CommitTimestamp }}`}}"
 
-release:
-  make_latest: true
-  prerelease: auto
+checksum:
+  name_template: "checksums.txt"
 
 {{- if .githubDomain }}
 github_urls:
@@ -56,6 +52,14 @@ github_urls:
   upload: https://{{ .githubDomain.Host }}/api/uploads/
   download: https://{{ .githubDomain.Host }}/
 {{- end }}
+
+release:
+  make_latest: true
+  prerelease: auto
+
+sboms:
+  - id: archive
+    artifacts: archive
 
 snapshot:
   version_template: "{{`{{ .Tag }}`}}-next"
