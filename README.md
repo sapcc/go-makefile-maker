@@ -348,7 +348,7 @@ packageRules:
     allowedVersions: 0.28.x
 
   # Restrict updates for versions managed by go-makefile-maker.
-  - matchPackageNames: [ golang ]
+  - matchPackageNames: [ go, golang ]
     allowedVersions: $goVersion.x # only update within the same minor release
   - matchDepTypes: [ action ]
     enabled: false # see githubWorkflow config section below

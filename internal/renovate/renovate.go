@@ -90,7 +90,7 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 		// NOTE: When changing this list, please also adjust the documentation for
 		// default package rules in the README.
 		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
-			MatchPackageNames: []string{"golang"},
+			MatchPackageNames: []string{"go", "golang"},
 			AllowedVersions:   cfgRenovate.GoVersion + ".x",
 		})
 
