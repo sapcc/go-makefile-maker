@@ -445,6 +445,7 @@ Since only entire packages (not single source files) can be selected for testing
 variables:
   GO_BUILDENV: ''
   GO_BUILDFLAGS: '-mod vendor'
+  GO_TESTFLAGS: ''
   GO_LDFLAGS: ''
   GO_TESTENV: ''
 ```
@@ -464,6 +465,12 @@ variables:
 However, for this specific usecase, we suggest that your application use `github.com/sapcc/go-api-declarations/bininfo`
 instead. When the respective module is present as a direct dependency in the `go.mod` file, go-makefile-maker will
 auto-generate suitable linker flags to fill the global variables in the `bininfo` package.
+
+`GO_TESTFLAGS` can be used to provide additional flags to append to the test command flags:
+
+```yaml
+  GO_TESTFLAGS: '-count=1 -short'
+```
 
 `GO_TESTENV` can contain environment variables to pass to `go test`:
 
