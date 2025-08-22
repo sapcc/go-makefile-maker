@@ -98,6 +98,9 @@ type job struct {
 	// The name of the job displayed on GitHub.
 	Name string `yaml:"name,omitempty"`
 
+	// You can use the if conditional to prevent a step from running unless a condition is met.
+	If string `yaml:"if,omitempty"`
+
 	// List of <job_id> that must complete successfully before this job will run.
 	Needs []string `yaml:"needs,omitempty"`
 

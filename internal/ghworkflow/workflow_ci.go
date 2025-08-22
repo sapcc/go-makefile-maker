@@ -68,6 +68,7 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 
 	// see https://github.com/fgrosse/go-coverage-report#usage
 	codeCov := baseJob("Code coverage report", cfg.GitHubWorkflow)
+	codeCov.If = "github.event_name == 'pull_request'"
 	codeCov.Needs = []string{"test"}
 	codeCov.Permissions = permissions{
 		Contents:     "read",
