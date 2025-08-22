@@ -59,6 +59,7 @@ type permissions struct {
 	Checks         githubTokenScope `yaml:"checks,omitempty"`
 	Contents       githubTokenScope `yaml:"contents,omitempty"`
 	Packages       githubTokenScope `yaml:"packages,omitempty"`
+	PullRequests   githubTokenScope `yaml:"pull-requests,omitempty"`
 	SecurityEvents githubTokenScope `yaml:"security-events,omitempty"`
 }
 
@@ -119,6 +120,11 @@ type job struct {
 
 	// A map of <service_id> to their configuration(s).
 	Services map[string]jobService `yaml:"services,omitempty"`
+
+	// Permissions modify the default permissions granted to the GITHUB_TOKEN. If you
+	// specify the access for any of the scopes, all of those that are not specified are
+	// set to 'none'.
+	Permissions permissions `yaml:"permissions,omitempty"`
 }
 
 type JobStrategy struct {
