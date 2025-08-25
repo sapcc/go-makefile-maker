@@ -213,6 +213,7 @@ endif
 	if isGolang {
 		build.addDefinition("GO_BUILDFLAGS =%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
 		build.addDefinition("GO_LDFLAGS =%s", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
+		build.addDefinition("GO_TESTFLAGS :=%s $(GO_TESTFLAGS)", cfg.Variable("GO_TESTFLAGS", ""))
 		build.addDefinition("GO_TESTENV =%s", cfg.Variable("GO_TESTENV", ""))
 		build.addDefinition("GO_BUILDENV =%s", cfg.Variable("GO_BUILDENV", ""))
 	}
@@ -381,7 +382,7 @@ endif
 		if sr.UseGinkgo {
 			testRunner = "go run github.com/onsi/ginkgo/v2/ginkgo run --randomize-all -output-dir=build"
 		}
-		goTest := fmt.Sprintf(`%s $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTPKGS)`,
+		goTest := fmt.Sprintf(`%s $(GO_BUILDFLAGS) -ldflags '%s $(GO_LDFLAGS)' -covermode=count -coverpkg=$(subst $(space),$(comma),$(GO_COVERPKGS)) $(GO_TESTFLAGS) $(GO_TESTPKGS)`,
 			testRunner, makeDefaultLinkerFlags(path.Base(sr.ModulePath), sr))
 		if runControllerGen {
 			testRule.prerequisites = append(testRule.prerequisites, "generate", "install-setup-envtest")
