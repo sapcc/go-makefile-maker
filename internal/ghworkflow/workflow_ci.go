@@ -57,7 +57,7 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 	coverageArtifactName := "code-coverage"
 	testJob.addStep(jobStep{
 		Name: "Archive code coverage results",
-		Uses: core.UploadArtifactAction,
+		Uses: core.GetUploadArtifactAction(ghwCfg.IsSelfHostedRunner),
 		With: map[string]any{
 			"name": coverageArtifactName,
 			"path": "build/cover.out",
