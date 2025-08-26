@@ -455,6 +455,20 @@ This mechanism cannot be used to define new variables to use in your own rules; 
 By default, all accepted variables are empty.
 The only exception is that `GO_BUILDFLAGS` defaults to `-mod vendor` when vendoring is enabled (see below).
 
+When invoking the respective targets utilizing the variables, it's possible to either append to the provided values by modifying the calling environment:
+
+```console
+$ GO_BUILDFLAGS="-work -v" make build/go-makefile-maker
+env  go build -mod vendor -work -v -ldflags ...
+```
+
+or to override their values by passing the variables as `make` arguments:
+
+```console
+$ make build/go-makefile-maker GO_BUILDFLAGS="-mod=mod"
+env  go build -mod=mod -ldflags ...
+```
+
 A typical usage of `GO_LDFLAGS` is to give compile-time values to the Go compiler with the `-X` linker flag:
 
 ```yaml
