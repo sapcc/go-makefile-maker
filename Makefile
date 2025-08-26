@@ -50,11 +50,11 @@ install-reuse: FORCE
 
 prepare-static-check: FORCE install-golangci-lint install-modernize install-shellcheck install-go-licence-detector install-addlicense install-reuse
 
-GO_BUILDFLAGS = -mod vendor
-GO_LDFLAGS =
+GO_BUILDFLAGS := -mod vendor $(GO_BUILDFLAGS)
+GO_LDFLAGS := $(GO_LDFLAGS)
 GO_TESTFLAGS := $(GO_TESTFLAGS)
-GO_TESTENV =
-GO_BUILDENV =
+GO_TESTENV := $(GO_TESTENV)
+GO_BUILDENV := $(GO_BUILDENV)
 
 # These definitions are overridable, e.g. to provide fixed version/commit values when
 # no .git directory is present or to provide a fixed build date for reproducibility.
