@@ -16,10 +16,19 @@ var DefaultGitHubEnterpriseRunsOn = map[string]string{
 }
 var SugarRunsOn = []string{"self-hosted"}
 
+// GetUploadArtifactAction works around GitHub not supporting their own stuff
+// https://github.com/actions/upload-artifact/issues/537
+func GetUploadArtifactAction(isSelfHostedRunner bool) string {
+	if isSelfHostedRunner {
+		return "actions/upload-artifact@v2"
+	} else {
+		return "actions/upload-artifact@v4"
+	}
+}
+
 const (
-	CheckoutAction       = "actions/checkout@v5"
-	SetupGoAction        = "actions/setup-go@v5"
-	UploadArtifactAction = "actions/upload-artifact@v4"
+	CheckoutAction = "actions/checkout@v5"
+	SetupGoAction  = "actions/setup-go@v5"
 
 	DockerLoginAction     = "docker/login-action@v3"
 	DockerMetadataAction  = "docker/metadata-action@v5"
