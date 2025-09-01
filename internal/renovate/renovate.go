@@ -165,4 +165,16 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 	must.Succeed(os.MkdirAll(".github", 0750))
 	must.Succeed(os.RemoveAll("renovate.json"))
 	must.Succeed(util.WriteFile(".github/renovate.json", buf.Bytes()))
+
+	validator, err := exec.LookPath("renovate-config-validator")
+	if err != nil {
+		logg.Info("renovate-config-validator not found in PATH, skipping validation of generated renovate.json file")
+	} else {
+		logg.Debug("-> running renovate-config-validator")
+		cmd := exec.Command(validator)
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			logg.Fatal(string(output))
+		}
+	}
 }
