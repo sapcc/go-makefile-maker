@@ -378,7 +378,9 @@ endif
 			},
 		}
 
-		testRunner := "go test -shuffle=on -p 1 -coverprofile=$@"
+		// NOTE: Ginkgo will always write the coverage profile as "coverprofile.out", so we will choose the same path for non-Ginkgo tests, too.
+		// The actual final path is build/cover.out, which will be filled by a post-processing step below.
+		testRunner := "go test -shuffle=on -p 1 -coverprofile=build/coverprofile.out"
 		if sr.UseGinkgo {
 			testRunner = "go run github.com/onsi/ginkgo/v2/ginkgo run --randomize-all -output-dir=build"
 		}
@@ -390,9 +392,8 @@ endif
 		} else {
 			testRule.recipe = append(testRule.recipe, `@env $(GO_TESTENV) `+goTest)
 		}
-		if sr.UseGinkgo {
-			testRule.recipe = append(testRule.recipe, `@mv build/coverprofile.out build/cover.out`)
-		}
+		// workaround for <https://github.com/fgrosse/go-coverage-report/issues/61>: merge block coverage manually
+		testRule.recipe = append(testRule.recipe, `@awk < build/coverprofile.out '$$1 != "mode:" { is_filename[$$1] = true; counts1[$$1]+=$$2; counts2[$$1]+=$$3 } END { for (filename in is_filename) { printf "%s %d %d\n", filename, counts1[filename], counts2[filename]; } }' | sort | $(SED) '1s/^/mode: count\n/' > $@`)
 
 		test.addRule(testRule)
 
