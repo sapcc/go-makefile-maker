@@ -53,37 +53,71 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 		Run:  makeMultilineYAMLString(testCmd),
 	})
 
-	// see https://github.com/fgrosse/go-coverage-report#usage
-	coverageArtifactName := "code-coverage"
-	testJob.addStep(jobStep{
-		Name: "Archive code coverage results",
-		Uses: core.GetUploadArtifactAction(ghwCfg.IsSelfHostedRunner),
-		With: map[string]any{
-			"name": coverageArtifactName,
-			"path": "build/cover.out",
-		},
-	})
+	const coverageArtifactName = "code-coverage"
+	if !ghwCfg.CI.Coveralls {
+		// see https://github.com/fgrosse/go-coverage-report#usage
+		testJob.addStep(jobStep{
+			Name: "Archive code coverage results",
+			Uses: core.GetUploadArtifactAction(ghwCfg.IsSelfHostedRunner),
+			With: map[string]any{
+				"name": coverageArtifactName,
+				"path": "build/cover.out",
+			},
+		})
+	}
 
 	w.Jobs["test"] = testJob
 
-	// see https://github.com/fgrosse/go-coverage-report#usage
-	codeCov := baseJob("Code coverage report", cfg.GitHubWorkflow)
-	codeCov.If = "github.event_name == 'pull_request'"
-	codeCov.Needs = []string{"test"}
-	codeCov.Permissions = permissions{
-		Contents:     "read",
-		Actions:      "read",
-		PullRequests: "write",
+	if ghwCfg.CI.Coveralls {
+		multipleOS := len(ghwCfg.CI.RunsOn) > 1
+		env := map[string]string{
+			"GIT_BRANCH":      "${{ github.head_ref }}",
+			"COVERALLS_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
+		}
+		installGoveralls := "go install github.com/mattn/goveralls@latest"
+		cmd := "goveralls -service=github -coverprofile=build/cover.out"
+		if multipleOS {
+			cmd += ` -parallel -flagname="Unit-${{ matrix.os }}"`
+		}
+		testJob.addStep(jobStep{
+			Name: "Upload coverage report to Coveralls",
+			Run:  makeMultilineYAMLString([]string{installGoveralls, cmd}),
+			Env:  env,
+		})
+
+		if multipleOS {
+			// 04. Tell Coveralls to merge coverage results.
+			finishJob := baseJobWithGo("Finish", cfg)
+			finishJob.Needs = []string{"test"} // this is the <job_id> for the test job
+			finishJob.addStep(jobStep{
+				Name: "Coveralls post build webhook",
+				Run:  makeMultilineYAMLString([]string{installGoveralls, "goveralls -parallel-finish"}),
+				Env:  env,
+			})
+			w.Jobs["finish"] = finishJob
+		}
+	} else {
+		// see https://github.com/fgrosse/go-coverage-report#usage
+		codeCov := baseJob("Code coverage report", cfg.GitHubWorkflow)
+		codeCov.If = "github.event_name == 'pull_request'"
+		codeCov.Needs = []string{"test"}
+		codeCov.Permissions = permissions{
+			Contents:     "read",
+			Actions:      "read",
+			PullRequests: "write",
+		}
+		codeCov.addStep(jobStep{
+			Name: "Post coverage report",
+			Uses: core.GoCoverageReportAction,
+			With: map[string]any{
+				"coverage-artifact-name": coverageArtifactName,
+				"coverage-file-name":     "cover.out",
+			},
+		})
+		w.Jobs["code_coverage"] = codeCov
 	}
-	codeCov.addStep(jobStep{
-		Name: "Post coverage report",
-		Uses: core.GoCoverageReportAction,
-		With: map[string]any{
-			"coverage-artifact-name": coverageArtifactName,
-			"coverage-file-name":     "cover.out",
-		},
-	})
-	w.Jobs["code_coverage"] = codeCov
+
+	w.Jobs["test"] = testJob
 
 	writeWorkflowToFile(w)
 }

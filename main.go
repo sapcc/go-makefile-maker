@@ -112,8 +112,8 @@ func main() {
 	// Render GitHub workflows
 	if cfg.GitHubWorkflow != nil {
 		logg.Debug("rendering GitHub Actions workflows")
-		if cfg.GitHubWorkflow.CI.Coveralls {
-			logg.Fatal("Coveralls support has been removed, please remove it from your Makefile.maker.yaml")
+		if cfg.GitHubWorkflow.CI.Coveralls && cfg.GitHubWorkflow.IsSelfHostedRunner {
+			logg.Fatal("Coveralls is not supported on GitHub Enterprise: please remove `githubWorkflow.ci.coveralls = true` to use the alternative code coverage action")
 		}
 		ghworkflow.Render(cfg, sr)
 	}
