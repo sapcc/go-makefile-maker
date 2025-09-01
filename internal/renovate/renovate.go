@@ -7,8 +7,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"os"
+	"os/exec"
 	"strings"
 
+	. "github.com/majewsky/gg/option"
+	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
@@ -86,14 +89,18 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 		cfg.PostUpdateOptions = append([]string{"gomodTidy", "gomodUpdateImportPaths"}, cfg.PostUpdateOptions...)
 
 		// Default package rules.
+		// More explicit rules must come after more generic ones, as otherwise things get rematched/grouped again
 		//
 		// NOTE: When changing this list, please also adjust the documentation for
 		// default package rules in the README.
-		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
-			MatchPackageNames: []string{"go", "golang"},
-			AllowedVersions:   cfgRenovate.GoVersion + ".x",
-		})
 
+		// combine all dependencies not under github.com/sapcc/
+		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
+			MatchPackageNames: []string{`/.*/`},
+			MatchUpdateTypes:  []string{"minor", "patch"},
+			GroupName:         "External dependencies",
+			AutoMerge:         false,
+		})
 		// combine and automerge all dependencies under github.com/sapcc/
 		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
 			MatchPackageNames: []string{`/^github\.com\/sapcc\/.*/`},
@@ -101,12 +108,15 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 			AutoMerge:         true,
 		})
 
-		// combine all dependencies not under github.com/sapcc/
 		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
-			MatchPackageNames: []string{`!/^github\.com\/sapcc\/.*/`, `/.*/`},
-			MatchUpdateTypes:  []string{"minor", "patch"},
-			GroupName:         "External dependencies",
-			AutoMerge:         false,
+			MatchPackageNames:  []string{"go", "golang", "actions/go-versions"},
+			GroupName:          "golang",
+			SeparateMinorPatch: Some(true),
+		})
+		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
+			MatchPackageNames:           []string{"go", "golang", "actions/go-versions"},
+			MatchUpdateTypes:            []string{"minor", "major"},
+			DependencyDashboardApproval: Some(true),
 		})
 	}
 
