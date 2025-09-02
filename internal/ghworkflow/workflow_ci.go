@@ -66,24 +66,27 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 
 	w.Jobs["test"] = testJob
 
-	// see https://github.com/fgrosse/go-coverage-report#usage
-	codeCov := baseJob("Code coverage report", cfg.GitHubWorkflow)
-	codeCov.If = "github.event_name == 'pull_request'"
-	codeCov.Needs = []string{"test"}
-	codeCov.Permissions = permissions{
-		Contents:     "read",
-		Actions:      "read",
-		PullRequests: "write",
+	// coverage is only available on github.com because tj-actions/changed-files is blocked due to their famour securits incident
+	if !ghwCfg.IsSelfHostedRunner {
+		// see https://github.com/fgrosse/go-coverage-report#usage
+		codeCov := baseJob("Code coverage report", cfg.GitHubWorkflow)
+		codeCov.If = "github.event_name == 'pull_request'"
+		codeCov.Needs = []string{"test"}
+		codeCov.Permissions = permissions{
+			Contents:     "read",
+			Actions:      "read",
+			PullRequests: "write",
+		}
+		codeCov.addStep(jobStep{
+			Name: "Post coverage report",
+			Uses: core.GoCoverageReportAction,
+			With: map[string]any{
+				"coverage-artifact-name": coverageArtifactName,
+				"coverage-file-name":     "cover.out",
+			},
+		})
+		w.Jobs["code_coverage"] = codeCov
 	}
-	codeCov.addStep(jobStep{
-		Name: "Post coverage report",
-		Uses: core.GoCoverageReportAction,
-		With: map[string]any{
-			"coverage-artifact-name": coverageArtifactName,
-			"coverage-file-name":     "cover.out",
-		},
-	})
-	w.Jobs["code_coverage"] = codeCov
 
 	writeWorkflowToFile(w)
 }
