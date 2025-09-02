@@ -40,7 +40,7 @@ const (
 	CodeqlAnalyzeAction   = "github/codeql-action/analyze@v3"
 	CodeqlAutobuildAction = "github/codeql-action/autobuild@v3"
 
-	DownloadSyftAction     = "anchore/sbom-action/download-syft@v0.20"
+	DownloadSyftAction     = "anchore/sbom-action/download-syft@v0"
 	GoCoverageReportAction = "fgrosse/go-coverage-report@v1.2.0"
 	GolangciLintAction     = "golangci/golangci-lint-action@v8"
 	GoreleaserAction       = "goreleaser/goreleaser-action@v6"
