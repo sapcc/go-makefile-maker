@@ -209,16 +209,18 @@ func (s ShellCheckConfiguration) AllIgnorePaths(g GolangConfiguration) []string 
 }
 
 type PackageRule struct {
-	MatchPackageNames []string `yaml:"matchPackageNames" json:"matchPackageNames,omitempty"`
-	MatchUpdateTypes  []string `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
-	MatchDepTypes     []string `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
-	MatchFileNames    []string `yaml:"matchFileNames" json:"matchFileNames,omitempty"`
-	Extends           []string `yaml:"extends" json:"extends,omitempty"`
-	AllowedVersions   string   `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
-	AutoMerge         bool     `yaml:"automerge" json:"automerge,omitempty"`
-	Enabled           *bool    `yaml:"enabled" json:"enabled,omitempty"`
-	GroupName         string   `yaml:"groupName" json:"groupName,omitempty"`
-	MinimumReleaseAge string   `yaml:"minimumReleaseAge" json:"minimumReleaseAge,omitempty"`
+	MatchPackageNames           []string     `yaml:"matchPackageNames" json:"matchPackageNames,omitempty"`
+	MatchUpdateTypes            []string     `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
+	MatchDepTypes               []string     `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
+	MatchFileNames              []string     `yaml:"matchFileNames" json:"matchFileNames,omitempty"`
+	Extends                     []string     `yaml:"extends" json:"extends,omitempty"`
+	AllowedVersions             string       `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
+	AutoMerge                   bool         `yaml:"automerge" json:"automerge,omitempty"`
+	DependencyDashboardApproval Option[bool] `yaml:"dependencyDashboardApproval" json:"dependencyDashboardApproval,omitzero"`
+	Enabled                     Option[bool] `yaml:"enabled" json:"enabled,omitzero"`
+	GroupName                   string       `yaml:"groupName" json:"groupName,omitempty"`
+	MinimumReleaseAge           string       `yaml:"minimumReleaseAge" json:"minimumReleaseAge,omitempty"`
+	SeparateMinorPatch          Option[bool] `yaml:"separateMinorPatch" json:"separateMinorPatch,omitzero"`
 }
 
 // RenovateConfig appears in type Configuration.
