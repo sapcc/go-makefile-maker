@@ -5,7 +5,7 @@ package core
 
 const (
 	DefaultAlpineImage         = "3.22"
-	DefaultGoVersion           = "1.24.6"
+	DefaultGoVersion           = "1.24.7"
 	DefaultPostgresVersion     = "17"
 	DefaultLinkerdAwaitVersion = "0.2.7"
 	DefaultGitHubComRunsOn     = "ubuntu-latest"
@@ -28,7 +28,7 @@ func GetUploadArtifactAction(isSelfHostedRunner bool) string {
 
 const (
 	CheckoutAction = "actions/checkout@v5"
-	SetupGoAction  = "actions/setup-go@v5"
+	SetupGoAction  = "actions/setup-go@v6"
 
 	DockerLoginAction     = "docker/login-action@v3"
 	DockerMetadataAction  = "docker/metadata-action@v5"
