@@ -1,6 +1,6 @@
 module github.com/sapcc/go-makefile-maker
 
-go 1.24.0
+go 1.25
 
 require (
 	github.com/majewsky/gg v1.3.0
