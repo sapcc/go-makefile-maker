@@ -2,8 +2,6 @@ module github.com/sapcc/go-makefile-maker
 
 go 1.24.0
 
-toolchain go1.24.7
-
 require (
 	github.com/majewsky/gg v1.3.0
 	github.com/sapcc/go-api-declarations v1.17.4
