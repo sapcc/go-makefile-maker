@@ -46,7 +46,6 @@ func newMakefile(cfg core.Configuration, sr golang.ScanResult) *makefile {
 	// General
 	general := category{name: "general"}
 
-	general.addDefinition("MAKEFLAGS=--warn-undefined-variables")
 	general.addDefinition(strings.TrimSpace(`
 # /bin/sh is dash on Debian which does not support all features of ash/bash
 # to fix that we use /bin/bash only on Debian to not break Alpine
