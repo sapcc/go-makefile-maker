@@ -46,7 +46,6 @@ func newMakefile(cfg core.Configuration, sr golang.ScanResult) *makefile {
 	// General
 	general := category{name: "general"}
 
-	general.addDefinition("MAKEFLAGS=--warn-undefined-variables")
 	general.addDefinition(strings.TrimSpace(`
 # /bin/sh is dash on Debian which does not support all features of ash/bash
 # to fix that we use /bin/bash only on Debian to not break Alpine
@@ -213,11 +212,11 @@ endif
 	if isGolang {
 		build.addDefinition("# To add additional flags or values, specify the variable in the environment, e.g. `GO_BUILDFLAGS='-tags experimental' make`.")
 		build.addDefinition("# To override the default flags or values, specify the variable on the command line, e.g. `make GO_BUILDFLAGS='-tags experimental'`.")
-		build.addDefinition("GO_BUILDFLAGS +=%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
-		build.addDefinition("GO_LDFLAGS +=%s", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
-		build.addDefinition("GO_TESTFLAGS +=%s", cfg.Variable("GO_TESTFLAGS", ""))
-		build.addDefinition("GO_TESTENV +=%s", cfg.Variable("GO_TESTENV", ""))
-		build.addDefinition("GO_BUILDENV +=%s", cfg.Variable("GO_BUILDENV", ""))
+		build.addDefinition("GO_BUILDFLAGS :=%s $(GO_BUILDFLAGS)", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
+		build.addDefinition("GO_LDFLAGS :=%s $(GO_LDFLAGS)", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
+		build.addDefinition("GO_TESTFLAGS :=%s $(GO_TESTFLAGS)", cfg.Variable("GO_TESTFLAGS", ""))
+		build.addDefinition("GO_TESTENV :=%s $(GO_TESTENV)", cfg.Variable("GO_TESTENV", ""))
+		build.addDefinition("GO_BUILDENV :=%s $(GO_BUILDENV)", cfg.Variable("GO_BUILDENV", ""))
 	}
 	if sr.HasBinInfo {
 		build.addDefinition("")
