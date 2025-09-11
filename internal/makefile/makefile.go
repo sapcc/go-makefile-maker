@@ -380,9 +380,20 @@ endif
 			},
 		}
 
+		// The current design of `easypg.WithTestDB()` came about because we wanted to get rid of the `./testing/with-postgres-db.sh` wrapper.
+		// Since wrappers outside of go test are not desirable, we can only hook into the TestMain level,
+		// and then there is no good way to deal with multiple test binaries running in parallel.
+		// We could use file locking to make them wait for each other, but that would just reverse this change with extra steps.
+		//
+		// usesPostgres reflects whether `github.com/lib/pq` is loaded. `github.com/sapcc/go-bits/easypg` hard depends on `github.com/lib/pq`.
+		singleThreaded := ""
+		if sr.UsesPostgres {
+			singleThreaded = "-p 1 "
+		}
+
 		// NOTE: Ginkgo will always write the coverage profile as "coverprofile.out", so we will choose the same path for non-Ginkgo tests, too.
 		// The actual final path is build/cover.out, which will be filled by a post-processing step below.
-		testRunner := "go test -shuffle=on -p 1 -coverprofile=build/coverprofile.out"
+		testRunner := fmt.Sprintf("go test -shuffle=on %s-coverprofile=build/coverprofile.out", singleThreaded)
 		if sr.UseGinkgo {
 			testRunner = "go run github.com/onsi/ginkgo/v2/ginkgo run --randomize-all -output-dir=build"
 		}
