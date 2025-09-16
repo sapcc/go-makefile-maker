@@ -20,7 +20,7 @@ var (
 	//go:embed shell.nix.tmpl
 	shellNixTemplate string
 	//go:embed envrc.tmpl
-	envrcTemplate []byte
+	envrcTemplate string
 )
 
 func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserConfig bool) {
@@ -61,5 +61,7 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 		"Packages":       packages,
 		"ExtraLibraries": cfg.Nix.ExtraLibraries,
 	}))
-	must.Succeed(util.WriteFile(".envrc", envrcTemplate))
+	must.Succeed(util.WriteFileFromTemplate(".envrc", envrcTemplate, map[string]any{
+		"Variables": cfg.VariableValues,
+	}))
 }
