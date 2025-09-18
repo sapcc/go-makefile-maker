@@ -381,7 +381,7 @@ endif
 
 		// NOTE: Ginkgo will always write the coverage profile as "coverprofile.out", so we will choose the same path for non-Ginkgo tests, too.
 		// The actual final path is build/cover.out, which will be filled by a post-processing step below.
-		testRunner := "go test -shuffle=on -p 1 -coverprofile=build/coverprofile.out"
+		testRunner := "go test -shuffle=on -coverprofile=build/coverprofile.out"
 		if sr.UseGinkgo {
 			testRunner = "go run github.com/onsi/ginkgo/v2/ginkgo run --randomize-all -output-dir=build"
 		}
