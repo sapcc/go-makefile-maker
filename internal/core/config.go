@@ -234,16 +234,17 @@ type RenovateConfig struct {
 
 // DockerfileConfig appears in type Configuration.
 type DockerfileConfig struct {
-	Enabled            bool     `yaml:"enabled"`
-	Entrypoint         []string `yaml:"entrypoint"`
-	ExtraBuildPackages []string `yaml:"extraBuildPackages"`
-	ExtraBuildStages   []string `yaml:"extraBuildStages"`
-	ExtraDirectives    []string `yaml:"extraDirectives"`
-	ExtraIgnores       []string `yaml:"extraIgnores"`
-	ExtraPackages      []string `yaml:"extraPackages"`
-	RunAsRoot          bool     `yaml:"runAsRoot"`
-	UseBuildKit        bool     `yaml:"useBuildKit"`
-	WithLinkerdAwait   bool     `yaml:"withLinkerdAwait"`
+	Enabled              bool     `yaml:"enabled"`
+	Entrypoint           []string `yaml:"entrypoint"`
+	ExtraBuildDirectives []string `yaml:"extraBuildDirectives"`
+	ExtraBuildPackages   []string `yaml:"extraBuildPackages"`
+	ExtraBuildStages     []string `yaml:"extraBuildStages"`
+	ExtraDirectives      []string `yaml:"extraDirectives"`
+	ExtraIgnores         []string `yaml:"extraIgnores"`
+	ExtraPackages        []string `yaml:"extraPackages"`
+	RunAsRoot            bool     `yaml:"runAsRoot"`
+	UseBuildKit          bool     `yaml:"useBuildKit"`
+	WithLinkerdAwait     bool     `yaml:"withLinkerdAwait"`
 }
 
 type ControllerGen struct {

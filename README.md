@@ -156,6 +156,10 @@ dockerfile:
       RUN toolbox-cmd
   extraBuildPackages:
     - linux-headers
+  extraBuildDirectives:
+  	 - |
+  	   RUN wget -P /usr/local/share/ca-certificates/ http://example.com/some-custom-certificate.pem \
+        && update-ca-certificates
   extraDirectives:
     - 'LABEL mylabel=myvalue'
     - 'COPY --from=toolbox /bin/fancytool /usr/bin/fancytool'
@@ -182,6 +186,7 @@ With [go-api-declarations](https://github.com/sapcc/go-api-declarations)'s [`bin
 * `entrypoint` allows overwriting the final entrypoint.
 * `extraBuildStages` prepends additional build stages at the top of the Dockerfile. This is useful for bringing in precompiled assets from other images, or if a non-Go compilation step is required.
 * `extraBuildPackages` installs extra Alpine packages in the Docker layer where `make install` is executed. We always install `ca-certificates`, `gcc`, `git`, `make` and `musl-dev`.
+* `extraBuildDirectives` appends additional directives in the build stage Docker layer after `make install` is executed.
 * `extraDirectives` appends additional directives near the end of the Dockerfile.
 * `extraIgnores` appends entries in `.dockerignore` to the default ones.
 * `extraPackages` installs extra Alpine packages in the final Docker layer. `ca-certificates` is always installed.
