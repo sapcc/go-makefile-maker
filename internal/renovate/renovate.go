@@ -39,7 +39,10 @@ type config struct {
 	SemanticCommits                            string             `json:"semanticCommits,omitempty"`
 }
 
-func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult, url string, isApplicationRepo bool) {
+func RenderConfig(coreCfg core.Configuration, scanResult golang.ScanResult) {
+	cfgRenovate := coreCfg.Renovate
+	url := coreCfg.Metadata.URL
+
 	isGoMakefileMakerRepo := scanResult.ModulePath == "github.com/sapcc/go-makefile-maker"
 	isInternalRenovate := strings.HasPrefix(url, "https://github.wdf.sap.corp")
 
@@ -55,7 +58,9 @@ func RenderConfig(cfgRenovate core.RenovateConfig, scanResult golang.ScanResult,
 	// However, for pure library repos, we do the PRs on Thursday instead, so
 	// that the dependency updates in these library repos trickle down into the
 	// application repos without an extra week of delay.
-	if !isApplicationRepo {
+	//
+	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
+	if scanResult.GoVersion != "" && len(coreCfg.Binaries) == 0 {
 		schedule = "before 8am on Thursday"
 		if isInternalRenovate {
 			schedule = "on Thursday"
