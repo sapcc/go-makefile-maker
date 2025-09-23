@@ -214,7 +214,7 @@ endif
 	if isGolang {
 		// WARNING: DO NOT CHANGE THIS WITHOUT FIRST UNDERSTANDING THE CONSEQUENCES.
 		// All changes have to be okay'd by Stefan Majewsky to avoid breaking setups.
-		build.addDefinition("# To add additional flags or values, specify the variable in the environment, e.g. `GO_BUILDFLAGS='-tags experimental' make`.")
+		build.addDefinition("# To add additional flags or values (before the default ones), specify the variable in the environment, e.g. `GO_BUILDFLAGS='-tags experimental' make`.")
 		build.addDefinition("# To override the default flags or values, specify the variable on the command line, e.g. `make GO_BUILDFLAGS='-tags experimental'`.")
 		build.addDefinition("GO_BUILDFLAGS +=%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
 		build.addDefinition("GO_LDFLAGS +=%s", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
