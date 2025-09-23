@@ -157,8 +157,8 @@ dockerfile:
   extraBuildPackages:
     - linux-headers
   extraBuildDirectives:
-  	 - |
-  	   RUN wget -P /usr/local/share/ca-certificates/ http://example.com/some-custom-certificate.pem \
+    - |
+      RUN wget -P /usr/local/share/ca-certificates/ http://example.com/some-custom-certificate.pem \
         && update-ca-certificates
   extraDirectives:
     - 'LABEL mylabel=myvalue'
