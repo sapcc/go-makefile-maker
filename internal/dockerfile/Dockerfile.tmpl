@@ -22,8 +22,8 @@ RUN {{ if .UseBuildKit }}--mount=type=cache,target=/go/pkg/mod \
 
 {{ range $dcfg.ExtraBuildDirectives -}}
 {{ . }}
-{{ end -}}
 
+{{ end -}}
 ################################################################################
 
 FROM alpine:{{ .Constants.DefaultAlpineImage }}
