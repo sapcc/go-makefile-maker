@@ -46,8 +46,20 @@ func newMakefile(cfg core.Configuration, sr golang.ScanResult) *makefile {
 	// General
 	general := category{name: "general"}
 
+	// at least --warn-undefined-variables is known to not be supported on make 3.81
+	general.addDefinition(`# macOS ships with make 3.81 from 2006, which does not support all the stuff that we need
+ifeq ($(MAKE_VERSION),3.81)
+  ifeq (,$(shell which gmake 2>/dev/null))
+    $(error We do not support "make" versions that are two decades old. Please install a newer version, e.g. using "brew install make")
+  else
+    $(error We do not support "make" versions that are two decades old. You have GNU make installed, so please run "gmake" instead)
+  endif
+endif
+`)
+
 	// WARNING: Do not remove this just because it may be inconvenient to you. Learn to work with it.
 	general.addDefinition("MAKEFLAGS=--warn-undefined-variables")
+
 	general.addDefinition(strings.TrimSpace(`
 # /bin/sh is dash on Debian which does not support all features of ash/bash
 # to fix that we use /bin/bash only on Debian to not break Alpine

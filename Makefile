@@ -6,6 +6,15 @@
 # SPDX-FileCopyrightText: 2024 SAP SE or an SAP affiliate company
 # SPDX-License-Identifier: Apache-2.0
 
+# macOS ships with make 3.81 from 2006, which does not support all the stuff that we need
+ifeq ($(MAKE_VERSION),3.81)
+  ifeq (,$(shell which gmake 2>/dev/null))
+    $(error We do not support "make" versions that are two decades old. Please install a newer version, e.g. using "brew install make")
+  else
+    $(error We do not support "make" versions that are two decades old. You have GNU make installed, so please run "gmake" instead)
+  endif
+endif
+
 MAKEFLAGS=--warn-undefined-variables
 # /bin/sh is dash on Debian which does not support all features of ash/bash
 # to fix that we use /bin/bash only on Debian to not break Alpine
@@ -182,6 +191,7 @@ vars: FORCE
 	@printf "GO_TESTFLAGS=$(GO_TESTFLAGS)\n"
 	@printf "GO_TESTPKGS=$(GO_TESTPKGS)\n"
 	@printf "MAKE=$(MAKE)\n"
+	@printf "MAKE_VERSION=$(MAKE_VERSION)\n"
 	@printf "PREFIX=$(PREFIX)\n"
 	@printf "SED=$(SED)\n"
 	@printf "UNAME_S=$(UNAME_S)\n"
