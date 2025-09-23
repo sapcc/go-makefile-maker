@@ -39,12 +39,9 @@ type config struct {
 	SemanticCommits                            string             `json:"semanticCommits,omitempty"`
 }
 
-func RenderConfig(coreCfg core.Configuration, scanResult golang.ScanResult) {
-	cfgRenovate := coreCfg.Renovate
-	url := coreCfg.Metadata.URL
-
+func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult) {
 	isGoMakefileMakerRepo := scanResult.ModulePath == "github.com/sapcc/go-makefile-maker"
-	isInternalRenovate := strings.HasPrefix(url, "https://github.wdf.sap.corp")
+	isInternalRenovate := strings.HasPrefix(cfg.Metadata.URL, "https://github.wdf.sap.corp")
 
 	// Our default rule is to have Renovate send us PRs once a week. (More
 	// frequent PRs become too overwhelming with the sheer amount of repos that
@@ -60,21 +57,21 @@ func RenderConfig(coreCfg core.Configuration, scanResult golang.ScanResult) {
 	// application repos without an extra week of delay.
 	//
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
-	if scanResult.GoVersion != "" && len(coreCfg.Binaries) == 0 {
+	if scanResult.GoVersion != "" && len(cfg.Binaries) == 0 {
 		schedule = "before 8am on Thursday"
 		if isInternalRenovate {
 			schedule = "on Thursday"
 		}
 	}
 
-	cfg := config{
+	renovateConfig := config{
 		Schema: "https://docs.renovatebot.com/renovate-schema.json",
 		Extends: []string{
 			"config:recommended",
 			"default:pinDigestsDisabled",
 			"mergeConfidence:all-badges",
 		},
-		Assignees: cfgRenovate.Assignees,
+		Assignees: cfg.Renovate.Assignees,
 		// CommitMessageAction is the verb that appears at the start of Renovate's
 		// commit messages (and therefore, PR titles). The default value is "Update".
 		// We choose something more specific because some of us have filter rules
@@ -88,10 +85,10 @@ func RenderConfig(coreCfg core.Configuration, scanResult golang.ScanResult) {
 	}
 
 	if scanResult.GoVersion != "" {
-		cfg.Constraints = &constraints{
-			Go: cfgRenovate.GoVersion,
+		renovateConfig.Constraints = &constraints{
+			Go: cfg.Renovate.GoVersion,
 		}
-		cfg.PostUpdateOptions = append([]string{"gomodTidy", "gomodUpdateImportPaths"}, cfg.PostUpdateOptions...)
+		renovateConfig.PostUpdateOptions = append([]string{"gomodTidy", "gomodUpdateImportPaths"}, renovateConfig.PostUpdateOptions...)
 
 		// Default package rules.
 		// More explicit rules must come after more generic ones, as otherwise things get rematched/grouped again
@@ -100,25 +97,25 @@ func RenderConfig(coreCfg core.Configuration, scanResult golang.ScanResult) {
 		// default package rules in the README.
 
 		// combine all dependencies not under github.com/sapcc/
-		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
+		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
 			MatchPackageNames: []string{`/.*/`},
 			MatchUpdateTypes:  []string{"minor", "patch"},
 			GroupName:         "External dependencies",
 			AutoMerge:         false,
 		})
 		// combine and automerge all dependencies under github.com/sapcc/
-		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
+		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
 			MatchPackageNames: []string{`/^github\.com\/sapcc\/.*/`},
 			GroupName:         "github.com/sapcc",
 			AutoMerge:         true,
 		})
 
-		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
+		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
 			MatchPackageNames:  []string{"go", "golang", "actions/go-versions"},
 			GroupName:          "golang",
 			SeparateMinorPatch: Some(true),
 		})
-		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
+		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
 			MatchPackageNames:           []string{"go", "golang", "actions/go-versions"},
 			MatchUpdateTypes:            []string{"minor", "major"},
 			DependencyDashboardApproval: Some(true),
@@ -127,9 +124,9 @@ func RenderConfig(coreCfg core.Configuration, scanResult golang.ScanResult) {
 
 	// Only enable Dockerfile and github-actions updates for go-makefile-maker itself.
 	if isGoMakefileMakerRepo {
-		cfg.Extends = append(cfg.Extends, "docker:enableMajor", "customManagers:dockerfileVersions")
+		renovateConfig.Extends = append(renovateConfig.Extends, "docker:enableMajor", "customManagers:dockerfileVersions")
 	} else {
-		cfg.Extends = append(cfg.Extends, "docker:disable")
+		renovateConfig.Extends = append(renovateConfig.Extends, "docker:disable")
 	}
 	hasK8sIOPkgs := false
 	for _, v := range scanResult.GoDirectDependencies {
@@ -138,7 +135,7 @@ func RenderConfig(coreCfg core.Configuration, scanResult golang.ScanResult) {
 		}
 	}
 	if hasK8sIOPkgs {
-		cfg.PackageRules = append(cfg.PackageRules, core.PackageRule{
+		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
 			MatchPackageNames: []string{`/^k8s.io\//`},
 			// Since our clusters use k8s v1.26 and k8s has a support policy of -/+ 1 minor version we set the allowedVersions to `0.27.x`.
 			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.x instead of 1.x.
@@ -153,19 +150,19 @@ func RenderConfig(coreCfg core.Configuration, scanResult golang.ScanResult) {
 	// Renovate will evaluate all packageRules and not stop once it gets a first match
 	// therefore the packageRules should be in the order of importance so that user
 	// defined rules can override settings from earlier rules.
-	cfg.PackageRules = append(cfg.PackageRules, cfgRenovate.PackageRules...)
+	renovateConfig.PackageRules = append(renovateConfig.PackageRules, cfg.Renovate.PackageRules...)
 
 	// CustomManagers specified in config.
 	//
 	// With customManagers using regex you can configure Renovate so it finds dependencies
 	// that are not detected by its other built-in package managers.
-	cfg.CustomManagers = append(cfg.CustomManagers, cfgRenovate.CustomManagers...)
+	renovateConfig.CustomManagers = append(renovateConfig.CustomManagers, cfg.Renovate.CustomManagers...)
 
 	var buf bytes.Buffer
 	encoder := json.NewEncoder(&buf)
 	encoder.SetIndent("", "  ")
 	encoder.SetEscapeHTML(false) // in order to preserve `<` in allowedVersions field
-	must.Succeed(encoder.Encode(cfg))
+	must.Succeed(encoder.Encode(renovateConfig))
 
 	must.Succeed(os.MkdirAll(".github", 0750))
 	must.Succeed(os.RemoveAll("renovate.json"))
