@@ -124,9 +124,7 @@ func main() {
 		if cfg.Renovate.GoVersion == "" {
 			cfg.Renovate.GoVersion = sr.GoVersionMajorMinor
 		}
-		// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
-		isApplicationRepo := sr.GoVersion == "" || len(cfg.Binaries) > 0
-		renovate.RenderConfig(cfg.Renovate, sr, cfg.Metadata.URL, isApplicationRepo)
+		renovate.RenderConfig(cfg, sr)
 	}
 
 	// Render REUSE config file

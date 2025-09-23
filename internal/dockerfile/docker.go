@@ -65,12 +65,18 @@ func RenderConfig(cfg core.Configuration) {
 		}
 	}
 
+	var dockerHubMirror string
+	if strings.HasPrefix(cfg.Metadata.URL, "https://github.wdf.sap.corp") {
+		dockerHubMirror = "keppel.eu-de-1.cloud.sap/ccloud-dockerhub-mirror/library/"
+	}
+
 	must.Succeed(util.WriteFileFromTemplate("Dockerfile", dockerfileTemplate, map[string]any{
 		"Config": cfg,
 		"Constants": map[string]any{
 			"DefaultGoVersion":   core.DefaultGoVersion,
 			"DefaultAlpineImage": core.DefaultAlpineImage,
 		},
+		"DockerHubMirror":    dockerHubMirror,
 		"Entrypoint":         entrypoint,
 		"RunCommands":        strings.Join(commands, " \\\n  && "),
 		"RunVersionCommands": strings.Join(runVersionCommands, " \\\n  && "),
