@@ -20,6 +20,10 @@ RUN {{ if .UseBuildKit }}--mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
   {{ end }}make -C /src install PREFIX=/pkg GOTOOLCHAIN=local{{ if .Config.Golang.EnableVendoring }} GO_BUILDFLAGS='-mod vendor'{{ end }}
 
+{{ range $dcfg.ExtraBuildDirectives -}}
+{{ . }}
+
+{{ end -}}
 ################################################################################
 
 FROM {{ .DockerHubMirror }}alpine:{{ .Constants.DefaultAlpineImage }}
