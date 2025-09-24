@@ -460,11 +460,11 @@ This mechanism cannot be used to define new variables to use in your own rules; 
 By default, all accepted variables are empty.
 The only exception is that `GO_BUILDFLAGS` defaults to `-mod vendor` when vendoring is enabled (see below).
 
-When invoking the respective targets utilizing the variables, it's possible to either append to the provided values by modifying the calling environment:
+When invoking the respective targets utilizing the variables, it's possible to either prepend to the provided values by modifying the calling environment:
 
 ```console
 $ GO_BUILDFLAGS="-work -v" make build/go-makefile-maker
-env  go build -mod vendor -work -v -ldflags ...
+env  go build -work -v -mod vendor -ldflags ...
 ```
 
 or to override their values by passing the variables as `make` arguments:
