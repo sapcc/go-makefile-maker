@@ -120,15 +120,13 @@ controllerGen:
   rbacRoleName: manager-role
 ```
 
-Customization options for controller-gen.
+Customization options for [controller-gen](https://book.kubebuilder.io/reference/controller-gen.html).
+This is only relevant if your project is using controller-gen to autogenerate code related to custom Kubernetes resources.
 
-`enabled` defaults to the presence of the `sigs.k8s.io/controller-runtime` dependency unless set explicitly.
-
-`crdOutputPath` allows changing the `output:crd:artifacts:config` argument given to `controller-gen rbac`. Defaults to `crd`.
-
-`objectHeaderFile` allows changing the `headerFile` argument given to `controller-gen object`.
-
-`rbacRoleName` allows changing the `roleName` argument given to controller-gen rbac. Defaults to the last element in the go module name.
+- `enabled` defaults to whether `sigs.k8s.io/controller-runtime` is a library dependency, unless set explicitly.
+- `crdOutputPath` allows changing the `output:crd:artifacts:config` argument given to `controller-gen rbac`. Defaults to `crd`.
+- `objectHeaderFile` allows changing the `headerFile` argument given to `controller-gen object`.
+- `rbacRoleName` allows changing the `roleName` argument given to `controller-gen rbac:role-name=`. Defaults to the last element in the go module name.
 
 ### `coverageTest`
 
