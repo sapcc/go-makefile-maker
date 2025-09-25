@@ -262,8 +262,19 @@ type MakefileConfig struct {
 	Enabled Option[bool] `yaml:"enabled"` // this is a pointer to bool to treat an absence as true for backwards compatibility
 }
 
+// Metadata appears in type Configuration.
 type Metadata struct {
 	URL string `yaml:"url"`
+}
+
+// IsSAPProject returns whether the project URL is below one of the scopes known to belong to SAP.
+func (m Metadata) IsSAPProject() bool {
+	return strings.HasPrefix(m.URL, "https://github.com/sapcc/") ||
+		strings.HasPrefix(m.URL, "https://github.com/SAP-cloud-infrastructure/") ||
+		strings.HasPrefix(m.URL, "https://github.com/cobaltcore-dev/") ||
+		strings.HasPrefix(m.URL, "https://github.com/ironcore-dev/") ||
+		strings.HasPrefix(m.URL, "https://github.wdf.sap.corp/") ||
+		strings.HasPrefix(m.URL, "https://github.tools.sap/")
 }
 
 type NixConfig struct {
@@ -314,6 +325,19 @@ func (c *Configuration) Validate() {
 			if len(ghwCfg.CI.RunsOn) > 1 && !strings.HasPrefix(ghwCfg.CI.RunsOn[0], "ubuntu") {
 				logg.Fatal("githubWorkflow.ci.runOn must only define a single Ubuntu based runner when githubWorkflow.ci.enabled is true")
 			}
+		}
+	}
+
+	// for SAP projects, we require the use of:
+	// - Renovate as a Software Composition Analysis tool
+	// - GitHub Advanced Security (specifically CodeQL) as a Security Check tool
+	// in order to satisfy compliance requirements
+	if c.Metadata.IsSAPProject() {
+		if ghwCfg != nil && !ghwCfg.SecurityChecks.IsEnabled() {
+			logg.Fatal("githubWorkflow.securityChecks.enabled may not be set to false (CodeQL is required for SAP projects to satisfy compliance requirements)")
+		}
+		if !c.Renovate.Enabled {
+			logg.Fatal("renovate.enabled must be set to true (Renovate is required for SAP projects to satisfy compliance requirements)")
 		}
 	}
 }
