@@ -36,9 +36,9 @@ const (
 	DockerQemuAction      = "docker/setup-qemu-action@v3"
 	DockerBuildPushAction = "docker/build-push-action@v6"
 
-	CodeqlInitAction      = "github/codeql-action/init@v3"
-	CodeqlAnalyzeAction   = "github/codeql-action/analyze@v3"
-	CodeqlAutobuildAction = "github/codeql-action/autobuild@v3"
+	CodeqlInitAction      = "github/codeql-action/init@v4"
+	CodeqlAnalyzeAction   = "github/codeql-action/analyze@v4"
+	CodeqlAutobuildAction = "github/codeql-action/autobuild@v4"
 
 	DownloadSyftAction     = "anchore/sbom-action/download-syft@v0"
 	GoCoverageReportAction = "fgrosse/go-coverage-report@v1.2.0"
