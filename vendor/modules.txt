@@ -9,7 +9,7 @@ github.com/majewsky/gg/option
 # github.com/sapcc/go-api-declarations v1.17.4
 ## explicit; go 1.24
 github.com/sapcc/go-api-declarations/bininfo
-# github.com/sapcc/go-bits v0.0.0-20251006091626-c8e55520bad5
+# github.com/sapcc/go-bits v0.0.0-20251008145151-92546a8461e7
 ## explicit; go 1.24
 github.com/sapcc/go-bits/logg
 github.com/sapcc/go-bits/must
