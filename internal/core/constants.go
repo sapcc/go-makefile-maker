@@ -26,6 +26,30 @@ func GetUploadArtifactAction(isSelfHostedRunner bool) string {
 	}
 }
 
+// see https://github.com/github/codeql-action/releases
+// and https://github.wdf.sap.corp/Security-Testing/codeql-action/releases
+func GetCodeqlInitAction(isSelfHostedRunner bool) string {
+	if isSelfHostedRunner {
+		return "Security-Testing/codeql-action/init@v3"
+	} else {
+		return "github/codeql-action/init@v4"
+	}
+}
+func GetCodeqlAnalyzeAction(isSelfHostedRunner bool) string {
+	if isSelfHostedRunner {
+		return "Security-Testing/codeql-action/analyze@v3"
+	} else {
+		return "github/codeql-action/analyze@v4"
+	}
+}
+func GetCodeqlAutobuildAction(isSelfHostedRunner bool) string {
+	if isSelfHostedRunner {
+		return "Security-Testing/codeql-action/autobuild@v3"
+	} else {
+		return "github/codeql-action/autobuild@v4"
+	}
+}
+
 const (
 	CheckoutAction = "actions/checkout@v5"
 	SetupGoAction  = "actions/setup-go@v6"
@@ -35,10 +59,6 @@ const (
 	DockerBuildxAction    = "docker/setup-buildx-action@v3"
 	DockerQemuAction      = "docker/setup-qemu-action@v3"
 	DockerBuildPushAction = "docker/build-push-action@v6"
-
-	CodeqlInitAction      = "github/codeql-action/init@v4"
-	CodeqlAnalyzeAction   = "github/codeql-action/analyze@v4"
-	CodeqlAutobuildAction = "github/codeql-action/autobuild@v4"
 
 	DownloadSyftAction     = "anchore/sbom-action/download-syft@v0"
 	GoCoverageReportAction = "fgrosse/go-coverage-report@v1.2.0"
