@@ -82,7 +82,12 @@ func RenderConfig(cfg core.Configuration) {
 		"RunVersionCommands": strings.Join(runVersionCommands, " \\\n  && "),
 		"UseBuildKit":        cfg.Dockerfile.UseBuildKit,
 	}))
+
+	ignores := cfg.Dockerfile.ExtraIgnores
+	if sr.UsesPostgres {
+		ignores = append(ignores, "/.testdb/")
+	}
 	must.Succeed(util.WriteFileFromTemplate(".dockerignore", dockerignoreTemplate, map[string]any{
-		"ExtraIgnores": cfg.Dockerfile.ExtraIgnores,
+		"ExtraIgnores": ignores,
 	}))
 }
