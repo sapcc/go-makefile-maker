@@ -12,6 +12,7 @@ import (
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
+	"github.com/sapcc/go-makefile-maker/internal/golang"
 	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
@@ -22,7 +23,7 @@ var (
 	dockerignoreTemplate string
 )
 
-func RenderConfig(cfg core.Configuration) {
+func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	// if there is an entrypoint configured use that otherwise fallback to the first binary name
 	var entrypoint string
 	if len(cfg.Dockerfile.Entrypoint) > 0 {
@@ -70,6 +71,15 @@ func RenderConfig(cfg core.Configuration) {
 		dockerHubMirror = "keppel.eu-de-1.cloud.sap/ccloud-dockerhub-mirror/library/"
 	}
 
+	var extraTestPackages []string
+	reuseEnabled := cfg.Reuse.Enabled.UnwrapOr(true)
+	if reuseEnabled {
+		extraTestPackages = append(extraTestPackages, "py3-pip")
+	}
+	if sr.UsesPostgres {
+		extraTestPackages = append(extraTestPackages, "postgresql")
+	}
+
 	must.Succeed(util.WriteFileFromTemplate("Dockerfile", dockerfileTemplate, map[string]any{
 		"Config": cfg,
 		"Constants": map[string]any{
@@ -77,7 +87,9 @@ func RenderConfig(cfg core.Configuration) {
 			"DefaultAlpineImage": core.DefaultAlpineImage,
 		},
 		"DockerHubMirror":    dockerHubMirror,
+		"ExtraTestPackages":  extraTestPackages,
 		"Entrypoint":         entrypoint,
+		"ReuseEnabled":       reuseEnabled,
 		"RunCommands":        strings.Join(commands, " \\\n  && "),
 		"RunVersionCommands": strings.Join(runVersionCommands, " \\\n  && "),
 		"UseBuildKit":        cfg.Dockerfile.UseBuildKit,
