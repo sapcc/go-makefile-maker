@@ -248,10 +248,11 @@ type DockerfileConfig struct {
 }
 
 type ControllerGen struct {
-	Enabled          Option[bool] `yaml:"enabled"`
-	CrdOutputPath    string       `yaml:"crdOutputPath"`
-	ObjectHeaderFile string       `yaml:"objectHeaderFile"`
-	RBACRoleName     string       `yaml:"rbacRoleName"`
+	Enabled                      Option[bool] `yaml:"enabled"`
+	CrdOutputPath                string       `yaml:"crdOutputPath"`
+	ObjectHeaderFile             string       `yaml:"objectHeaderFile"`
+	RBACRoleName                 string       `yaml:"rbacRoleName"`
+	ApplyconfigurationHeaderFile string       `yaml:"applyconfigurationHeaderFile"`
 }
 
 type LicenseConfig struct {
