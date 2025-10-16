@@ -313,6 +313,10 @@ endif
 			if cfg.ControllerGen.ObjectHeaderFile != "" {
 				objectParams = fmt.Sprintf(`:headerFile="%s"`, cfg.ControllerGen.ObjectHeaderFile)
 			}
+			applyconfigurationParams := ""
+			if cfg.ControllerGen.ApplyconfigurationHeaderFile != "" {
+				applyconfigurationParams = fmt.Sprintf(`:headerFile="%s"`, cfg.ControllerGen.ApplyconfigurationHeaderFile)
+			}
 			test.addRule(rule{
 				description: "Generate code for Kubernetes CRDs and deepcopy.",
 				target:      "generate",
@@ -320,6 +324,7 @@ endif
 					`@printf "\e[1;36m>> controller-gen\e[0m\n"`,
 					fmt.Sprintf(`@controller-gen crd rbac:roleName=%s webhook paths="./..." output:crd:artifacts:config=%s`, roleName, crdOutputPath),
 					fmt.Sprintf(`@controller-gen object%s paths="./..."`, objectParams),
+					fmt.Sprintf(`@controller-gen applyconfiguration%s paths="./..."`, applyconfigurationParams),
 				},
 				prerequisites: []string{"install-controller-gen"},
 			})
