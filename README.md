@@ -118,6 +118,7 @@ controllerGen:
   crdOutputPath: config/crd/bases
   objectHeaderFile: boilerplate.go.txt
   rbacRoleName: manager-role
+  applyconfigurationHeaderFile: boilerplate.go.txt
 ```
 
 Customization options for [controller-gen](https://book.kubebuilder.io/reference/controller-gen.html).
@@ -127,6 +128,27 @@ This is only relevant if your project is using controller-gen to autogenerate co
 - `crdOutputPath` allows changing the `output:crd:artifacts:config` argument given to `controller-gen rbac`. Defaults to `crd`.
 - `objectHeaderFile` allows changing the `headerFile` argument given to `controller-gen object`.
 - `rbacRoleName` allows changing the `roleName` argument given to `controller-gen rbac:role-name=`. Defaults to the last element in the go module name.
+- `applyconfigurationHeaderFile` allows changing the `headerFile` argument given to `controller-gen applyconfiguration`.
+
+You need to opt-in object helpers with a comment usually on a package level
+in `groupversion_info.go` like this
+```golang
+// +kubebuilder:object:generate=true
+```
+This is usually already done by kubebuilder and similar tools automatically.
+If you also want to have `Applyconfigurations` you'll need to add a comment like this:
+```golang
+// +kubebuilder:ac:generate=true
+// +kubebuilder:ac:output:package=../../applyconfigurations
+```
+The output is just a suggestion and depends on your directory-layout.
+By default, the generated code will land in `applyconfigurations` subfolder
+of the folder that contains the file with directives in the comments.
+I.e. if you only add the comment `kubebuilder:ac:generate=true` into `api/v1/groupversion_info.go`,
+the generated code will land in `api/v1/applyconfigurations/api/v1`.
+
+As the time of writing, the documentation is limited and you best find
+your way along the [related issue](https://github.com/kubernetes-sigs/controller-runtime/issues/3183) in the controller-runtime.
 
 ### `coverageTest`
 
