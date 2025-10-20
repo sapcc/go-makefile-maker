@@ -36,6 +36,7 @@ func newMakefile(cfg core.Configuration, sr golang.ScanResult) *makefile {
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
 	isGolang := sr.GoVersion != ""
 	isSAPCC := cfg.Metadata.IsSAPProject()
+	reuseEnabled := cfg.Reuse.Enabled.UnwrapOr(true)
 
 	///////////////////////////////////////////////////////////////////////////
 	// General
@@ -153,22 +154,24 @@ endif
 		})
 		prepareStaticRecipe = append(prepareStaticRecipe, "install-addlicense")
 
-		prepare.addRule(rule{
-			description: "Install reuse required by license-headers/check-reuse",
-			phony:       true,
-			target:      "install-reuse",
-			recipe: []string{
-				`@if ! hash reuse 2>/dev/null; then` +
-					` if ! hash pip3 2>/dev/null; then` +
-					` printf "\e[1;31m>> Cannot install reuse because no pip3 was found. Either install it using your package manager or install pip3\e[0m\n";` +
-					` else` +
-					` printf "\e[1;36m>> Installing reuse...\e[0m\n";` +
-					` pip3 install --user reuse;` +
-					` fi;` +
-					` fi`,
-			},
-		})
-		prepareStaticRecipe = append(prepareStaticRecipe, "install-reuse")
+		if reuseEnabled {
+			prepare.addRule(rule{
+				description: "Install reuse required by license-headers/check-reuse",
+				phony:       true,
+				target:      "install-reuse",
+				recipe: []string{
+					`@if ! hash reuse 2>/dev/null; then` +
+						` if ! hash pip3 2>/dev/null; then` +
+						` printf "\e[1;31m>> Cannot install reuse because no pip3 was found. Either install it using your package manager or install pip3\e[0m\n";` +
+						` else` +
+						` printf "\e[1;36m>> Installing reuse...\e[0m\n";` +
+						` pip3 install --user reuse;` +
+						` fi;` +
+						` fi`,
+				},
+			})
+			prepareStaticRecipe = append(prepareStaticRecipe, "install-reuse")
+		}
 	}
 	// add target for installing dependencies for `make static-check`
 	prepare.addRule(rule{
@@ -511,11 +514,16 @@ endif
 `))
 		copyright := cfg.License.Copyright.UnwrapOr("SAP SE or an SAP affiliate company")
 
+		licenseHeaderPrereqs := []string{"install-addlicense"}
+		if reuseEnabled {
+			licenseHeaderPrereqs = append(licenseHeaderPrereqs, "install-reuse")
+		}
+
 		dev.addRule(rule{
 			description:   "Add (or overwrite) license headers on all non-vendored source code files.",
 			target:        "license-headers",
 			phony:         true,
-			prerequisites: []string{"install-addlicense", "install-reuse"},
+			prerequisites: licenseHeaderPrereqs,
 			recipe: []string{
 				`@printf "\e[1;36m>> addlicense (for license headers on source code files)\e[0m\n"`,
 				// We must use gawk to use gnu awk on Darwin
@@ -549,22 +557,29 @@ endif
 				fmt.Sprintf(`@addlicense --check %s %s`, ignoreOptionsStr, allSourceFilesExpr),
 			},
 		})
-		test.addRule(rule{
-			description:   "Check reuse compliance",
-			target:        "check-reuse",
-			phony:         true,
-			prerequisites: []string{"install-reuse"},
-			recipe: []string{
-				`@printf "\e[1;36m>> reuse lint\e[0m\n"`,
-				// reuse is very verbose, so we only show the output if there are problems
-				`@if ! reuse lint -q; then reuse lint; fi`,
-			},
-		})
+		if reuseEnabled {
+			test.addRule(rule{
+				description:   "Check reuse compliance",
+				target:        "check-reuse",
+				phony:         true,
+				prerequisites: []string{"install-reuse"},
+				recipe: []string{
+					`@printf "\e[1;36m>> reuse lint\e[0m\n"`,
+					// reuse is very verbose, so we only show the output if there are problems
+					`@if ! reuse lint -q; then reuse lint; fi`,
+				},
+			})
+		}
+		// add target for static code checks
+		staticCodeChecksPrerequisites := []string{"check-addlicense"}
+		if reuseEnabled {
+			staticCodeChecksPrerequisites = append(staticCodeChecksPrerequisites, "check-reuse")
+		}
 		test.addRule(rule{
 			description:   "Run static code checks",
 			phony:         true,
 			target:        "check-license-headers",
-			prerequisites: []string{"check-addlicense", "check-reuse"},
+			prerequisites: staticCodeChecksPrerequisites,
 		})
 
 		if isGolang {
