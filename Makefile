@@ -55,7 +55,7 @@ install-addlicense: FORCE
 	@if ! hash addlicense 2>/dev/null; then printf "\e[1;36m>> Installing addlicense (this may take a while)...\e[0m\n"; go install github.com/google/addlicense@latest; fi
 
 install-reuse: FORCE
-	@if ! hash reuse 2>/dev/null; then if ! hash pip3 2>/dev/null; then printf "\e[1;31m>> Cannot install reuse because no pip3 was found. Either install it using your package manager or install pip3\e[0m\n"; else printf "\e[1;36m>> Installing reuse...\e[0m\n"; python3 -m venv ./venv && source ./venv/bin/activate && pip3 install reuse && deactivate; fi; fi
+	@if ! hash reuse 2>/dev/null; then if ! hash pip3 2>/dev/null; then printf "\e[1;31m>> Cannot install reuse because no pip3 was found. Either install it using your package manager or install pip3\e[0m\n"; else printf "\e[1;36m>> Installing reuse...\e[0m\n"; pip3 install --user reuse; fi; fi
 
 prepare-static-check: FORCE install-golangci-lint install-modernize install-shellcheck install-go-licence-detector install-addlicense install-reuse
 
@@ -132,7 +132,7 @@ check-addlicense: FORCE install-addlicense
 
 check-reuse: FORCE install-reuse
 	@printf "\e[1;36m>> reuse lint\e[0m\n"
-	@if ! (. ./venv/bin/activate && reuse lint -q); then . ./venv/bin/activate; reuse lint; fi
+	@if ! reuse lint -q; then reuse lint; fi
 
 check-license-headers: FORCE check-addlicense check-reuse
 
