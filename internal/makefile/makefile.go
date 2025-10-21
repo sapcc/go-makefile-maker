@@ -162,7 +162,7 @@ endif
 					` if ! hash pipx 2>/dev/null; then` +
 					` printf "\e[1;31m>> You are required to manually intervene to install reuse as go-makefile-maker cannot automatically resolve installing reuse on all setups.\e[0m\n";` +
 					` printf "\e[1;31m>> The preferred way for go-makefile-maker to install python tools after nix-shell is pipx which could not be found. Either install pipx using your package manager or install reuse using your package manager if at least version 6 is available.\e[0m\n";` +
-					` printf "\e[1;31m>> As your Python was likely installed by your package manager, just doing pip install --user sadly does no longer work as pip whines about breaking your system. Generally running --break-system-packages with --user is safe to do but you should only run this command if you can resolve issues with it yourself: pip3 install --user --break-system-packages reuse\e[0m\n";` +
+					` printf "\e[1;31m>> As your Python was likely installed by your package manager, just doing pip install --user sadly does no longer work as pip issues a warning about breaking your system. Generally running --break-system-packages with --user is safe to do but you should only run this command if you can resolve issues with it yourself: pip3 install --user --break-system-packages reuse\e[0m\n";` +
 					` else` +
 					` printf "\e[1;36m>> Installing reuse...\e[0m\n";` +
 					` pipx install reuse;` +
