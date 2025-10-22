@@ -112,9 +112,6 @@ func main() {
 	// Render GitHub workflows
 	if cfg.GitHubWorkflow != nil {
 		logg.Debug("rendering GitHub Actions workflows")
-		if cfg.GitHubWorkflow.CI.Coveralls {
-			logg.Fatal("Coveralls support has been removed, please remove it from your Makefile.maker.yaml")
-		}
 		ghworkflow.Render(cfg, sr)
 	}
 

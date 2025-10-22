@@ -156,7 +156,6 @@ type GithubWorkflowConfiguration struct {
 // CIWorkflowConfig appears in type Configuration.
 type CIWorkflowConfig struct {
 	Enabled           bool     `yaml:"enabled"`
-	Coveralls         bool     `yaml:"coveralls"`
 	PrepareMakeTarget string   `yaml:"prepareMakeTarget"`
 	IgnorePaths       []string `yaml:"ignorePaths"`
 	RunsOn            []string `yaml:"runOn"`
