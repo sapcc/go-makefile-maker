@@ -35,6 +35,12 @@ func newMakefile(cfg core.Configuration, sr golang.ScanResult) *makefile {
 	runControllerGen := cfg.ControllerGen.Enabled.UnwrapOr(sr.KubernetesController)
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
 	isGolang := sr.GoVersion != ""
+
+	if !strings.HasPrefix(cfg.Metadata.URL, "https://") {
+		logg.Error("The option metadata.url should always start with https://, eg: https://github.com/sapcc/go-makefile-maker")
+		logg.Error("Some defaults or usages of the metadata might not work correctly")
+	}
+
 	isSAPCC := cfg.Metadata.IsSAPProject()
 
 	///////////////////////////////////////////////////////////////////////////
