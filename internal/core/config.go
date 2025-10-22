@@ -273,6 +273,7 @@ func (m Metadata) IsSAPProject() bool {
 	return strings.HasPrefix(m.URL, "https://github.com/sapcc/") ||
 		strings.HasPrefix(m.URL, "https://github.com/SAP-cloud-infrastructure/") ||
 		strings.HasPrefix(m.URL, "https://github.com/cobaltcore-dev/") ||
+		strings.HasPrefix(m.URL, "https://github.com/cloudoperators/") ||
 		strings.HasPrefix(m.URL, "https://github.com/ironcore-dev/") ||
 		strings.HasPrefix(m.URL, "https://github.wdf.sap.corp/") ||
 		strings.HasPrefix(m.URL, "https://github.tools.sap/")
