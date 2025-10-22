@@ -75,6 +75,7 @@ The config file has the following sections:
 * [golang](#golang)
 * [golangciLint](#golangcilint)
 * [goReleaser](#goreleaser)
+* [license](#license)
 * [makefile](#makefile)
 * [metadata](#metadata)
 * [nix](#nix)
@@ -288,6 +289,28 @@ The `binaryName` option can be used to change the name of the compiled binaries.
 The `nameTemplate` option can be used to change the name of uploaded release artefacts. It corresponds to the upstream archives[].name_template option.
 
 The `files` option can be used to add extra files. For backwards compatibility it defaults to `[ CHANGELOG.md, LICENSE, README.md ]`.
+
+### `license`
+
+```yaml
+license:
+  addHeaders: true
+  checkDependencies: true
+  copyright: 'SAP SE or an SAP affiliate company'
+  spdx: Apache-2.0
+```
+
+`license` contains settings related to the license of the project and specifically license header generation.
+
+`addHeaders` controls whether license headers are added and checked in source files.
+
+`checkDependencies` controls whether dependency licenses are checked for compliance.
+
+`copyright` is the text to be used in the copyright line of the license header.
+
+`spdx` is the SPDX short identifier of the license to be used in the license header.
+
+In SAP Cloud Infrastructure projects all checks are enabled by default and the copyright and SPDX identifier are prefilled accordingly.
 
 ### `makefile`
 

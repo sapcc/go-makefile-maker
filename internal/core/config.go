@@ -255,7 +255,10 @@ type ControllerGen struct {
 }
 
 type LicenseConfig struct {
-	Copyright Option[string] `yaml:"copyright"`
+	AddHeaders        Option[bool]   `yaml:"addHeaders"`
+	CheckDependencies Option[bool]   `yaml:"checkDependencies"`
+	Copyright         Option[string] `yaml:"copyright"`
+	SPDX              Option[string] `yaml:"spdx"`
 }
 
 type MakefileConfig struct {
