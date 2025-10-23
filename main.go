@@ -51,7 +51,8 @@ func main() {
 	must.Succeed(file.Close())
 	cfg.Validate()
 
-	if cfg.GitHubWorkflow != nil && !strings.HasPrefix(cfg.Metadata.URL, "https://github.com/") {
+	// The github.com/ prefix is just a safeguard to avoid false positives when the metadata.url is not complete.
+	if cfg.GitHubWorkflow != nil && !strings.Contains(cfg.Metadata.URL, "github.com/") {
 		cfg.GitHubWorkflow.IsSelfHostedRunner = true
 		if strings.Contains(cfg.Metadata.URL, "/sap-cloud-infrastructure/") {
 			cfg.GitHubWorkflow.IsSugarRunner = true
@@ -112,9 +113,6 @@ func main() {
 	// Render GitHub workflows
 	if cfg.GitHubWorkflow != nil {
 		logg.Debug("rendering GitHub Actions workflows")
-		if cfg.GitHubWorkflow.CI.Coveralls {
-			logg.Fatal("Coveralls support has been removed, please remove it from your Makefile.maker.yaml")
-		}
 		ghworkflow.Render(cfg, sr)
 	}
 

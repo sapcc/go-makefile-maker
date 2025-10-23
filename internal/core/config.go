@@ -156,7 +156,6 @@ type GithubWorkflowConfiguration struct {
 // CIWorkflowConfig appears in type Configuration.
 type CIWorkflowConfig struct {
 	Enabled           bool     `yaml:"enabled"`
-	Coveralls         bool     `yaml:"coveralls"`
 	PrepareMakeTarget string   `yaml:"prepareMakeTarget"`
 	IgnorePaths       []string `yaml:"ignorePaths"`
 	RunsOn            []string `yaml:"runOn"`
@@ -256,7 +255,10 @@ type ControllerGen struct {
 }
 
 type LicenseConfig struct {
-	Copyright Option[string] `yaml:"copyright"`
+	AddHeaders        Option[bool]   `yaml:"addHeaders"`
+	CheckDependencies Option[bool]   `yaml:"checkDependencies"`
+	Copyright         Option[string] `yaml:"copyright"`
+	SPDX              Option[string] `yaml:"spdx"`
 }
 
 type MakefileConfig struct {
@@ -273,6 +275,7 @@ func (m Metadata) IsSAPProject() bool {
 	return strings.HasPrefix(m.URL, "https://github.com/sapcc/") ||
 		strings.HasPrefix(m.URL, "https://github.com/SAP-cloud-infrastructure/") ||
 		strings.HasPrefix(m.URL, "https://github.com/cobaltcore-dev/") ||
+		strings.HasPrefix(m.URL, "https://github.com/cloudoperators/") ||
 		strings.HasPrefix(m.URL, "https://github.com/ironcore-dev/") ||
 		strings.HasPrefix(m.URL, "https://github.wdf.sap.corp/") ||
 		strings.HasPrefix(m.URL, "https://github.tools.sap/")

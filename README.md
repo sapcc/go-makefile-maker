@@ -75,6 +75,7 @@ The config file has the following sections:
 * [golang](#golang)
 * [golangciLint](#golangcilint)
 * [goReleaser](#goreleaser)
+* [license](#license)
 * [makefile](#makefile)
 * [metadata](#metadata)
 * [nix](#nix)
@@ -289,6 +290,28 @@ The `nameTemplate` option can be used to change the name of uploaded release art
 
 The `files` option can be used to add extra files. For backwards compatibility it defaults to `[ CHANGELOG.md, LICENSE, README.md ]`.
 
+### `license`
+
+```yaml
+license:
+  addHeaders: true
+  checkDependencies: true
+  copyright: 'SAP SE or an SAP affiliate company'
+  spdx: Apache-2.0
+```
+
+`license` contains settings related to the license of the project and specifically license header generation.
+
+`addHeaders` controls whether license headers are added and checked in source files.
+
+`checkDependencies` controls whether dependency licenses are checked for compliance.
+
+`copyright` is the text to be used in the copyright line of the license header.
+
+`spdx` is the SPDX short identifier of the license to be used in the license header.
+
+In SAP Cloud Infrastructure projects all checks are enabled by default and the copyright and SPDX identifier are prefilled accordingly.
+
 ### `makefile`
 
 ```yaml
@@ -402,7 +425,7 @@ customManagers:
 
 ```yaml
 reuse:
-  enabled: false
+  enabled: true
   annotations:
     - paths:
         - internal/**/fixtures/*.json
@@ -574,25 +597,22 @@ This workflow:
 * checks your code using `golangci-lint`
 * ensures that your code compiles successfully
 * runs tests and generates test coverage report
-* uploads the test coverage report to [Coveralls]
 
 ```yaml
-ci:
-  enabled: true
-  runOn:
-    - macos-latest
-    - ubuntu-latest
-    - windows-latest
-  coveralls: true
-  prepareMakeTarget: generate
-  ignorePaths: []
+githubWorkflow:
+  ci:
+    enabled: true
+    runOn:
+      - macos-latest
+      - ubuntu-latest
+      - windows-latest
+    prepareMakeTarget: generate
+    ignorePaths: []
 ```
 
 `runOn` specifies a list of machine(s) to run the `build` and `test` jobs on ([more info][ref-runs-on]).
 You can use this to ensure that your build compilation and tests are
 successful on multiple operating systems. Default value for this is `ubuntu-latest`.
-
-If `coveralls` is `true` then your test coverage report will be uploaded to [Coveralls]. Make sure that you have enabled Coveralls for your GitHub repo beforehand.
 
 `ignorePaths` specifies a list of filename patterns. Workflows will not trigger if a path
 name matches a pattern in this list. [More info][ref-onpushpull] and [filter pattern cheat
@@ -610,14 +630,15 @@ This is intended for use with `github.com/sapcc/go-bits/easypg`, which can launc
 If `enabled` is set to true, the generated `Dockerfile` is built for the platforms `linux/amd64` and `linux/arm64` and pushed to the repository path under `ghcr.io`.
 
 ```yaml
-pushContainerToGhcr:
-  enabled: true
-  platforms: "linux/amd64,linux/arm64"
-  tagStrategy:
-    - edge
-    - latest
-    - semver
-    - sha
+githubWorkflow:
+  pushContainerToGhcr:
+    enabled: true
+    platforms: "linux/amd64,linux/arm64"
+    tagStrategy:
+      - edge
+      - latest
+      - semver
+      - sha
 ```
 
 `platforms` configures for which platforms the multi-arch docker image is built. Defaults to `linux/amd64`. Note: emulation is provided by qemu and might take significant time.
@@ -650,9 +671,10 @@ If `securityChecks` is enabled then it will generate the following workflows:
   It uses the [Go Vulnerability Database](https://pkg.go.dev/vuln/) as a source.
 
 ```yaml
-securityChecks:
-  enabled: true
-  queries: security-extended
+githubWorkflow:
+  securityChecks:
+    enabled: true
+    queries: security-extended
 ```
 
 `queries` is passed through to the GitHub Action. See the [GitHub Documentation](https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning#working-with-custom-configuration-files) for more information.
@@ -663,10 +685,11 @@ This workflow uses [`addlicense`][addlicense] to ensure that all your Go source 
 If vendoring is enabled, the `vendor/` directory is always entirely ignored by this workflow.
 
 ```yaml
-license:
-  enabled: true
-  ignorePatterns:
-    - "vendor/**"
+githubWorkflow:
+  license:
+    enabled: true
+    ignorePatterns:
+      - "vendor/**"
 ```
 
 `ignorePatterns` specifies a list of file patterns to check. You can use any pattern
@@ -675,7 +698,6 @@ license:
 **Hint**: You can also use `addlicense` to add license headers to all unignored Go files by running `make license-headers`. The copyright text used is customizable by setting `license.copyright` in the `Makefile.maker.yaml` file.
 
 [codeql]: https://codeql.github.com/
-[coveralls]: https://coveralls.io
 [doublestar-pattern]: https://github.com/bmatcuk/doublestar#patterns
 [go-licence-detector]: https://github.com/elastic/go-licence-detector
 [govulncheck]: https://github.com/golang/vuln

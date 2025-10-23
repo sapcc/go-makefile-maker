@@ -35,6 +35,12 @@ func newMakefile(cfg core.Configuration, sr golang.ScanResult) *makefile {
 	runControllerGen := cfg.ControllerGen.Enabled.UnwrapOr(sr.KubernetesController)
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
 	isGolang := sr.GoVersion != ""
+
+	if !strings.HasPrefix(cfg.Metadata.URL, "https://") {
+		logg.Error("The option metadata.url should always start with https://, eg: https://github.com/sapcc/go-makefile-maker")
+		logg.Error("Some defaults or usages of the metadata might not work correctly")
+	}
+
 	isSAPCC := cfg.Metadata.IsSAPProject()
 
 	///////////////////////////////////////////////////////////////////////////
@@ -135,16 +141,16 @@ endif
 		prepareStaticRecipe = append(prepareStaticRecipe, "install-shellcheck")
 	}
 
-	if isSAPCC {
-		if isGolang {
-			prepare.addRule(rule{
-				description: "Install-go-licence-detector required by check-dependency-licenses/static-check",
-				phony:       true,
-				target:      "install-go-licence-detector",
-				recipe:      installTool("go-licence-detector", "go.elastic.co/go-licence-detector@latest"),
-			})
-			prepareStaticRecipe = append(prepareStaticRecipe, "install-go-licence-detector")
-		}
+	if isGolang && (cfg.License.AddHeaders.UnwrapOr(isSAPCC) || cfg.License.CheckDependencies.UnwrapOr(isSAPCC)) {
+		prepare.addRule(rule{
+			description: "Install-go-licence-detector required by check-dependency-licenses/static-check",
+			phony:       true,
+			target:      "install-go-licence-detector",
+			recipe:      installTool("go-licence-detector", "go.elastic.co/go-licence-detector@latest"),
+		})
+		prepareStaticRecipe = append(prepareStaticRecipe, "install-go-licence-detector")
+	}
+	if cfg.License.AddHeaders.UnwrapOr(isSAPCC) {
 		prepare.addRule(rule{
 			description: "Install addlicense required by check-license-headers/license-headers/static-check",
 			phony:       true,
@@ -490,7 +496,7 @@ endif
 		allSourceFilesExpr = `$(shell find -name *.rs)`
 	}
 
-	if isSAPCC {
+	if cfg.License.AddHeaders.UnwrapOr(isSAPCC) {
 		var ignoreOptions []string
 		if cfg.GitHubWorkflow != nil {
 			for _, pattern := range cfg.GitHubWorkflow.License.IgnorePatterns {
@@ -592,25 +598,13 @@ endif
 		}
 	}
 
+	staticCheckPrerequisites := []string{"run-shellcheck"}
 	if isGolang {
 		// add target for static code checks
-		staticCheckPrerequisites := []string{"run-shellcheck", "run-golangci-lint", "run-modernize"}
-		if isSAPCC {
-			staticCheckPrerequisites = append(staticCheckPrerequisites, "check-dependency-licenses", "check-license-headers")
+		staticCheckPrerequisites = append(staticCheckPrerequisites, "run-golangci-lint", "run-modernize")
+		if cfg.License.CheckDependencies.UnwrapOr(isSAPCC) {
+			staticCheckPrerequisites = append(staticCheckPrerequisites, "check-dependency-licenses")
 		}
-		test.addRule(rule{
-			description:   "Run static code checks (internal option to enforce --keep-going)",
-			phony:         true,
-			target:        "__static-check",
-			hideTarget:    true,
-			prerequisites: staticCheckPrerequisites,
-		})
-		test.addRule(rule{
-			description: "Run static code checks",
-			phony:       true,
-			target:      "static-check",
-			recipe:      []string{`@$(MAKE) --keep-going --no-print-directory __static-check`},
-		})
 
 		dev.addRule(rule{
 			description:   "Run goimports on all non-vendored .go files",
@@ -634,6 +628,24 @@ endif
 			},
 		})
 	}
+
+	if cfg.License.AddHeaders.UnwrapOr(isSAPCC) {
+		staticCheckPrerequisites = append(staticCheckPrerequisites, "check-license-headers")
+	}
+
+	test.addRule(rule{
+		description:   "Run static code checks (internal option to enforce --keep-going)",
+		phony:         true,
+		target:        "__static-check",
+		hideTarget:    true,
+		prerequisites: staticCheckPrerequisites,
+	})
+	test.addRule(rule{
+		description: "Run static code checks",
+		phony:       true,
+		target:      "static-check",
+		recipe:      []string{`@$(MAKE) --keep-going --no-print-directory __static-check`},
+	})
 
 	// add cleaning target
 	dev.addRule(rule{
