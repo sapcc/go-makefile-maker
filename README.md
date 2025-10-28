@@ -273,7 +273,6 @@ Take a look at `go-makefile-maker`'s own [`golangci-lint` config file](./.golang
 
 ```yaml
 goReleaser:
-  enabled: true
   createConfig: true
   binaryName: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
   format: .tar.gz
@@ -648,7 +647,7 @@ githubWorkflow:
 
 If `release` is enabled a workflow is generated which creates a new GitHub release using goreleaser when a git tag is pushed.
 
-`goReleaser.enabled` will be enabled automatically when the option isn't set yet.
+`goReleaser.createConfig` will be set to true automatically when the option isn't set yet.
 
 #### `githubWorkflow.securityChecks`
 
