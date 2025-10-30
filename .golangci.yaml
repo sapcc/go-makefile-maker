@@ -146,6 +146,7 @@ linters:
     nolintlint:
       require-specific: true
     perfsprint:
+      # modernize generates nicer fix code
       concat-loop: false
     staticcheck:
       dot-import-whitelist:
