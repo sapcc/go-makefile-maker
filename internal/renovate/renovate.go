@@ -122,6 +122,13 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult) {
 		})
 	}
 
+	if cfg.GitHubWorkflow.IsSelfHostedRunner {
+		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
+			MatchPackageNames: []string{"actions/upload-artifact"},
+			AllowedVersions:   "v2",
+		})
+	}
+
 	// Only enable Dockerfile and github-actions updates for go-makefile-maker itself.
 	if isGoMakefileMakerRepo {
 		renovateConfig.Extends = append(renovateConfig.Extends, "docker:enableMajor", "customManagers:dockerfileVersions")
