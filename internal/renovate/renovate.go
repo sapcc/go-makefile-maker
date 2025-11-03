@@ -137,10 +137,10 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult) {
 	if hasK8sIOPkgs {
 		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
 			MatchPackageNames: []string{`/^k8s.io\//`},
-			// Since our clusters use k8s v1.26 and k8s has a support policy of -/+ 1 minor version we set the allowedVersions to `0.27.x`.
+			// Since our clusters use k8s v1.32 and k8s has a support policy of -/+ 1 minor version we set the allowedVersions to `0.33.x`.
 			// k8s.io/* deps use v0.x.y instead of v1.x.y therefore we use 0.x instead of 1.x.
 			// Ref: https://docs.renovatebot.com/configuration-options/#allowedversions
-			AllowedVersions: "0.28.x",
+			AllowedVersions: "0.33.x",
 			// ^ NOTE: When bumping this version, also adjust the rendition of this rule in the README appropriately.
 		})
 	}
