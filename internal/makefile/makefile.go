@@ -109,13 +109,7 @@ endif
 			target:      "install-golangci-lint",
 			recipe:      installTool("golangci-lint", "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest"),
 		})
-		prepare.addRule(rule{
-			description: "Install modernize required by run-modernize/static-check",
-			phony:       true,
-			target:      "install-modernize",
-			recipe:      installTool("modernize", "golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@latest"),
-		})
-		prepareStaticRecipe = append(prepareStaticRecipe, "install-golangci-lint", "install-modernize")
+		prepareStaticRecipe = append(prepareStaticRecipe, "install-goimports", "install-golangci-lint")
 	}
 
 	if cfg.ShellCheck.Enabled.UnwrapOr(true) {
@@ -351,21 +345,9 @@ endif
 			},
 		})
 
-		// add target to run modernize
-		test.addRule(rule{
-			description:   "Install and run modernize. Installing is used in CI, but you should probably install modernize using your package manager.",
-			phony:         true,
-			target:        "run-modernize",
-			prerequisites: []string{"install-modernize"},
-			recipe: []string{
-				`@printf "\e[1;36m>> modernize\e[0m\n"`,
-				`@modernize $(GO_TESTPKGS)`,
-			},
-		})
-
 		if cfg.ShellCheck.Enabled.UnwrapOr(true) {
 			// add target to run shellcheck
-			ignorePathArgs := ""
+			var ignorePathArgs strings.Builder
 			for _, path := range cfg.ShellCheck.AllIgnorePaths(cfg.Golang) {
 				if strings.HasPrefix(path, "/") {
 					logg.Fatal("ShellCheck ignore paths must not start with a slash, got: %s", path)
@@ -373,9 +355,9 @@ endif
 
 				// https://github.com/ludeeus/action-shellcheck/blob/master/action.yaml#L120-L124
 				if !strings.HasPrefix(path, "./") {
-					ignorePathArgs += fmt.Sprintf(" \\( -path '*/%s/*' -prune \\) -o", path)
+					fmt.Fprintf(&ignorePathArgs, " \\( -path '*/%s/*' -prune \\) -o", path)
 				}
-				ignorePathArgs += fmt.Sprintf(" \\( -path '%s' -prune \\) -o", path)
+				fmt.Fprintf(&ignorePathArgs, " \\( -path '%s' -prune \\) -o", path)
 			}
 			// partly taken from https://github.com/ludeeus/action-shellcheck/blob/master/action.yaml#L164-L196
 			test.addRule(rule{
@@ -385,7 +367,7 @@ endif
 				prerequisites: []string{"install-shellcheck"},
 				recipe: []string{
 					`@printf "\e[1;36m>> shellcheck\e[0m\n"`,
-					fmt.Sprintf(`@find . %s -type f \( -name '*.bash' -o -name '*.ksh' -o -name '*.zsh' -o -name '*.sh' -o -name '*.shlib' \) -exec shellcheck %s {} +`, strings.TrimSpace(ignorePathArgs), cfg.ShellCheck.Opts),
+					fmt.Sprintf(`@find . %s -type f \( -name '*.bash' -o -name '*.ksh' -o -name '*.zsh' -o -name '*.sh' -o -name '*.shlib' \) -exec shellcheck %s {} +`, strings.TrimSpace(ignorePathArgs.String()), cfg.ShellCheck.Opts),
 				},
 			})
 		}
@@ -601,7 +583,7 @@ endif
 	staticCheckPrerequisites := []string{"run-shellcheck"}
 	if isGolang {
 		// add target for static code checks
-		staticCheckPrerequisites = append(staticCheckPrerequisites, "run-golangci-lint", "run-modernize")
+		staticCheckPrerequisites = append(staticCheckPrerequisites, "run-golangci-lint")
 		if cfg.License.CheckDependencies.UnwrapOr(isSAPCC) {
 			staticCheckPrerequisites = append(staticCheckPrerequisites, "check-dependency-licenses")
 		}
@@ -614,17 +596,6 @@ endif
 			recipe: []string{
 				fmt.Sprintf(`@printf "\e[1;36m>> goimports -w -local %s\e[0m\n"`, cfg.Metadata.URL),
 				fmt.Sprintf(`@goimports -w -local %s %s`, sr.ModulePath, allSourceFilesExpr),
-			},
-		})
-
-		dev.addRule(rule{
-			description:   "Run modernize on all non-vendored .go files",
-			phony:         true,
-			target:        "modernize",
-			prerequisites: []string{"install-modernize"},
-			recipe: []string{
-				`@printf "\e[1;36m>> modernize -fix ./...\e[0m\n"`,
-				`@modernize -fix ./...`,
 			},
 		})
 	}
