@@ -105,12 +105,18 @@ type GolangConfiguration struct {
 	SetGoModVersion      bool                  `yaml:"setGoModVersion"`
 }
 
+type ReviveRule struct {
+	Name      string   `yaml:"name"`
+	Arguments []string `yaml:"arguments"`
+}
+
 // GolangciLintConfiguration appears in type Configuration.
 type GolangciLintConfiguration struct {
 	CreateConfig     bool          `yaml:"createConfig"`
 	ErrcheckExcludes []string      `yaml:"errcheckExcludes"`
 	SkipDirs         []string      `yaml:"skipDirs"`
 	Timeout          time.Duration `yaml:"timeout"`
+	ReviveRules      []ReviveRule  `yaml:"reviveRules"`
 }
 
 type GoReleaserConfiguration struct {

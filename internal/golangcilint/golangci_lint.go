@@ -35,5 +35,6 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		"ErrcheckExcludes":    cfg.GolangciLint.ErrcheckExcludes,
 		"SkipDirs":            cfg.GolangciLint.SkipDirs,
 		"Timeout":             timeout,
+		"ReviveRules":         cfg.GolangciLint.ReviveRules,
 	}))
 }

@@ -64,6 +64,9 @@ linters:
     - perfsprint
     - predeclared
     - rowserrcheck
+    {{- if .ReviveRules }}
+    - revive
+    {{- end }}
     - sqlclosecheck
     - staticcheck
     - unconvert
@@ -161,6 +164,19 @@ linters:
     perfsprint:
       # modernize generates nicer fix code
       concat-loop: false
+    {{- if .ReviveRules }}
+    revive:
+      rules:
+        {{- range .ReviveRules }}
+        - name: {{ .Name }}
+          {{- if .Arguments }}
+          arguments:
+            {{- range .Arguments }}
+            - {{ . }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+    {{- end }}
     staticcheck:
       dot-import-whitelist:
         - github.com/majewsky/gg/option
@@ -185,13 +201,13 @@ linters:
   exclusions:
     generated: lax
     presets:
-      - comments
       - common-false-positives
       - legacy
       - std-error-handling
     rules:
       - linters:
           - bodyclose
+          - revive
         path: _test\.go
       # It is idiomatic Go to reuse the name 'err' with ':=' for subsequent errors.
       # Ref: https://go.dev/doc/effective_go#redeclaration
