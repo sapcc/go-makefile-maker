@@ -18,6 +18,7 @@ var SugarRunsOn = []string{"self-hosted"}
 
 // GetUploadArtifactAction works around GitHub not supporting their own stuff
 // https://github.com/actions/upload-artifact/issues/537
+// NOTE: When removing this, also remove the corresponding renovate rule
 func GetUploadArtifactAction(isSelfHostedRunner bool) string {
 	if isSelfHostedRunner {
 		return "actions/upload-artifact@v2"
