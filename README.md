@@ -252,6 +252,11 @@ golangciLint:
   skipDirs:
     - easypg/migrate/*
   timeout: 3m
+  reviveRules:
+    - name: exported
+      arguments:
+        - checkPrivateReceivers
+        - disableChecksOnConstants
 ```
 
 The `make check` and `make static-check` targets use [`golangci-lint`](https://golangci-lint.run) to lint your code.
@@ -266,6 +271,12 @@ Refer to [`errcheck`'s README](https://github.com/kisielk/errcheck#excluding-fun
 for function signatures that `errcheck` accepts.
 
 `timeout` changes the `run.timeout` option. This should only be necessary to bump when in big projects like ones that use Kubernetes.
+
+`reviveRules` can be specified to activate the [revive](https://github.com/mgechev/revive) linter with only the mentioned rules.
+A rule must have a `name` and can optionally have `arguments`, which specify how the rule behaves.
+In the snippet above, the [exported](https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#exported)-rule is configured.
+It enforces comments on exported functions and types.
+If no `reviveRules` are specified, `revive` is not configured to be used.
 
 Take a look at `go-makefile-maker`'s own [`golangci-lint` config file](./.golangci.yaml) for an up-to-date example of what the generated config would look like.
 
