@@ -36,5 +36,6 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		"SkipDirs":            cfg.GolangciLint.SkipDirs,
 		"Timeout":             timeout,
 		"ReviveRules":         cfg.GolangciLint.ReviveRules,
+		"WithControllerGen":   cfg.ControllerGen.Enabled.UnwrapOr(sr.KubernetesController),
 	}))
 }
