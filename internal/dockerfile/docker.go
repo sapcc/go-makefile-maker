@@ -87,6 +87,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 			"DefaultAlpineImage": core.DefaultAlpineImage,
 		},
 		"DockerHubMirror":    dockerHubMirror,
+		"CheckEnv":           cfg.Dockerfile.CheckEnv,
 		"ExtraTestPackages":  extraTestPackages,
 		"Entrypoint":         entrypoint,
 		"ReuseEnabled":       reuseEnabled,

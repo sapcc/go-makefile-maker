@@ -240,6 +240,7 @@ type RenovateConfig struct {
 // DockerfileConfig appears in type Configuration.
 type DockerfileConfig struct {
 	Enabled              bool     `yaml:"enabled"`
+	CheckEnv             []string `yaml:"checkEnv"`
 	Entrypoint           []string `yaml:"entrypoint"`
 	ExtraBuildDirectives []string `yaml:"extraBuildDirectives"`
 	ExtraBuildPackages   []string `yaml:"extraBuildPackages"`

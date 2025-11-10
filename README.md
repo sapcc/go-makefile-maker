@@ -170,6 +170,8 @@ Since only entire packages (not single source files) can be selected for coverag
 ```yaml
 dockerfile:
   enabled: true
+  checkEnv:
+    - CHECK_SKIPS_FUNCTIONAL_TEST=true
   entrypoint: [ "/bin/bash", "--", "--arg" ]
   extraBuildStages:
     - |
@@ -204,6 +206,7 @@ To ensure that the resulting Docker Image is functional, tests should be run bef
 As an additional smoke test, the compiled binaries are invoked with the `--version` argument after being copied to the final image.
 With [go-api-declarations](https://github.com/sapcc/go-api-declarations)'s [`bininfo.HandleVersionArgument` function](https://pkg.go.dev/github.com/sapcc/go-api-declarations/bininfo#HandleVersionArgument), this can be implemented in one line. If you are using Cobra or any other library to handle arguments, the [`bininfo.Version` function](https://pkg.go.dev/github.com/sapcc/go-api-declarations/bininfo#Version) is recommended instead.
 
+* `checkEnv` sets environment variables for `make check` inside the docker check build.
 * `entrypoint` allows overwriting the final entrypoint.
 * `extraBuildStages` prepends additional build stages at the top of the Dockerfile. This is useful for bringing in precompiled assets from other images, or if a non-Go compilation step is required.
 * `extraBuildPackages` installs extra Alpine packages in the Docker layer where `make install` is executed. We always install `ca-certificates`, `gcc`, `git`, `make` and `musl-dev`.
