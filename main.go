@@ -95,7 +95,7 @@ func main() {
 	// Render Dockerfile
 	if cfg.Dockerfile.Enabled {
 		logg.Debug("rendering Dockerfile")
-		dockerfile.RenderConfig(cfg)
+		dockerfile.RenderConfig(cfg, sr)
 	}
 
 	// Render golangci-lint config file
