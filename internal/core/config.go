@@ -5,6 +5,7 @@ package core
 
 import (
 	_ "embed"
+	"os"
 	"os/exec"
 	"slices"
 	"strings"
@@ -318,7 +319,9 @@ func (c *Configuration) Validate() {
 		// Validate global options.
 		if ghwCfg.Global.DefaultBranch == "" {
 			errMsg := "could not find default branch using git, you can define it manually by setting 'githubWorkflow.global.defaultBranch' in config"
-			b, err := exec.Command("git", "symbolic-ref", "refs/remotes/origin/HEAD").CombinedOutput()
+			cmd := exec.Command("git", "symbolic-ref", "refs/remotes/origin/HEAD")
+			cmd.Stderr = os.Stderr
+			b, err := cmd.Output()
 			if err != nil {
 				logg.Fatal("%s: %s", errMsg, err.Error())
 			}

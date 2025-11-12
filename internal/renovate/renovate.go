@@ -181,7 +181,8 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult) {
 	} else {
 		logg.Debug("-> running renovate-config-validator")
 		cmd := exec.Command(validator)
-		output, err := cmd.CombinedOutput()
+		cmd.Stderr = os.Stderr
+		output, err := cmd.Output()
 		if err != nil {
 			logg.Fatal(string(output))
 		}
