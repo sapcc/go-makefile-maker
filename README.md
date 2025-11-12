@@ -297,7 +297,7 @@ If `goReleaser.createConfig` is set to true or it is unset but the release GitHu
 
 The `format` option can be used to only upload binaries. It corresponds to the upstream archives[].format option. See <https://goreleaser.com/customization/archive/> for more details.
 
-The `binaryName` option can be used to change the name of the compiled binaries. It corresponds to the upstream builds[].binary option. This is only really useful when format is set to binary. It defaults to name of the first entry in the binaries option.
+The `binaryName` option allows you to change the name of the compiled binary or select the binary to be released. It aligns with the upstream builds[].binary option. This feature is only useful when the format is set to binary. By default, it uses the name of the first entry in the binaries option. If this name matches a predefined builds[].binary name, only that binary will be included.
 
 The `nameTemplate` option can be used to change the name of uploaded release artefacts. It corresponds to the upstream archives[].name_template option.
 
