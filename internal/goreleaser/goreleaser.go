@@ -45,7 +45,14 @@ func RenderConfig(cfg core.Configuration) {
 		}
 	}
 
-	binaryName := cfg.Binaries[0].Name
+	binary := cfg.Binaries[0]
+	for _, bin := range cfg.Binaries {
+		if bin.Name == cfg.GoReleaser.BinaryName {
+			binary = bin
+			break
+		}
+	}
+	binaryName := binary.Name
 	if cfg.GoReleaser.BinaryName != "" {
 		binaryName = cfg.GoReleaser.BinaryName
 	}
@@ -71,9 +78,9 @@ func RenderConfig(cfg core.Configuration) {
 		"format":       cfg.GoReleaser.Format,
 		"files":        cfg.GoReleaser.Files,
 		"binaryName":   binaryName,
-		"binName":      cfg.Binaries[0].Name,
+		"binName":      binary.Name,
 		"ldflags":      cfg.Golang.LdFlags,
-		"fromPackage":  cfg.Binaries[0].FromPackage,
+		"fromPackage":  binary.FromPackage,
 		"githubDomain": metadataURL,
 	}))
 	must.Succeed(util.WriteFileFromTemplate("RELEASE.md", releaseMDTemplate, map[string]any{
