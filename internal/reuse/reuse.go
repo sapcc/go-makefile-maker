@@ -49,7 +49,8 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		// otherwise we might miss some direct dependencies which is really strange...
 		logg.Debug("-> running go-mod-tidy")
 		cmd := exec.Command("go", "mod", "tidy")
-		output, err := cmd.CombinedOutput()
+		cmd.Stderr = os.Stderr
+		output, err := cmd.Output()
 		if err != nil {
 			logg.Fatal(string(output))
 		}
