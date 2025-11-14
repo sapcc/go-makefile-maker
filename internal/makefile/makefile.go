@@ -276,8 +276,14 @@ endif
 
 		test.addDefinition(`# which packages to measure coverage for`)
 		coverPkgGreps := ""
+		if cfg.Coverage.Only == "" {
+			cfg.Coverage.Only = cfg.Test.Only
+		}
 		if cfg.Coverage.Only != "" {
 			coverPkgGreps += fmt.Sprintf(" | grep -E '%s'", cfg.Coverage.Only)
+		}
+		if cfg.Coverage.Except == "" {
+			cfg.Coverage.Except = cfg.Test.Except
 		}
 		if cfg.Coverage.Except != "" {
 			coverPkgGreps += fmt.Sprintf(" | grep -Ev '%s'", cfg.Coverage.Except)
