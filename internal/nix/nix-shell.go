@@ -44,9 +44,6 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 		packages = append(packages, "kubernetes-controller-tools # controller-gen")
 		packages = append(packages, "setup-envtest")
 	}
-	if sr.UseGinkgo {
-		packages = append(packages, "ginkgo")
-	}
 	if sr.UsesPostgres {
 		packages = append(packages, "postgresql_"+core.DefaultPostgresVersion)
 	}
