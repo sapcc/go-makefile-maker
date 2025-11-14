@@ -33,6 +33,9 @@ renovate:
 reuse:
   annotations:
     - paths:
+        - internal/makefile/license-scan-overrides.jsonl
+        - internal/makefile/license-scan-rules.json
+        - internal/reuse/go-licence-detector.tmpl
         - logo*.png
       SPDX-FileCopyrightText: 'SAP SE or an SAP affiliate company'
       SPDX-License-Identifier: Apache-2.0
