@@ -60,8 +60,6 @@ func Render(cfg core.Configuration, sr golang.ScanResult) {
 	must.Succeed(util.WriteFile("Makefile", buf.Bytes()))
 
 	if sr.UsesPostgres {
-		must.Succeed(os.MkdirAll("testing", os.ModePerm))
-
 		// Cleanup obsolete helper script that was previously managed by this tool.
 		err := os.Remove("testing/with-postgres-db.sh")
 		if !os.IsNotExist(err) {
