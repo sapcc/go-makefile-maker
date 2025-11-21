@@ -52,7 +52,7 @@ func GetCodeqlAutobuildAction(isSelfHostedRunner bool) string {
 }
 
 const (
-	CheckoutAction = "actions/checkout@v5"
+	CheckoutAction = "actions/checkout@v6"
 	SetupGoAction  = "actions/setup-go@v6"
 
 	DockerLoginAction     = "docker/login-action@v3"
