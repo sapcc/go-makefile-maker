@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2025 SAP SE
+#
+# SPDX-License-Identifier: Apache-2.0
+
+[default.extend-words]
+{{ range $key, $value := .ExtendWords -}}
+{{$key}} = "{{$value}}"
+{{ end }}
+[files]
+extend-exclude = [
+{{- range .ExtendExcludes}}
+  "{{.}}",{{ end }}
+]

@@ -4,9 +4,6 @@
 package ghworkflow
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
@@ -27,7 +24,7 @@ func checksWorkflow(cfg core.Configuration) {
 		},
 	})
 
-	if cfg.ShellCheck.Enabled.UnwrapOr(true) {
+	if cfg.ShellCheck.IsEnabled() {
 		// delete the pretty out of date installed version of shellcheck so that make install-shellcheck installs the current version
 		if !ghwCfg.IsSelfHostedRunner {
 			j.addStep(jobStep{
@@ -49,24 +46,12 @@ func checksWorkflow(cfg core.Configuration) {
 	}
 
 	if !ghwCfg.IsSelfHostedRunner {
-		with := map[string]any{
-			"exclude":       "./vendor/*",
-			"reporter":      "github-check",
-			"fail_on_error": true,
-			"github_token":  "${{ secrets.GITHUB_TOKEN }}",
-			"ignore":        "importas", //nolint:misspell //importas is a valid linter name, so we always ignore it
-		}
-		ignoreWords := cfg.SpellCheck.IgnoreWords
-		if len(ignoreWords) > 0 {
-			with["ignore"] = fmt.Sprintf("%s,%s", with["ignore"], strings.Join(ignoreWords, ","))
-		}
-
-		w.Permissions.Checks = tokenScopeWrite      // for nicer output in pull request diffs
-		w.Permissions.PullRequests = tokenScopeRead // for private repos
 		j.addStep(jobStep{
 			Name: "Check for spelling errors",
-			Uses: core.MisspellAction,
-			With: with,
+			Uses: core.TyposAction,
+			Env: map[string]string{
+				"CLICOLOR": "1",
+			},
 		})
 	}
 

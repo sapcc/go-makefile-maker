@@ -50,8 +50,11 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 	if cfg.Renovate.Enabled {
 		packages = append(packages, "renovate")
 	}
-	if cfg.Reuse.Enabled.UnwrapOr(true) {
+	if cfg.Reuse.IsEnabled() {
 		packages = append(packages, "reuse")
+	}
+	if cfg.Typos.IsEnabled() {
+		packages = append(packages, "typos")
 	}
 	packages = append(packages, cfg.Nix.ExtraPackages...)
 
