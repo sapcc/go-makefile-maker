@@ -61,7 +61,8 @@ func checksWorkflow(cfg core.Configuration) {
 			with["ignore"] = fmt.Sprintf("%s,%s", with["ignore"], strings.Join(ignoreWords, ","))
 		}
 
-		w.Permissions.Checks = tokenScopeWrite // for nicer output in pull request diffs
+		w.Permissions.Checks = tokenScopeWrite      // for nicer output in pull request diffs
+		w.Permissions.PullRequests = tokenScopeRead // for private repos
 		j.addStep(jobStep{
 			Name: "Check for spelling errors",
 			Uses: core.MisspellAction,
