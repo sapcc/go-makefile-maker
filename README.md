@@ -82,8 +82,8 @@ The config file has the following sections:
 * [renovate](#renovate)
 * [reuse](#reuse)
 * [shellCheck](#shellCheck)
-* [spellCheck](#spellcheck)
 * [testPackages](#testpackages)
+* [typos](#typos)
 * [variables](#variables)
 * [verbatim](#verbatim)
 * [githubWorkflow](#githubworkflow)
@@ -473,18 +473,23 @@ Whether to run [`ShellCheck`](https://www.shellcheck.net/) on all shell scripts 
 
 `opts` specifies additional options to pass to `shellcheck`. The `-e` option can be used to ignore specific shellcheck warnings.
 
-### `spellCheck`
+### `typos`
 
 ```yaml
-spellCheck:
-  ignoreWords:
-    - example
-    - exampleTwo
+typos:
+  enabled: true
+  extendExcludes:
+    - internal/compress/constants.go
+    - internal/compress/testdata/
+  extendWords:
+    reenforced: reenforced # do not correct to the semantically different word "reinforced"
 ```
 
-`golangci-lint` (if `golangciLint.createConfig` is `true`) and the spell check GitHub workflow (`githubWorkflow.spellCheck`) use [`misspell`][misspell] to check for spelling errors.
+Whether to run [`typos`](https://github.com/crate-ci/typos) to check for spelling mistakes.
 
-If `spellCheck.ignoreWords` is defined then both `golangci-lint` and spell check workflow will give this word list to `misspell` so that they can be ignored during its checks.
+`typos.extendExcludes` maps to typos `files.extend-excludes` and allows to exclude some files or paths from spell checking.
+
+`typos.extendWords` maps to typos `default.extend-words` and allows to add custom word mappings to the dictionary. The key is hereby the wrong spelling and the value the correct spelling.
 
 
 ### `testPackages`
@@ -714,7 +719,6 @@ githubWorkflow:
 [doublestar-pattern]: https://github.com/bmatcuk/doublestar#patterns
 [go-licence-detector]: https://github.com/elastic/go-licence-detector
 [govulncheck]: https://github.com/golang/vuln
-[misspell]: https://github.com/client9/misspell
 [ref-onpushpull]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths
 [ref-pattern-cheat-sheet]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
 [ref-runs-on]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
