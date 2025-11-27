@@ -24,6 +24,7 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/nix"
 	"github.com/sapcc/go-makefile-maker/internal/renovate"
 	"github.com/sapcc/go-makefile-maker/internal/reuse"
+	"github.com/sapcc/go-makefile-maker/internal/typos"
 )
 
 func main() {
@@ -129,5 +130,11 @@ func main() {
 	if cfg.Reuse.IsEnabled() {
 		logg.Debug("rendering REUSE configuration")
 		reuse.RenderConfig(cfg, sr)
+	}
+
+	// Render typos config file
+	if cfg.Typos.IsEnabled() {
+		logg.Debug("rendering typos configuration")
+		typos.RenderConfig(cfg)
 	}
 }
