@@ -482,7 +482,7 @@ typos:
     - internal/compress/constants.go
     - internal/compress/testdata/
   extendWords:
-    - reenforced: reenforced # do not correct to the semantically different word "reinforced"
+    reenforced: reenforced # do not correct to the semantically different word "reinforced"
 ```
 
 Whether to run [`typos`](https://github.com/crate-ci/typos) to check for spelling mistakes.
