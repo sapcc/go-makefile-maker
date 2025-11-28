@@ -26,7 +26,7 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	w.On.Push.Branches = nil
 	w.On.WorkflowDispatch.manualTrigger = true
 
-	strategy := slices.Clone(cfg.PushContainerToGhcr.TagStrategy)
+	strategy := cfg.PushContainerToGhcr.TagStrategy
 	if slices.Contains(strategy, "edge") {
 		w.On.Push.Branches = []string{cfg.Global.DefaultBranch}
 	} else {
@@ -121,23 +121,6 @@ type=sha,format=long
 		},
 	})
 	w.Jobs = map[string]job{"build-and-push-image": j}
-
-	if slices.Contains(cfg.PushContainerToGhcr.TagStrategy, "edge") {
-		cleanupJob := baseJob("Cleanup untagged GHCR versions", cfg)
-		cleanupJob.RunsOn = "ubuntu-latest"
-		cleanupJob.Needs = []string{"build-and-push-image"}
-		cleanupJob.addStep(jobStep{
-			Name: "Cleanup untagged GHCR versions",
-			Uses: "actions/delete-package-versions@v5",
-			With: map[string]any{
-				"package-name":                  "${{ github.event.repository.name }}",
-				"package-type":                  "container",
-				"delete-only-untagged-versions": "true",
-				"min-versions-to-keep":          "0",
-			},
-		})
-		w.Jobs["cleanup-untagged-versions"] = cleanupJob
-	}
 
 	writeWorkflowToFile(w)
 }
