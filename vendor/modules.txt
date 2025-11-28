@@ -3,7 +3,7 @@
 github.com/hashicorp/golang-lru/v2
 github.com/hashicorp/golang-lru/v2/internal
 github.com/hashicorp/golang-lru/v2/simplelru
-# github.com/majewsky/gg v1.4.0
+# github.com/majewsky/gg v1.5.0
 ## explicit; go 1.24
 github.com/majewsky/gg/option
 # github.com/sapcc/go-api-declarations v1.17.4

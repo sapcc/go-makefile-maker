@@ -3,7 +3,7 @@ module github.com/sapcc/go-makefile-maker
 go 1.25
 
 require (
-	github.com/majewsky/gg v1.4.0
+	github.com/majewsky/gg v1.5.0
 	github.com/sapcc/go-api-declarations v1.17.4
 	github.com/sapcc/go-bits v0.0.0-20251119215428-a048ca8f6eba
 	github.com/spf13/pflag v1.0.10
