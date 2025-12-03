@@ -502,7 +502,6 @@ ifeq ($(UNAME_S),Darwin)
 	XARGS = gxargs
 endif
 `))
-		copyright := cfg.License.Copyright.UnwrapOr("SAP SE or an SAP affiliate company")
 
 		licenseHeaderPrereqs := []string{"install-addlicense"}
 		if reuseEnabled {
@@ -528,9 +527,9 @@ endif
 					`addlicense -c "%s" -s=only -y "$$year" %s {}; `+
 					// Replace "// Copyright" with "// SPDX-FileCopyrightText:" to fulfill reuse
 					`$(SED) -i '"'"'1s+// Copyright +// SPDX-FileCopyrightText: +'"'"' {}; `+
-					`'`, allSourceFilesExpr, copyright, ignoreOptionsStr),
+					`'`, allSourceFilesExpr, cfg.License.GetCopyright(), ignoreOptionsStr),
 				`@printf "\e[1;36m>> reuse annotate (for license headers on other files)\e[0m\n"`,
-				fmt.Sprintf(`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | grep -vw vendor | $(XARGS) reuse annotate -c '%s' -l Apache-2.0 --skip-unrecognised`, copyright),
+				fmt.Sprintf(`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | grep -vw vendor | $(XARGS) reuse annotate -c '%s' -l %s --skip-unrecognised`, cfg.License.GetCopyright(), cfg.License.GetSPDX()),
 				`@printf "\e[1;36m>> reuse download --all\e[0m\n"`,
 				`@reuse download --all`,
 				`@printf "\e[1;35mPlease review the changes. If *.license files were generated, consider instructing go-makefile-maker to add overrides to REUSE.toml instead.\e[0m\n"`,

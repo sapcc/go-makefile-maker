@@ -269,6 +269,14 @@ type LicenseConfig struct {
 	SPDX              Option[string] `yaml:"spdx"`
 }
 
+func (l LicenseConfig) GetCopyright() string {
+	return l.Copyright.UnwrapOr("SAP SE or an SAP affiliate company")
+}
+
+func (l LicenseConfig) GetSPDX() string {
+	return l.SPDX.UnwrapOr("Apache-2.0")
+}
+
 type MakefileConfig struct {
 	Enabled Option[bool] `yaml:"enabled"` // this is a pointer to bool to treat an absence as true for backwards compatibility
 }

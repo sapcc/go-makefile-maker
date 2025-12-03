@@ -99,6 +99,8 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 
 	must.Succeed(util.WriteFileFromTemplate("REUSE.toml", reuseTOMLTemplate, map[string]any{
 		"Annotations": allAnnotations,
+		"Copyright":   cfg.License.GetCopyright(),
+		"SPDX":        cfg.License.GetSPDX(),
 		"PackageName": filepath.Base(cfg.Metadata.URL),
 		"URL":         cfg.Metadata.URL,
 	}))
