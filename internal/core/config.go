@@ -38,11 +38,13 @@ type Configuration struct {
 	Nix            NixConfig                    `yaml:"nix"`
 	Renovate       RenovateConfig               `yaml:"renovate"`
 	ShellCheck     ShellCheckConfiguration      `yaml:"shellCheck"`
-	SpellCheck     SpellCheckConfiguration      `yaml:"spellCheck"`
-	Test           TestConfiguration            `yaml:"testPackages"`
-	Reuse          ReuseConfiguration           `yaml:"reuse"`
-	Verbatim       string                       `yaml:"verbatim"`
-	VariableValues map[string]string            `yaml:"variables"`
+	// Deprecated: use `typos` instead.
+	SpellCheck     SpellCheckConfiguration `yaml:"spellCheck"`
+	Test           TestConfiguration       `yaml:"testPackages"`
+	Typos          TyposConfiguration      `yaml:"typos"`
+	Reuse          ReuseConfiguration      `yaml:"reuse"`
+	Verbatim       string                  `yaml:"verbatim"`
+	VariableValues map[string]string       `yaml:"variables"`
 }
 
 // Variable returns the value of this variable if it's overridden in the config,
@@ -139,6 +141,18 @@ type SpellCheckConfiguration struct {
 	IgnoreWords []string `yaml:"ignoreWords"`
 }
 
+// TyposConfiguration appears in type Configuration.
+type TyposConfiguration struct {
+	Enabled        Option[bool]      `yaml:"enabled"`
+	ExtendExcludes []string          `yaml:"extendExcludes"`
+	ExtendWords    map[string]string `yaml:"extendWords"`
+}
+
+// IsEnabled encodes that the default state for the Enabled field is `true`.
+func (c TyposConfiguration) IsEnabled() bool {
+	return c.Enabled.UnwrapOr(true)
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // GitHub workflow configuration
 
@@ -212,6 +226,11 @@ func (s ShellCheckConfiguration) AllIgnorePaths(g GolangConfiguration) []string 
 		return append(slices.Clone(s.IgnorePaths), "./vendor/*")
 	}
 	return s.IgnorePaths
+}
+
+// IsEnabled encodes that the default state for the Enabled field is `true`.
+func (s ShellCheckConfiguration) IsEnabled() bool {
+	return s.Enabled.UnwrapOr(true)
 }
 
 type PackageRule struct {
@@ -306,6 +325,10 @@ type NixConfig struct {
 // Helper functions
 
 func (c *Configuration) Validate() {
+	if len(c.SpellCheck.IgnoreWords) > 0 {
+		logg.Fatal("SpellCheck/misspell is deprecated, please migrate to typos")
+	}
+
 	if c.Dockerfile.Enabled {
 		if c.Metadata.URL == "" {
 			logg.Fatal("metadata.url must be set when docker.enabled is true")

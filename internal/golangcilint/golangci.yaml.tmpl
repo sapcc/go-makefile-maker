@@ -56,7 +56,6 @@ linters:
     - ineffassign
     - intrange
     - iotamixing
-    - misspell
     - modernize
     - nilerr
     - nolintlint
@@ -157,15 +156,8 @@ linters:
     {{- if .WithControllerGen }}
     modernize:
       disable:
-        # omitzero requires removing omitempty tags in kubernetes api struct types which are nested, which is intepreted by controller-gen and breaks the CRDs.
+        # omitzero requires removing omitempty tags in kubernetes api struct types which are nested, which is interpreted by controller-gen and breaks the CRDs.
         - omitzero
-    {{- end }}
-    {{- if .MisspellIgnoreWords }}
-    misspell:
-      ignore-rules:
-        {{- range .MisspellIgnoreWords }}
-        - {{ . }}
-        {{- end }}
     {{- end }}
     perfsprint:
       # modernize generates nicer fix code
