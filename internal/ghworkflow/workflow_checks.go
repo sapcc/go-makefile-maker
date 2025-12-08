@@ -52,6 +52,8 @@ func checksWorkflow(cfg core.Configuration) {
 			"CLICOLOR": "1",
 		},
 	})
+	// TyposAction drops its binary into the repository root; if we do not clean this up,
+	// `reuse lint` will complain about it not having license information
 	j.addStep(jobStep{
 		Name: "Delete typos binary",
 		Run:  "rm typos",
