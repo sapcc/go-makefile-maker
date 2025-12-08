@@ -119,7 +119,8 @@ endif
 			phony:       true,
 			target:      "install-shellcheck",
 			recipe: []string{
-				`@if ! hash shellcheck 2>/dev/null; then` +
+				`@set -eou pipefail; ` +
+					` if ! hash shellcheck 2>/dev/null; then` +
 					` printf "\e[1;36m>> Installing shellcheck...\e[0m\n";` +
 					` SHELLCHECK_ARCH=$$(uname -m);` +
 					// relevant for MacOS
