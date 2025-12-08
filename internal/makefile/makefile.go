@@ -113,7 +113,7 @@ endif
 		prepareStaticRecipe = append(prepareStaticRecipe, "install-goimports", "install-golangci-lint")
 	}
 
-	if cfg.ShellCheck.Enabled.UnwrapOr(true) {
+	if cfg.ShellCheck.IsEnabled() {
 		prepare.addRule(rule{
 			description: "Install shellcheck required by run-shellcheck/static-check",
 			phony:       true,
@@ -348,7 +348,7 @@ endif
 			},
 		})
 
-		if cfg.ShellCheck.Enabled.UnwrapOr(true) {
+		if cfg.ShellCheck.IsEnabled() {
 			// add target to run shellcheck
 			var ignorePathArgs strings.Builder
 			for _, path := range cfg.ShellCheck.AllIgnorePaths(cfg.Golang) {
@@ -371,6 +371,19 @@ endif
 				recipe: []string{
 					`@printf "\e[1;36m>> shellcheck\e[0m\n"`,
 					fmt.Sprintf(`@find . %s -type f \( -name '*.bash' -o -name '*.ksh' -o -name '*.zsh' -o -name '*.sh' -o -name '*.shlib' \) -exec shellcheck %s {} +`, strings.TrimSpace(ignorePathArgs.String()), cfg.ShellCheck.Opts),
+				},
+			})
+		}
+
+		if cfg.Typos.IsEnabled() {
+			test.addRule(rule{
+				description: "Check for spelling errors using typos.",
+				phony:       true,
+				target:      "run-typos",
+				recipe: []string{
+					`@printf "\e[1;36m>> typos\e[0m\n"`,
+					`@printf "\e[1;36m>> Typos install instructions can be found here https://github.com/crate-ci/typos#install \e[0m\n"`,
+					`@typos`,
 				},
 			})
 		}

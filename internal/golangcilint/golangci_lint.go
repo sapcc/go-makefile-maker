@@ -28,14 +28,13 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	}
 
 	must.Succeed(util.WriteFileFromTemplate(".golangci.yaml", configTemplate, map[string]any{
-		"EnableVendoring":     cfg.Golang.EnableVendoring,
-		"GoMinorVersion":      must.Return(strconv.Atoi(strings.Split(sr.GoVersion, ".")[1])),
-		"ModulePath":          sr.ModulePath,
-		"MisspellIgnoreWords": cfg.SpellCheck.IgnoreWords,
-		"ErrcheckExcludes":    cfg.GolangciLint.ErrcheckExcludes,
-		"SkipDirs":            cfg.GolangciLint.SkipDirs,
-		"Timeout":             timeout,
-		"ReviveRules":         cfg.GolangciLint.ReviveRules,
-		"WithControllerGen":   cfg.ControllerGen.Enabled.UnwrapOr(sr.KubernetesController),
+		"EnableVendoring":   cfg.Golang.EnableVendoring,
+		"GoMinorVersion":    must.Return(strconv.Atoi(strings.Split(sr.GoVersion, ".")[1])),
+		"ModulePath":        sr.ModulePath,
+		"ErrcheckExcludes":  cfg.GolangciLint.ErrcheckExcludes,
+		"SkipDirs":          cfg.GolangciLint.SkipDirs,
+		"Timeout":           timeout,
+		"ReviveRules":       cfg.GolangciLint.ReviveRules,
+		"WithControllerGen": cfg.ControllerGen.Enabled.UnwrapOr(sr.KubernetesController),
 	}))
 }
