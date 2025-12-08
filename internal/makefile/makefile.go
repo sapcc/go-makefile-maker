@@ -754,7 +754,7 @@ func installTarget(binaries []core.BinaryConfiguration, cfg *core.Configuration)
 	}
 	r.addDefinition(strings.TrimSpace(`
 DESTDIR =%s
-ifeq ($(shell uname -s),Darwin)
+ifeq ($(UNAME_S),Darwin)
 	PREFIX = /usr/local
 else
 	PREFIX = /usr
