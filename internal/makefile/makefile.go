@@ -138,6 +138,34 @@ endif
 		prepareStaticRecipe = append(prepareStaticRecipe, "install-shellcheck")
 	}
 
+	if cfg.Typos.IsEnabled() {
+		prepare.addRule(rule{
+			description: "Install typos required by run-typos/static-check",
+			phony:       true,
+			target:      "install-typos",
+			recipe: []string{
+				// see https://github.com/crate-ci/typos/blob/master/action/entrypoint.sh
+				`@set -eou pipefail; ` +
+					` if ! hash typos 2>/dev/null; then` +
+					` printf "\e[1;36m>> Installing typos...\e[0m\n";` +
+					` TYPOS_ARCH=$$(uname -m);` +
+					// relevant for MacOS
+					` if [[ "$$TYPOS_ARCH" == "arm64" ]]; then TYPOS_ARCH=aarch64; fi;` +
+					` if command -v gh >/dev/null; then TYPOS_GET_RELEASE_JSON="gh api /repos/crate-ci/typos/releases"; else TYPOS_GET_RELEASE_JSON="curl -s https://api.github.com/repos/crate-ci/typos/releases"; fi;` +
+					` TYPOS_VERSION=$$($$TYPOS_GET_RELEASE_JSON | jq -r '.[0].name' );` +
+					` if [[ $(UNAME_S) == Darwin ]]; then TYPOS_FILE="typos-$$TYPOS_VERSION-$$TYPOS_ARCH-apple-darwin.tar.gz"; elif [[ $(UNAME_S) == Linux ]]; then TYPOS_FILE="typos-$$TYPOS_VERSION-$$TYPOS_ARCH-unknown-linux-musl.tar.gz"; fi;` +
+					` if command -v curl >/dev/null 2>&1; then GET="curl -sLo-"; elif command -v wget >/dev/null 2>&1; then GET="wget -O-"; else echo "Didn't find curl or wget to download typos"; exit 2; fi;` +
+					` mkdir -p typos;` +
+					` $$GET ""https://github.com/crate-ci/typos/releases/download/$$TYPOS_VERSION/$$TYPOS_FILE"" | tar -C typos -zxf -;` +
+					// hardcoding go here is not nice but since we mainly target go it should be acceptable
+					` BIN=$$(go env GOBIN); if [[ -z $$BIN ]]; then BIN=$$(go env GOPATH)/bin; fi;` +
+					` install -Dm755 typos/typos -t "$$BIN";` +
+					` rm -rf typos/; fi`,
+			},
+		})
+		prepareStaticRecipe = append(prepareStaticRecipe, "install-typos")
+	}
+
 	if isGolang && (cfg.License.AddHeaders.UnwrapOr(isSAPCC) || cfg.License.CheckDependencies.UnwrapOr(isSAPCC)) {
 		prepare.addRule(rule{
 			description: "Install-go-licence-detector required by check-dependency-licenses/static-check",
@@ -379,9 +407,10 @@ endif
 
 		if cfg.Typos.IsEnabled() {
 			test.addRule(rule{
-				description: "Check for spelling errors using typos.",
-				phony:       true,
-				target:      "run-typos",
+				description:   "Check for spelling errors using typos.",
+				phony:         true,
+				target:        "run-typos",
+				prerequisites: []string{"install-typos"},
 				recipe: []string{
 					`@printf "\e[1;36m>> typos\e[0m\n"`,
 					`@printf "\e[1;36m>> Typos install instructions can be found here https://github.com/crate-ci/typos#install \e[0m\n"`,
