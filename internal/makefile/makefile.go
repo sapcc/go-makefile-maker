@@ -121,9 +121,10 @@ endif
 			recipe: []string{
 				`@if ! hash shellcheck 2>/dev/null; then` +
 					` printf "\e[1;36m>> Installing shellcheck...\e[0m\n";` +
-					` SHELLCHECK_ARCH=$(shell uname -m);` +
+					` SHELLCHECK_ARCH=$$(uname -m);` +
+					// relevant for MacOS
 					` if [[ "$$SHELLCHECK_ARCH" == "arm64" ]]; then SHELLCHECK_ARCH=aarch64; fi;` +
-					` SHELLCHECK_OS=$(shell uname -s | tr '[:upper:]' '[:lower:]');` +
+					` SHELLCHECK_OS=$$(uname -s | tr '[:upper:]' '[:lower:]');` +
 					` SHELLCHECK_VERSION="stable";` +
 					` if command -v curl >/dev/null 2>&1; then GET="curl -sLo-"; elif command -v wget >/dev/null 2>&1; then GET="wget -O-"; else echo "Didn't find curl or wget to download shellcheck"; exit 2; fi;` +
 					` $$GET "https://github.com/koalaman/shellcheck/releases/download/$$SHELLCHECK_VERSION/shellcheck-$$SHELLCHECK_VERSION.$$SHELLCHECK_OS.$$SHELLCHECK_ARCH.tar.xz" | tar -Jxf -;` +
