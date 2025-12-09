@@ -413,7 +413,6 @@ endif
 				prerequisites: []string{"install-typos"},
 				recipe: []string{
 					`@printf "\e[1;36m>> typos\e[0m\n"`,
-					`@printf "\e[1;36m>> Typos install instructions can be found here https://github.com/crate-ci/typos#install \e[0m\n"`,
 					`@typos`,
 				},
 			})
