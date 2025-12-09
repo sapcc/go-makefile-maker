@@ -151,7 +151,7 @@ endif
 					` TYPOS_ARCH=$$(uname -m);` +
 					// relevant for MacOS
 					` if [[ "$$TYPOS_ARCH" == "arm64" ]]; then TYPOS_ARCH=aarch64; fi;` +
-					` if command -v curl >/dev/null 2>&1; then GET="curl -sLo-"; elif command -v wget >/dev/null 2>&1; then GET="wget -O-"; else echo "Didn't find curl or wget to download typos"; exit 2; fi;` +
+					` if command -v curl >/dev/null 2>&1; then GET="curl $${GITHUB_TOKEN:+" -u \":$$GITHUB_TOKEN\""} -sLo-"; elif command -v wget >/dev/null 2>&1; then GET="wget $${GITHUB_TOKEN:+" --password \"$$GITHUB_TOKEN\""} -O-"; else echo "Didn't find curl or wget to download typos"; exit 2; fi;` +
 					` if command -v gh >/dev/null; then TYPOS_GET_RELEASE_JSON="gh api /repos/crate-ci/typos/releases"; else TYPOS_GET_RELEASE_JSON="$$GET https://api.github.com/repos/crate-ci/typos/releases"; fi;` +
 					` TYPOS_VERSION=$$($$TYPOS_GET_RELEASE_JSON | jq -r '.[0].name' );` +
 					` if [[ $(UNAME_S) == Darwin ]]; then TYPOS_FILE="typos-$$TYPOS_VERSION-$$TYPOS_ARCH-apple-darwin.tar.gz"; elif [[ $(UNAME_S) == Linux ]]; then TYPOS_FILE="typos-$$TYPOS_VERSION-$$TYPOS_ARCH-unknown-linux-musl.tar.gz"; fi;` +
