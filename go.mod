@@ -5,7 +5,7 @@ go 1.25
 require (
 	github.com/majewsky/gg v1.5.0
 	github.com/sapcc/go-api-declarations v1.18.0
-	github.com/sapcc/go-bits v0.0.0-20251209145416-cf45eedd8982
+	github.com/sapcc/go-bits v0.0.0-20251211170253-467ecb6aaf3d
 	github.com/spf13/pflag v1.0.10
 	go.yaml.in/yaml/v3 v3.0.4
 	golang.org/x/mod v0.30.0
