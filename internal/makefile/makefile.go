@@ -732,7 +732,7 @@ func buildTargets(binaries []core.BinaryConfiguration, sr golang.ScanResult, run
 					description: fmt.Sprintf("Build %s.", alias),
 					phony:       true,
 					target:      "build/" + alias,
-					recipe:      []string{fmt.Sprintf("ln -s %s build/%s", bin.Name, alias)},
+					recipe:      []string{fmt.Sprintf("ln -sf %s build/%s", bin.Name, alias)},
 				}
 				result = append(result, r)
 				allPrerequisites = append(allPrerequisites, r.target)
@@ -799,7 +799,7 @@ endif
 		if installPath == "/opt/resource" {
 			for _, alias := range []string{"check", "in", "out"} {
 				r.recipe = append(r.recipe, fmt.Sprintf(
-					`ln -s %s $(DESTDIR)%s/%s`,
+					`ln -sf %s $(DESTDIR)%s/%s`,
 					bin.Name, installPath, alias,
 				))
 			}

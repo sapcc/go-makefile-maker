@@ -7,6 +7,7 @@ import (
 	_ "embed"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"slices"
 	"strings"
 	"time"
@@ -333,6 +334,17 @@ func (c *Configuration) Validate() {
 		if c.Metadata.URL == "" {
 			logg.Fatal("metadata.url must be set when docker.enabled is true")
 		}
+	}
+
+	// because of the special logic for `installTo: /opt/resource`, only one binary is allowed to install there
+	optResourceBinaryCount := 0
+	for _, bin := range c.Binaries {
+		if filepath.Clean(bin.InstallTo) == "/opt/resource" {
+			optResourceBinaryCount++
+		}
+	}
+	if optResourceBinaryCount > 1 {
+		logg.Fatal("cannot have more than one entry in 'binaries' with `installTo: /opt/resource`")
 	}
 
 	// Validate GolangciLintConfiguration.

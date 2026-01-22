@@ -112,13 +112,13 @@ If `installTo` is set for at least one binary, the `install` target is added to 
 In this case, `example` would be installed as `/usr/bin/example` by default, and `test-helper` would not be installed.
 
 As a special case for building [Concourse resource types](https://concourse-ci.org/docs/resource-types/implementing/),
-setting `installTo: /opt/resource/` will have the following effects:
+setting `installTo: /opt/resource` will have the following effects:
 
 - At build time, the binary will be written to `build/$NAME` as usual.
   This path will also be symlinked to `build/check`, `build/in` and `build/out`,
   to allow invoking the binary in one of the three operation modes for Concourse resource types.
-- At install time, the binary will be installed as if `installTo: bin/` was set.
-  The install path will also be symlinked to `/opt/resource/check`, `/opt/resource/in` and `/opt/resource/out`,
+- At install time, the binary will be installed to `/opt/resource/$NAME`.
+  This path will also be symlinked to `/opt/resource/check`, `/opt/resource/in` and `/opt/resource/out`,
   to make Docker images that were built with `make install` work as a Concourse resource type.
   See [`dockerfile.enabled`](#dockerfile) below for how to build such images.
 

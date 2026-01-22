@@ -75,7 +75,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 				"/opt/resource/out --version 2>/dev/null",
 			)
 		default:
-			logg.Error("dockerfile: ignoring binary %q with custom install path %q, only 'bin/' is supported at the moment", binary.Name, binary.InstallTo)
+			logg.Error("dockerfile: ignoring binary %q with custom install path %q, only 'bin/' and '/opt/resource' are supported at the moment", binary.Name, binary.InstallTo)
 		}
 	}
 
