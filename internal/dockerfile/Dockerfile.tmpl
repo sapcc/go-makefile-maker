@@ -74,7 +74,9 @@ RUN {{ .RunCommands }}
 
 COPY --from=builder /etc/ssl/certs/ /etc/ssl/certs/
 COPY --from=builder /etc/ssl/cert.pem /etc/ssl/cert.pem
-COPY --from=builder /pkg/ /usr/
+{{- range $src := .PathsToCopy | sortedKeys }}
+COPY --from=builder {{ $src }}/ {{ index $.PathsToCopy $src }}/
+{{- end }}
 # make sure all binaries can be executed
 {{- if .RunVersionCommands }}
 RUN set -x \

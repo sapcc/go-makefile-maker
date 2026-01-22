@@ -724,6 +724,20 @@ func buildTargets(binaries []core.BinaryConfiguration, sr golang.ScanResult, run
 
 		result = append(result, r)
 		allPrerequisites = append(allPrerequisites, r.target)
+
+		// special handling for Concourse resource type binaries
+		if filepath.Clean(bin.InstallTo) == "/opt/resource" {
+			for _, alias := range []string{"check", "in", "out"} {
+				r := rule{
+					description: fmt.Sprintf("Build %s.", alias),
+					phony:       true,
+					target:      "build/" + alias,
+					recipe:      []string{fmt.Sprintf("ln -sf %s build/%s", bin.Name, alias)},
+				}
+				result = append(result, r)
+				allPrerequisites = append(allPrerequisites, r.target)
+			}
+		}
 	}
 	result[0].prerequisites = allPrerequisites
 
@@ -761,16 +775,34 @@ endif
 `), cfg.Variable("DESTDIR", ""))
 
 	for _, bin := range binaries {
-		if bin.InstallTo != "" {
-			r.prerequisites = append(r.prerequisites, "build/"+bin.Name)
-			// stupid MacOS does not have -D
-			r.recipe = append(r.recipe, fmt.Sprintf(
-				`install -d -m 0755 "$(DESTDIR)$(PREFIX)/%s"`, filepath.Clean(bin.InstallTo),
-			))
-			r.recipe = append(r.recipe, fmt.Sprintf(
-				`install -m 0755 build/%s "$(DESTDIR)$(PREFIX)/%s/%s"`,
-				bin.Name, filepath.Clean(bin.InstallTo), bin.Name,
-			))
+		if bin.InstallTo == "" {
+			continue
+		}
+		var installPath string
+		if strings.HasPrefix(bin.InstallTo, "/") {
+			installPath = filepath.Clean(bin.InstallTo)
+		} else {
+			installPath = filepath.Join("$(PREFIX)", bin.InstallTo)
+		}
+
+		r.prerequisites = append(r.prerequisites, "build/"+bin.Name)
+		// stupid MacOS does not have -D
+		r.recipe = append(r.recipe, fmt.Sprintf(
+			`install -d -m 0755 "$(DESTDIR)%s"`, installPath,
+		))
+		r.recipe = append(r.recipe, fmt.Sprintf(
+			`install -m 0755 build/%s "$(DESTDIR)%s/%s"`,
+			bin.Name, installPath, bin.Name,
+		))
+
+		// special handling for Concourse resource type binaries
+		if installPath == "/opt/resource" {
+			for _, alias := range []string{"check", "in", "out"} {
+				r.recipe = append(r.recipe, fmt.Sprintf(
+					`ln -sf %s $(DESTDIR)%s/%s`,
+					bin.Name, installPath, alias,
+				))
+			}
 		}
 	}
 	if len(r.recipe) == 0 {

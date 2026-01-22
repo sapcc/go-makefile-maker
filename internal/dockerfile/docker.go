@@ -6,6 +6,7 @@ package dockerfile
 import (
 	_ "embed"
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/sapcc/go-bits/logg"
@@ -53,16 +54,28 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 
 	// these commands will be run after `make install` to see that all installed commands can be executed
 	// (e.g. that all required shared libraries can be loaded correctly)
-	var runVersionCommands []string
+	var (
+		runVersionCommands []string
+		pathsToCopy        = make(map[string]string)
+	)
 	for _, binary := range cfg.Binaries {
-		if binary.InstallTo != "" {
+		switch {
+		case binary.InstallTo == "":
+			continue
+		case binary.InstallTo == "bin/":
 			// The binaries need to be in PATH which is only the case if they are installed to bin/
-			if binary.InstallTo != "bin/" {
-				logg.Error("dockerfile: ignoring binary %q with custom install path %q, only 'bin/' is supported at the moment", binary.Name, binary.InstallTo)
-				continue
-			}
-
+			pathsToCopy["/pkg"] = "/usr"
 			runVersionCommands = append(runVersionCommands, binary.Name+" --version 2>/dev/null")
+		case filepath.Clean(binary.InstallTo) == "/opt/resource":
+			// special case: Concourse resource type binaries are accessed through symlinks in /opt/resource that `make install` generates
+			pathsToCopy["/opt/resource"] = "/opt/resource"
+			runVersionCommands = append(runVersionCommands,
+				"/opt/resource/check --version 2>/dev/null",
+				"/opt/resource/in --version 2>/dev/null",
+				"/opt/resource/out --version 2>/dev/null",
+			)
+		default:
+			logg.Error("dockerfile: ignoring binary %q with custom install path %q, only 'bin/' and '/opt/resource' are supported at the moment", binary.Name, binary.InstallTo)
 		}
 	}
 
@@ -90,6 +103,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		"CheckEnv":           cfg.Dockerfile.CheckEnv,
 		"ExtraTestPackages":  extraTestPackages,
 		"Entrypoint":         entrypoint,
+		"PathsToCopy":        pathsToCopy,
 		"ReuseEnabled":       reuseEnabled,
 		"RunCommands":        strings.Join(commands, " \\\n  && "),
 		"RunVersionCommands": strings.Join(runVersionCommands, " \\\n  && "),

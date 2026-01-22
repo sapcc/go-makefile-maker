@@ -6,7 +6,9 @@ package util
 import (
 	"bytes"
 	"fmt"
+	"maps"
 	"os"
+	"slices"
 	"strings"
 	"text/template"
 
@@ -22,6 +24,9 @@ func WriteFileFromTemplate(fileName, templateCode string, data map[string]any) e
 	funcMap := template.FuncMap{
 		"containsIgnoreCase": func(s, substr string) bool {
 			return strings.Contains(strings.ToLower(s), strings.ToLower(substr))
+		},
+		"sortedKeys": func(m map[string]string) []string {
+			return slices.Sorted(maps.Keys(m))
 		},
 		"trimSpace": strings.TrimSpace,
 	}
