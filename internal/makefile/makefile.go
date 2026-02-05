@@ -643,7 +643,7 @@ endif
 	if isGolang {
 		// add target for static code checks
 		staticCheckPrerequisites = append(staticCheckPrerequisites, "run-golangci-lint")
-		if cfg.License.CheckDependencies.UnwrapOr(isSAPCC) {
+		if cfg.License.AddHeaders.UnwrapOr(isSAPCC) {
 			staticCheckPrerequisites = append(staticCheckPrerequisites, "check-dependency-licenses")
 		}
 
