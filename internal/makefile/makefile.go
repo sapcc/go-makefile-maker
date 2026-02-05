@@ -524,16 +524,7 @@ endif
 		allSourceFilesExpr = `$(shell find -name *.rs)`
 	}
 
-	if cfg.License.AddHeaders.UnwrapOr(isSAPCC) {
-		var ignoreOptions []string
-		if cfg.GitHubWorkflow != nil {
-			for _, pattern := range cfg.GitHubWorkflow.License.IgnorePatterns {
-				// quoting avoids glob expansion
-				ignoreOptions = append(ignoreOptions, fmt.Sprintf("-ignore %q", pattern))
-			}
-		}
-		ignoreOptionsStr := strings.Join(append(ignoreOptions, "--"), " ")
-
+	if cfg.License.AddHeaders.UnwrapOr(isSAPCC) || cfg.Typos.IsEnabled() {
 		// Darwin's sed does not support sed -i but sed -i ""
 		// xargs fails: command line cannot be assembled, too long
 		general.addDefinition(strings.TrimSpace(`
@@ -545,6 +536,17 @@ ifeq ($(UNAME_S),Darwin)
 	XARGS = gxargs
 endif
 `))
+	}
+
+	if cfg.License.AddHeaders.UnwrapOr(isSAPCC) {
+		var ignoreOptions []string
+		if cfg.GitHubWorkflow != nil {
+			for _, pattern := range cfg.GitHubWorkflow.License.IgnorePatterns {
+				// quoting avoids glob expansion
+				ignoreOptions = append(ignoreOptions, fmt.Sprintf("-ignore %q", pattern))
+			}
+		}
+		ignoreOptionsStr := strings.Join(append(ignoreOptions, "--"), " ")
 
 		licenseHeaderPrereqs := []string{"install-addlicense"}
 		if reuseEnabled {
@@ -641,7 +643,7 @@ endif
 	if isGolang {
 		// add target for static code checks
 		staticCheckPrerequisites = append(staticCheckPrerequisites, "run-golangci-lint")
-		if cfg.License.CheckDependencies.UnwrapOr(isSAPCC) {
+		if cfg.License.AddHeaders.UnwrapOr(isSAPCC) {
 			staticCheckPrerequisites = append(staticCheckPrerequisites, "check-dependency-licenses")
 		}
 
