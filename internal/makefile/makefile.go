@@ -574,7 +574,7 @@ endif
 					`$(SED) -i '"'"'1s+// Copyright +// SPDX-FileCopyrightText: +'"'"' {}; `+
 					`'`, allSourceFilesExpr, cfg.License.GetCopyright(), ignoreOptionsStr),
 				`@printf "\e[1;36m>> reuse annotate (for license headers on other files)\e[0m\n"`,
-				fmt.Sprintf(`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | grep -vw vendor | $(XARGS) reuse annotate -c '%s' -l %s --skip-unrecognised`, cfg.License.GetCopyright(), cfg.License.GetSPDX()),
+				fmt.Sprintf(`@reuse lint -j | jq -r '.non_compliant.missing_licensing_info[]' | sed '/\<vendor\>/d' | $(XARGS) reuse annotate -c '%s' -l %s --skip-unrecognised`, cfg.License.GetCopyright(), cfg.License.GetSPDX()),
 				`@printf "\e[1;36m>> reuse download --all\e[0m\n"`,
 				`@reuse download --all`,
 				`@printf "\e[1;35mPlease review the changes. If *.license files were generated, consider instructing go-makefile-maker to add overrides to REUSE.toml instead.\e[0m\n"`,
