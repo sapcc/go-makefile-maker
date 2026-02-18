@@ -73,7 +73,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		}
 
 		// Read the output from temp file
-		output, err = os.ReadFile(tmpOutput.Name())
+		output, err = os.ReadFile(tmpOutput.Name()) // #nosec G703 -- hardcoded path, no problem
 		if err != nil {
 			logg.Fatal(err.Error())
 		}

@@ -45,7 +45,7 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 			"username": "${{ github.actor }}",
 			"password": "${{ secrets.GITHUB_TOKEN }}",
 		},
-	})
+	}) // #nosec G101 -- obviously no hardcoded credentials
 
 	var tags string
 	if slices.Contains(strategy, "edge") {

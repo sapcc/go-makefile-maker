@@ -48,7 +48,7 @@ func releaseWorkflow(cfg core.Configuration) {
 		Env: map[string]string{
 			"GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
 		},
-	})
+	}) // #nosec G101 -- obviously no hardcoded credentials
 	w.Jobs = map[string]job{"release": j}
 
 	writeWorkflowToFile(w)
