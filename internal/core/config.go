@@ -283,10 +283,11 @@ type ControllerGen struct {
 }
 
 type LicenseConfig struct {
-	AddHeaders        Option[bool]   `yaml:"addHeaders"`
-	CheckDependencies Option[bool]   `yaml:"checkDependencies"`
-	Copyright         Option[string] `yaml:"copyright"`
-	SPDX              Option[string] `yaml:"spdx"`
+	AddHeaders        Option[bool]            `yaml:"addHeaders"`
+	CheckDependencies Option[bool]            `yaml:"checkDependencies"`
+	GoLicenseDetector GoLicenseDetectorConfig `yaml:"goLicenseDetector"`
+	Copyright         Option[string]          `yaml:"copyright"`
+	SPDX              Option[string]          `yaml:"spdx"`
 }
 
 func (l LicenseConfig) GetCopyright() string {
@@ -295,6 +296,20 @@ func (l LicenseConfig) GetCopyright() string {
 
 func (l LicenseConfig) GetSPDX() string {
 	return l.SPDX.UnwrapOr("Apache-2.0")
+}
+
+type GoLicenseDetectorConfig struct {
+	Overrides []LicenseDetectorOverride `yaml:"overrides"`
+}
+
+// LicenseDetectorOverride represents entries as described in
+// https://github.com/elastic/go-licence-detector#adding-overrides
+type LicenseDetectorOverride struct {
+	Name                    string `yaml:"name" json:"name,omitzero"`
+	LicenceFile             string `yaml:"licenceFile" json:"licenceFile,omitzero"`
+	LicenceType             string `yaml:"licenceType" json:"licenceType,omitzero"`
+	URL                     string `yaml:"url" json:"url,omitzero"`
+	LicenceTextOverrideFile string `yaml:"licenceTextOverrideFile" json:"licenceTextOverrideFile,omitzero"`
 }
 
 type MakefileConfig struct {
