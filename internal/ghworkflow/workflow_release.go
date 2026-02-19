@@ -45,10 +45,10 @@ func releaseWorkflow(cfg core.Configuration) {
 			"version": "latest",
 			"args":    "release --clean --release-notes=./build/release-info",
 		},
-		Env: map[string]string{
+		Env: map[string]string{ //nolint:gosec // not a hardcoded secret, we are doing templating here
 			"GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
 		},
-	}) // #nosec G101 -- not a hardcoded secret, we are doing templating here
+	})
 	w.Jobs = map[string]job{"release": j}
 
 	writeWorkflowToFile(w)

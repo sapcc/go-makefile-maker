@@ -40,12 +40,12 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
 	j.addStep(jobStep{
 		Name: "Log in to the Container registry",
 		Uses: core.DockerLoginAction,
-		With: map[string]any{
+		With: map[string]any{ //nolint:gosec // not a hardcoded secret, we are doing templating here
 			"registry": registry,
 			"username": "${{ github.actor }}",
 			"password": "${{ secrets.GITHUB_TOKEN }}",
 		},
-	}) // #nosec G101 -- not a hardcoded secret, we are doing templating here
+	})
 
 	var tags string
 	if slices.Contains(strategy, "edge") {
