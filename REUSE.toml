@@ -27,7 +27,7 @@ SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
 path = [
-  "internal/makefile/license-scan-overrides.jsonl",
+  "internal/makefile/license-scan-overrides.jsonl.tmpl",
   "internal/makefile/license-scan-rules.json",
   "internal/reuse/go-licence-detector.tmpl",
   "logo*.png",
