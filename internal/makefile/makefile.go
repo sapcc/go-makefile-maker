@@ -5,6 +5,7 @@ package makefile
 
 import (
 	_ "embed"
+	"encoding/json"
 	"fmt"
 	"path"
 	"path/filepath"
@@ -25,8 +26,8 @@ var editorconfig []byte
 //go:embed license-scan-rules.json
 var licenseRules []byte
 
-//go:embed license-scan-overrides.jsonl
-var scanOverrides []byte
+//go:embed license-scan-overrides.jsonl.tmpl
+var scanOverrides string
 
 // newMakefile defines the structure of the Makefile. Order is important as categories,
 // rules, and definitions will appear in the exact order as they are defined.
@@ -623,7 +624,14 @@ endif
 			must.Succeed(util.WriteFile(licenseRulesFile, licenseRules))
 
 			scanOverridesFile := ".license-scan-overrides.jsonl"
-			must.Succeed(util.WriteFile(scanOverridesFile, scanOverrides))
+			additionalOverridesFromCfg := cfg.License.GoLicenseDetector.Overrides
+			additionalOverrides := make([]string, len(additionalOverridesFromCfg))
+			for i, o := range additionalOverridesFromCfg {
+				additionalOverrides[i] = string(must.Return(json.Marshal(o)))
+			}
+			must.Succeed(util.WriteFileFromTemplate(scanOverridesFile, scanOverrides, map[string]any{
+				"AdditionalOverrides": additionalOverrides,
+			}))
 
 			dev.addRule(rule{
 				description:   "Check all dependency licenses using go-licence-detector.",

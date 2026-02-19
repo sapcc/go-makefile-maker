@@ -58,7 +58,7 @@ In addition to the `Makefile.maker.yaml`, you should also commit the `Makefile` 
 
 The `check-dependency-licenses` make target and the `checks` github workflow use (go-licence-detector)[go-licence-detector] to check all dependencies to have compliant licenses.
 See [license-scan-rules.json](./internal/makefile/license-scan-rules.json) for an incomplete list of licenses which is based on [SPDX licenses](https://spdx.org/licenses/) and [the internal risk analysis](https://wiki.one.int.sap/wiki/display/ospodocs/Licenses#Licenses-OpenSourceLicensesCategorization).
-If the automatic license detection is not working, overrides can be specific in the [license-scan-overrides.jsonl](./internal/makefile/license-scan-overrides.jsonl) file.
+If the automatic license detection is not working, overrides can be specified using [#license](#license) configuration.
 
 ## Configuration
 
@@ -322,6 +322,9 @@ license:
   checkDependencies: true
   copyright: 'SAP SE or an SAP affiliate company'
   spdx: Apache-2.0
+  goLicenseDetector:
+    overrides:
+      - {"name": "pkg.example/foo/bar", "licenceType": "Apache-2.0"}
 ```
 
 `license` contains settings related to the license of the project and specifically license header generation.
@@ -333,6 +336,8 @@ license:
 `copyright` is the text to be used in the copyright line of the license header.
 
 `spdx` is the SPDX short identifier of the license to be used in the license header.
+
+`goLicenseDetector.overrides` contains additional to [license-scan-overrides.jsonl.tmpl](./internal/makefile/license-scan-overrides.jsonl.tmpl) override entries as described in [`go-license-detector` documentation](https://github.com/elastic/go-licence-detector#adding-overrides).
 
 In SAP Cloud Infrastructure projects all checks are enabled by default and the copyright and SPDX identifier are prefilled accordingly.
 
