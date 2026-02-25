@@ -375,8 +375,10 @@ nix:
     - pkg-config
 ```
 
+`enabled` is an optional setting to disable the `shell.nix` generation completely.
 `extraLibraries` extra packages to add to buildInputs in the generated `shell.nix` file. This is useful for libraries like curl for go-curl.
 `extraPackages` extra packages to add to nativeBuildInputs in the generated `shell.nix` file. This is useful if entries in `verbatim` require additional tools.
+`writeEnvRc` disables the generation of an `.envrc` file that activates `nix-shell`, when available.
 
 See <https://search.nixos.org/> for available packages and libraries.
 
