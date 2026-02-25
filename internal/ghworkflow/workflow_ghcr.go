@@ -97,6 +97,15 @@ type=sha,format=long
 		},
 	})
 	j.addStep(jobStep{
+		Name: "Extract build-args for Docker",
+		ID:   "build_args",
+		Run: makeMultilineYAMLString([]string{
+			`echo "version=$(git describe --tags --always --abbrev=7)" >> $GITHUB_OUTPUT`,
+			`echo "commit=$(git rev-parse --verify HEAD)" >> $GITHUB_OUTPUT`,
+			`echo "date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT`,
+		}),
+	})
+	j.addStep(jobStep{
 		Name: "Set up QEMU",
 		Uses: core.DockerQemuAction,
 	})
@@ -118,6 +127,11 @@ type=sha,format=long
 			"tags":      "${{ steps.meta.outputs.tags }}",
 			"labels":    "${{ steps.meta.outputs.labels }}",
 			"platforms": platforms,
+			"build-args": makeMultilineYAMLString([]string{
+				"BININFO_VERSION=${{ steps.build_args.outputs.version }}",
+				"BININFO_COMMIT_HASH=${{ steps.build_args.outputs.commit }}",
+				"BININFO_BUILD_DATE=${{ steps.build_args.outputs.date }}",
+			}),
 		},
 	})
 	w.Jobs = map[string]job{"build-and-push-image": j}
