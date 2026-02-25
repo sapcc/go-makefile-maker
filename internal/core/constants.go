@@ -64,7 +64,7 @@ const (
 	DownloadSyftAction     = "anchore/sbom-action/download-syft@v0"
 	GoCoverageReportAction = "fgrosse/go-coverage-report@v1.2.0"
 	GolangciLintAction     = "golangci/golangci-lint-action@v9"
-	GoreleaserAction       = "goreleaser/goreleaser-action@v6"
+	GoreleaserAction       = "goreleaser/goreleaser-action@v7"
 	ReuseAction            = "fsfe/reuse-action@v6"
 	TyposAction            = "crate-ci/typos@v1"
 )
