@@ -59,6 +59,8 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 		Name: "Archive code coverage results",
 		Uses: core.GetUploadArtifactAction(ghwCfg.IsSelfHostedRunner),
 		With: map[string]any{
+			// TODO: upload without zipping (i.e. set "archive": "true") once we can use v7+ everywhere
+			// Ref: <https://github.com/actions/upload-artifact/releases/tag/v7.0.0>
 			"name": coverageArtifactName,
 			"path": "build/cover.out",
 		},

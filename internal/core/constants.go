@@ -23,7 +23,7 @@ func GetUploadArtifactAction(isSelfHostedRunner bool) string {
 	if isSelfHostedRunner {
 		return "actions/upload-artifact@v2"
 	} else {
-		return "actions/upload-artifact@v6"
+		return "actions/upload-artifact@v7"
 	}
 }
 
