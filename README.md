@@ -375,8 +375,10 @@ nix:
     - pkg-config
 ```
 
+`enabled` controls Nix integration; set to `false` to skip generating both `shell.nix` and `.envrc` (default: `true`).
 `extraLibraries` extra packages to add to buildInputs in the generated `shell.nix` file. This is useful for libraries like curl for go-curl.
 `extraPackages` extra packages to add to nativeBuildInputs in the generated `shell.nix` file. This is useful if entries in `verbatim` require additional tools.
+`writeEnvRc` controls whether an `.envrc` file that activates `nix-shell` is written; set to `false` to skip writing `.envrc` (default: `true`).
 
 See <https://search.nixos.org/> for available packages and libraries.
 
