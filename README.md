@@ -235,7 +235,8 @@ With [go-api-declarations](https://github.com/sapcc/go-api-declarations)'s [`bin
 golang:
   autoupdateableDeps: '^github.com/(?:sap-cloud-infrastructure|sapcc)/'
   enableVendoring: true
-  ldflags: -X "main.goversion={{.Env.GOVERSION}}"
+  ldflags:
+    '-X main.goversion': GOVERSION
   setGoModVersion: true
 ```
 
