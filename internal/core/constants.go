@@ -55,11 +55,11 @@ const (
 	CheckoutAction = "actions/checkout@v6"
 	SetupGoAction  = "actions/setup-go@v6"
 
-	DockerLoginAction     = "docker/login-action@v3"
+	DockerLoginAction     = "docker/login-action@v4"
 	DockerMetadataAction  = "docker/metadata-action@v5"
-	DockerBuildxAction    = "docker/setup-buildx-action@v3"
+	DockerBuildxAction    = "docker/setup-buildx-action@v4"
 	DockerQemuAction      = "docker/setup-qemu-action@v3"
-	DockerBuildPushAction = "docker/build-push-action@v6"
+	DockerBuildPushAction = "docker/build-push-action@v7"
 
 	DownloadSyftAction     = "anchore/sbom-action/download-syft@v0"
 	GoCoverageReportAction = "fgrosse/go-coverage-report@v1.2.0"
