@@ -90,7 +90,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 			must.Succeed(json.Unmarshal([]byte(dependencyString), &dep))
 			allAnnotations = append(allAnnotations, core.ReuseAnnotation{
 				Paths:                 []string{fmt.Sprintf("vendor/%s/**", dep.Name)},
-				Precedence:            "aggregate",
+				Precedence:            "override",
 				SPDXFileCopyrightText: "Other",
 				SPDXLicenseIdentifier: dep.License,
 			})
