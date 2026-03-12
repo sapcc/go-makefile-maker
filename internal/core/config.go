@@ -173,6 +173,7 @@ type GithubWorkflowConfiguration struct {
 	PushContainerToGhcr PushContainerToGhcrConfig    `yaml:"pushContainerToGhcr"`
 	Release             ReleaseWorkflowConfig        `yaml:"release"`
 	SecurityChecks      SecurityChecksWorkflowConfig `yaml:"securityChecks"`
+	PushHelmChartToGhcr PushHelmChartToGhcrConfig    `yaml:"pushHelmChartToGhcr"`
 }
 
 // CIWorkflowConfig appears in type Configuration.
@@ -198,6 +199,14 @@ type PushContainerToGhcrConfig struct {
 	Enabled     bool     `yaml:"enabled"`
 	Platforms   string   `yaml:"platforms"`
 	TagStrategy []string `yaml:"tagStrategy"`
+}
+
+// PushHelmChartToGhcrConfig appears in type Configuration.
+type PushHelmChartToGhcrConfig struct {
+	Path              Option[string] `yaml:"path"`
+	Lint              Option[bool]   `yaml:"lint"`
+	DependencyUpdate  Option[bool]   `yaml:"dependencyUpdate"`
+	DisableVersioning bool           `yaml:"disableVersioning"`
 }
 
 type ReleaseWorkflowConfig struct {

@@ -679,6 +679,40 @@ githubWorkflow:
 `platforms` configures for which platforms the multi-arch docker image is built. Defaults to `linux/amd64`. Note: emulation is provided by qemu and might take significant time.
 `tagStrategy` influences which container tags will be pushed. Currently `edge`, `latest`, `semver` and `sha` are supported.
 
+### `githubWorkflow.pushHelmChartToGhcr`
+
+If `path` is set to a valid Helm chart path inside the repository, the chart is automatically packaged and pushed as an OCI artifact to `oci://ghcr.io/${{ github.repository_owner }}/charts`, i.e. into the `charts` namespace owned by the GitHub user or organization that owns the repository.
+
+```yaml
+githubWorkflow:
+  pushHelmChartToGhcr:
+    path: charts/my-chart
+```
+
+`lint` configures whether the Helm chart should be linted with `helm lint` before packaging and pushing. Defaults to `true`.
+
+`dependencyUpdate` configures whether chart dependencies should be updated with `helm dependency update` before packaging and pushing. Defaults to `true`.
+
+`disableVersioning` disables automatic version detection from the `pushContainerToGhcr` workflow. Has no effect when the `pushContainerToGhcr` workflow is disabled. Defaults to `false`.
+
+When the repository uses the `pushContainerToGhcr` workflow with `semver` or `sha` tag strategy, the Helm chart's single `version` is derived from that strategy: if a valid semver tag is present, it becomes the chart version; otherwise a SHA-based version is used. 
+Only one version is applied to the chart per workflow run; it does not replicate additional container tags such as semver major/minor aliases. The `semver` strategy takes precedence over `sha` when both are enabled and a valid semver tag exists.
+
+#### Using AppVersion inside the Chart to link Chart version and image
+
+The Chart's AppVersion is automatically set to either the release semver or a SHA-based image tag (for example, `sha-<commit-sha>`) of the commit that triggered the workflow, overriding the version specified in `Chart.yaml`. This allows you to reference the image tag directly inside your chart using `{{ .Chart.AppVersion }}`, for example:
+
+```yaml
+kind: Deployment
+spec:
+...
+    image: ghcr.io/my-org/my-repo:{{ .Chart.AppVersion }}
+```
+
+#### Disabling auto-versioning and using the version from `Chart.yaml` instead
+
+To disable auto-versioning and use the version specified in `Chart.yaml`, set `disableVersioning` to `true`.
+
 ### `githubWorkflow.release`
 
 If `release` is enabled a workflow is generated which creates a new GitHub release using goreleaser when a git tag is pushed.
