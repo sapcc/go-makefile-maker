@@ -62,7 +62,7 @@ const (
 	DockerBuildPushAction = "docker/build-push-action@v7"
 
 	DownloadSyftAction     = "anchore/sbom-action/download-syft@v0"
-	GoCoverageReportAction = "fgrosse/go-coverage-report@v1.2.0"
+	GoCoverageReportAction = "fgrosse/go-coverage-report@v1.3.0"
 	GolangciLintAction     = "golangci/golangci-lint-action@v9"
 	GoreleaserAction       = "goreleaser/goreleaser-action@v7"
 	ReuseAction            = "fsfe/reuse-action@v6"
