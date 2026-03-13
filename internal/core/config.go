@@ -333,8 +333,10 @@ func (m Metadata) IsSAPProject() bool {
 }
 
 type NixConfig struct {
-	ExtraLibraries []string `yaml:"extraLibraries"`
-	ExtraPackages  []string `yaml:"extraPackages"`
+	Enabled        Option[bool] `yaml:"enabled"`
+	ExtraLibraries []string     `yaml:"extraLibraries"`
+	ExtraPackages  []string     `yaml:"extraPackages"`
+	WriteEnvRc     Option[bool] `yaml:"writeEnvRc"`
 }
 
 ///////////////////////////////////////////////////////////////////////////////
