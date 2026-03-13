@@ -56,9 +56,9 @@ const (
 	SetupGoAction  = "actions/setup-go@v6"
 
 	DockerLoginAction     = "docker/login-action@v4"
-	DockerMetadataAction  = "docker/metadata-action@v5"
+	DockerMetadataAction  = "docker/metadata-action@v6"
 	DockerBuildxAction    = "docker/setup-buildx-action@v4"
-	DockerQemuAction      = "docker/setup-qemu-action@v3"
+	DockerQemuAction      = "docker/setup-qemu-action@v4"
 	DockerBuildPushAction = "docker/build-push-action@v7"
 
 	DownloadSyftAction     = "anchore/sbom-action/download-syft@v0"
