@@ -90,6 +90,7 @@ type workflowDispatch struct {
 	manualTrigger bool `yaml:"-"`
 }
 
+// IsZero defines whether a workflowDispatch is zero (not set).
 func (w workflowDispatch) IsZero() bool {
 	return !w.manualTrigger
 }
@@ -119,7 +120,7 @@ type job struct {
 
 	// Strategy creates a build matrix for the job and allows different
 	// variations to run each job in.
-	Strategy JobStrategy `yaml:"strategy,omitempty"`
+	Strategy jobStrategy `yaml:"strategy,omitempty"`
 
 	// A map of <service_id> to their configuration(s).
 	Services map[string]jobService `yaml:"services,omitempty"`
@@ -130,7 +131,7 @@ type job struct {
 	Permissions permissions `yaml:"permissions,omitempty"`
 }
 
-type JobStrategy struct {
+type jobStrategy struct {
 	Matrix struct {
 		OS []string `yaml:"os"`
 	} `yaml:"matrix"`

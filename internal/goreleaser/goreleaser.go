@@ -4,10 +4,9 @@
 package goreleaser
 
 import (
+	_ "embed"
 	"net/url"
 	"strings"
-
-	_ "embed"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/util"
@@ -24,6 +23,7 @@ var (
 	goreleaserTemplate string
 )
 
+// RenderConfig writes the goreleaser configuration files from the provided config and scan results.
 func RenderConfig(cfg core.Configuration) {
 	if len(cfg.Binaries) < 1 {
 		logg.Fatal("GoReleaser requires at least 1 binary to be configured in binaries!")

@@ -32,6 +32,7 @@ type ScanResult struct {
 
 const ModFilename = "go.mod"
 
+// Scan goes through the configuration files in the project to assemble a ScanResult.
 func Scan() ScanResult {
 	// assume this is not a go project if there is no go.mod file
 	_, err := os.Stat(ModFilename)

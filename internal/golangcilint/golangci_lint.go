@@ -21,6 +21,7 @@ var (
 	configTemplate string
 )
 
+// RenderConfig writes the golanci-lint configuration files from the provided config and scan results.
 func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	timeout := 3 * time.Minute
 	if cfg.GolangciLint.Timeout != 0 {

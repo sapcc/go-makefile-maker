@@ -23,6 +23,7 @@ var (
 	envrcTemplate string
 )
 
+// RenderShell renders the Nix shell.
 func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserConfig bool) {
 	goVersionSlice := strings.Split(core.DefaultGoVersion, ".")
 	goPackage := fmt.Sprintf("go_%s_%s", goVersionSlice[0], goVersionSlice[1])

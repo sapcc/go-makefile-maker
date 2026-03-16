@@ -63,6 +63,7 @@ linters:
     - perfsprint
     - predeclared
     - rowserrcheck
+    - revive
     - sqlclosecheck
     - staticcheck
     - unconvert
@@ -138,9 +139,6 @@ linters:
         - G112
         # if we put a password or token into a serialized payload, guess what, we probably did that on purpose
         - G117
-        # this triggers on net/http.Request.ParseForm() and its callers, e.g. net/http.Request.FormValue(), complaining about potential memory exhaustion from unbounded form parsing;
-        # but that is incorrect, ParseForm() by default never parses more than 10 MiB for this specific reason
-        - G120
         # created file permissions are restricted by umask if necessary
         - G306
         # the following lints cause false-positives in many repositories, should be fixed with the next release. (see https://github.com/securego/gosec/issues/1500)
@@ -159,6 +157,12 @@ linters:
     perfsprint:
       # modernize generates nicer fix code
       concat-loop: false
+    revive:
+      rules:
+        - name: exported
+          arguments:
+            - checkPrivateReceivers
+            - disableChecksOnConstants
     staticcheck:
       dot-import-whitelist:
         - github.com/majewsky/gg/option

@@ -28,6 +28,7 @@ var (
 	goLicenceDetectorTemplate []byte
 )
 
+// RenderConfig writes the reuse configuration files from the provided config and scan results.
 func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	// If disabled, the REUSE.toml file should not be overridden.
 	// This is useful if the project needs additional information in

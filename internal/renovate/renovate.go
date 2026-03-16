@@ -39,6 +39,7 @@ type config struct {
 	SemanticCommits                            string             `json:"semanticCommits,omitempty"`
 }
 
+// RenderConfig writes the renovate configuration files from the provided config and scan results.
 func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult) {
 	isGoMakefileMakerRepo := scanResult.ModulePath == "github.com/sapcc/go-makefile-maker"
 	isInternalRenovate := strings.HasPrefix(cfg.Metadata.URL, "https://github.wdf.sap.corp")
