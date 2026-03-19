@@ -303,6 +303,8 @@ goReleaser:
   binaryName: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
   format: .tar.gz
   nameTemplate: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+  release:
+    additionalFlags: []
 ```
 
 If `goReleaser.createConfig` is set to true or it is unset but the release GitHub Workflow is enabled, a config file for goreleaser will be generated based on the metadata of the repository.
