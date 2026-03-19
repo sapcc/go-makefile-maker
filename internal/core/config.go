@@ -130,6 +130,11 @@ type GoReleaserConfiguration struct {
 	Format       string            `yaml:"format"`
 	Ldflags      map[string]string `yaml:"ldflags"`
 	NameTemplate string            `yaml:"nameTemplate"`
+	Release      Release           `yaml:"release"`
+}
+
+type Release struct {
+	AdditionalFlags []string `yaml:"additionalFlags"`
 }
 
 // IsEnabled encodes that the default state for the Enabled field is `false`.

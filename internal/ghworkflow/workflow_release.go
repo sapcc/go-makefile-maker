@@ -3,7 +3,11 @@
 
 package ghworkflow
 
-import "github.com/sapcc/go-makefile-maker/internal/core"
+import (
+	"strings"
+
+	"github.com/sapcc/go-makefile-maker/internal/core"
+)
 
 func releaseWorkflow(cfg core.Configuration) {
 	// https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#publishing-a-package-using-an-action
@@ -43,7 +47,10 @@ func releaseWorkflow(cfg core.Configuration) {
 		Uses: core.GoreleaserAction,
 		With: map[string]any{
 			"version": "latest",
-			"args":    "release --clean --release-notes=./build/release-info",
+			"args": strings.Join(append(
+				[]string{"release", "clean", "release-notes=./build/release-info"},
+				cfg.GoReleaser.Release.AdditionalFlags...,
+			), " --"),
 		},
 		Env: map[string]string{ //nolint:gosec // not a hardcoded secret, we are doing templating here
 			"GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
