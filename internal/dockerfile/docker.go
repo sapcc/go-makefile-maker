@@ -24,6 +24,7 @@ var (
 	dockerignoreTemplate string
 )
 
+// RenderConfig writes the docker configuration files from the provided config and scan results.
 func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	// if there is an entrypoint configured use that otherwise fallback to the first binary name
 	var entrypoint string

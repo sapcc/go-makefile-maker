@@ -11,9 +11,12 @@ const (
 	DefaultGitHubComRunsOn     = "ubuntu-latest"
 )
 
+// DefaultGitHubEnterpriseRunsOn is a map of group names to runner labels for GitHub Enterprise.
 var DefaultGitHubEnterpriseRunsOn = map[string]string{
 	"group": "organization/Default",
 }
+
+// SugarRunsOn is an array of Sugar runners.
 var SugarRunsOn = []string{"self-hosted"}
 
 // GetUploadArtifactAction works around GitHub not supporting their own stuff
@@ -27,6 +30,7 @@ func GetUploadArtifactAction(isSelfHostedRunner bool) string {
 	}
 }
 
+// GetCodeqlInitAction returns the right CodeQL init action for the chosen Runner.
 // see https://github.com/github/codeql-action/releases
 // and https://github.wdf.sap.corp/Security-Testing/codeql-action/releases
 func GetCodeqlInitAction(isSelfHostedRunner bool) string {
@@ -36,6 +40,8 @@ func GetCodeqlInitAction(isSelfHostedRunner bool) string {
 		return "github/codeql-action/init@v4"
 	}
 }
+
+// GetCodeqlAnalyzeAction returns the right CodeQL analyze action for the chosen Runner.
 func GetCodeqlAnalyzeAction(isSelfHostedRunner bool) string {
 	if isSelfHostedRunner {
 		return "Security-Testing/codeql-action/analyze@v3"
@@ -43,6 +49,8 @@ func GetCodeqlAnalyzeAction(isSelfHostedRunner bool) string {
 		return "github/codeql-action/analyze@v4"
 	}
 }
+
+// GetCodeqlAutobuildAction returns the right CodeQL autobild action for the chosen Runner.
 func GetCodeqlAutobuildAction(isSelfHostedRunner bool) string {
 	if isSelfHostedRunner {
 		return "Security-Testing/codeql-action/autobuild@v3"

@@ -17,6 +17,7 @@ var (
 	typosConfigTemplate string
 )
 
+// RenderConfig writes the typos configuration files from the provided config.
 func RenderConfig(cfg core.Configuration) {
 	extendExcludes := []string{"go.mod"}
 	if cfg.Golang.EnableVendoring {

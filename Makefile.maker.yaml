@@ -14,6 +14,11 @@ golang:
 
 golangciLint:
   createConfig: true
+  reviveRules:
+    - name: exported
+      arguments:
+        - checkPrivateReceivers
+        - disableChecksOnConstants
 
 githubWorkflow:
   ci:

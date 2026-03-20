@@ -28,7 +28,7 @@ func baseJob(name string, cfg *core.GithubWorkflowConfiguration) job {
 	var (
 		runsOn   any
 		envs     map[string]string
-		strategy JobStrategy
+		strategy jobStrategy
 	)
 
 	if cfg.IsSelfHostedRunner {
