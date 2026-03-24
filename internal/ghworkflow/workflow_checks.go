@@ -29,7 +29,7 @@ func checksWorkflow(cfg core.Configuration) {
 		if !ghwCfg.IsSelfHostedRunner {
 			j.addStep(jobStep{
 				Name: "Delete pre-installed shellcheck",
-				Run:  "sudo rm -f $(which shellcheck)",
+				Run:  `sudo rm -f "$(which shellcheck)"`,
 			})
 		}
 		j.addStep(jobStep{
