@@ -349,8 +349,10 @@ func (m Metadata) IsSAPProject() bool {
 
 // NixConfig appears in type Configuration.
 type NixConfig struct {
-	ExtraLibraries []string `yaml:"extraLibraries"`
-	ExtraPackages  []string `yaml:"extraPackages"`
+	Enabled        Option[bool] `yaml:"enabled"`
+	ExtraLibraries []string     `yaml:"extraLibraries"`
+	ExtraPackages  []string     `yaml:"extraPackages"`
+	WriteEnvRc     Option[bool] `yaml:"writeEnvRc"`
 }
 
 ///////////////////////////////////////////////////////////////////////////////

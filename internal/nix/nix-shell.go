@@ -25,6 +25,10 @@ var (
 
 // RenderShell renders the Nix shell.
 func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserConfig bool) {
+	if !cfg.Nix.Enabled.UnwrapOr(true) {
+		return
+	}
+
 	goVersionSlice := strings.Split(core.DefaultGoVersion, ".")
 	goPackage := fmt.Sprintf("go_%s_%s", goVersionSlice[0], goVersionSlice[1])
 	packages := []string{
@@ -65,7 +69,10 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 		"Packages":       packages,
 		"ExtraLibraries": cfg.Nix.ExtraLibraries,
 	}))
-	must.Succeed(util.WriteFileFromTemplate(".envrc", envrcTemplate, map[string]any{
-		"Variables": cfg.VariableValues,
-	}))
+
+	if cfg.Nix.WriteEnvRc.UnwrapOr(true) {
+		must.Succeed(util.WriteFileFromTemplate(".envrc", envrcTemplate, map[string]any{
+			"Variables": cfg.VariableValues,
+		}))
+	}
 }
