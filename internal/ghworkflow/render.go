@@ -37,6 +37,7 @@ func Render(cfg core.Configuration, sr golang.ScanResult) {
 		ciWorkflow(cfg, sr)
 		codeQLWorkflow(cfg)
 	}
+	helmWorkflow(cfg)
 	ghcrWorkflow(ghwCfg)
 	releaseWorkflow(cfg)
 }

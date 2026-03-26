@@ -75,4 +75,5 @@ const (
 	GoreleaserAction       = "goreleaser/goreleaser-action@v7"
 	ReuseAction            = "fsfe/reuse-action@v6"
 	TyposAction            = "crate-ci/typos@v1"
+	HelmSetupAction        = "azure/setup-helm@v4"
 )
