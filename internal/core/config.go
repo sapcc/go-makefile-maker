@@ -299,6 +299,7 @@ type ControllerGen struct {
 	ObjectHeaderFile             string       `yaml:"objectHeaderFile"`
 	RBACRoleName                 string       `yaml:"rbacRoleName"`
 	ApplyconfigurationHeaderFile string       `yaml:"applyconfigurationHeaderFile"`
+	AllowDangerousTypes          bool         `yaml:"allowDangerousTypes"`
 }
 
 // LicenseConfig appears in type Configuration.
