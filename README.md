@@ -141,6 +141,7 @@ This is only relevant if your project is using controller-gen to autogenerate co
 - `objectHeaderFile` allows changing the `headerFile` argument given to `controller-gen object`.
 - `rbacRoleName` allows changing the `roleName` argument given to `controller-gen rbac:role-name=`. Defaults to the last element in the go module name.
 - `applyconfigurationHeaderFile` allows changing the `headerFile` argument given to `controller-gen applyconfiguration`.
+- Setting `allowDangerousTypes` to true will run `controller-gen` CRD generation with the `allowDangerousTypes=true` flag, allowing the use of float32 and float64 fields.
 
 You need to opt-in object helpers with a comment usually on a package level
 in `groupversion_info.go` like this
