@@ -4,7 +4,7 @@ go 1.26
 
 require (
 	github.com/majewsky/gg v1.5.0
-	github.com/sapcc/go-api-declarations v1.20.2
+	github.com/sapcc/go-api-declarations v1.21.0
 	github.com/sapcc/go-bits v0.0.0-20260324094323-0c68f5c1e7d6
 	github.com/spf13/pflag v1.0.10
 	go.yaml.in/yaml/v3 v3.0.4
