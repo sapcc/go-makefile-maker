@@ -252,8 +252,13 @@ If `golang.setGoModVersion` is set to `true`, then `go.mod` will be automaticall
 
 The `golang.ldflags` option can be used to share flags between the Makefile and GoReleaser.
 
-If `golang.autoupdateableDeps` is filled with a [regular expression](https://pkg.go.dev/regexp/syntax), go-makefile-maker can be invoked with the `--autoupdate-deps` option to automatically upgrade all module dependencies matching that regex using `go get -u $MODULE@latest`.
+go-makefile-maker can be invoked with the `--autoupdate-deps` option to automatically upgrade module dependencies.
 This is intended for automated `go-makefile-maker` runs inside CI jobs that want to bundle some dependency updates together with the `go-makefile-maker` run in order to reduce the amount of automated chore commits in the commit history.
+Autoupdates can be configured in two ways:
+- If `golang.autoupdateableDeps` is filled with a [regular expression](https://pkg.go.dev/regexp/syntax), all module dependencies matching that regex are upgraded using `go get -u $MODULE@latest`.
+  This is intended for internal dependencies that have already gone through approval processes as the code was developed.
+- If `--additional-autoupdateable-dependencies /path/to/other/go.mod` is given, any dependencies shared by both our `go.mod` and the provided other `go.mod` file will be upgraded to the version in the other file (using `go get -u $MODULE@$VERSION`) if that version is newer.
+  This is intended for external dependencies that were already vetted and accepted in a different repository.
 
 ### `golangciLint`
 
