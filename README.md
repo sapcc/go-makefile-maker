@@ -138,9 +138,9 @@ This is only relevant if your project is using controller-gen to autogenerate co
 
 - `enabled` defaults to whether `sigs.k8s.io/controller-runtime` is a library dependency, unless set explicitly.
 - `crdOutputPath` allows changing the `output:crd:artifacts:config` argument given to `controller-gen rbac`. Defaults to `crd`.
-- `objectHeaderFile` allows changing the `headerFile` argument given to `controller-gen object`.
+- `objectHeaderFile` allows changing the `headerFile` argument given to `controller-gen object`. When set, a `year=$(YEAR)` parameter is also passed so that any literal `YEAR` string in the header file is replaced with the current year.
 - `rbacRoleName` allows changing the `roleName` argument given to `controller-gen rbac:role-name=`. Defaults to the last element in the go module name.
-- `applyconfigurationHeaderFile` allows changing the `headerFile` argument given to `controller-gen applyconfiguration`.
+- `applyconfigurationHeaderFile` allows changing the `headerFile` argument given to `controller-gen applyconfiguration`. The `applyconfiguration` generator automatically replaces any literal `YEAR` string in the header file with the current year.
 - Setting `allowDangerousTypes` to true will run `controller-gen` CRD generation with the `allowDangerousTypes=true` flag, allowing the use of float32 and float64 fields.
 
 You need to opt-in object helpers with a comment usually on a package level
