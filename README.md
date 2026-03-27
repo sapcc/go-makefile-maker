@@ -698,8 +698,16 @@ githubWorkflow:
 
 `disableVersioning` disables automatic version detection from the `pushContainerToGhcr` workflow. Has no effect when the `pushContainerToGhcr` workflow is disabled. Defaults to `false`.
 
-When the repository uses the `pushContainerToGhcr` workflow with `semver` or `sha` tag strategy, the Helm chart's single `version` is derived from that strategy: if a valid semver tag is present, it becomes the chart version; otherwise a SHA-based version is used. 
+When the repository uses the `pushContainerToGhcr` workflow with `semver` or `sha` tag strategy, the Helm chart's single `version` is derived from that strategy: if a valid semver tag is present, it becomes the chart version; otherwise a SHA-based version is used.
 Only one version is applied to the chart per workflow run; it does not replicate additional container tags such as semver major/minor aliases. The `semver` strategy takes precedence over `sha` when both are enabled and a valid semver tag exists.
+
+| Strategy Combination                    | Trigger                      | Helm Chart `version`                    | Helm Chart `appVersion`       | Example `version`     | Example `appVersion`   |
+|-----------------------------------------|------------------------------|-----------------------------------------|-------------------------------|-----------------------|------------------------|
+| **Neither**                             | Push to `chartPath/**`       | From `Chart.yaml`                       | Not set (uses `Chart.yaml`)   | `1.0.0`               | `1.0.0`                |
+| **`semver` only**                       | Push tags (`*`)              | Git tag (stripped `v` prefix)           | Git tag (if exact match)      | `2.1.0`               | `v2.1.0`               |
+| **`sha` only**                          | Push to default branch       | `Chart.yaml` version + `+sha-abc1234`   | `sha-<full-sha>`              | `1.0.0+sha-abc1234`   | `sha-abc12345678...`   |
+| **`semver` + `sha`** (tagged commit)    | Push tags or default branch  | Git tag (stripped `v`)                  | Git tag                       | `2.1.0`               | `v2.1.0`               |
+| **`semver` + `sha`** (untagged commit)  | Push to default branch       | Last tag + `+sha-abc1234`               | `sha-<full-sha>`              | `2.1.0+sha-abc1234`   | `sha-abc1234578...`    |
 
 #### Using AppVersion inside the Chart to link Chart version and image
 
