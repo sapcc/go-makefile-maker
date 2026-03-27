@@ -135,6 +135,11 @@ type GoReleaserConfiguration struct {
 	Format       string            `yaml:"format"`
 	Ldflags      map[string]string `yaml:"ldflags"`
 	NameTemplate string            `yaml:"nameTemplate"`
+	Release      Release           `yaml:"release"`
+}
+
+type Release struct {
+	AdditionalFlags []string `yaml:"additionalFlags"`
 }
 
 // ShouldCreateConfig encodes that the default state for the CreateConfig field is `false`.
