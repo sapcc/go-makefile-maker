@@ -118,13 +118,21 @@ type ReviveRule struct {
 	Arguments []string `yaml:"arguments"`
 }
 
+// ForbidigoRule appears in type GolangciLintConfiguration.
+type ForbidigoRule struct {
+	Pkg     string `yaml:"pkg"`
+	Pattern string `yaml:"pattern"`
+	Msg     string `yaml:"msg"`
+}
+
 // GolangciLintConfiguration appears in type Configuration.
 type GolangciLintConfiguration struct {
-	CreateConfig     bool          `yaml:"createConfig"`
-	ErrcheckExcludes []string      `yaml:"errcheckExcludes"`
-	SkipDirs         []string      `yaml:"skipDirs"`
-	Timeout          time.Duration `yaml:"timeout"`
-	ReviveRules      []ReviveRule  `yaml:"reviveRules"`
+	CreateConfig     bool            `yaml:"createConfig"`
+	ErrcheckExcludes []string        `yaml:"errcheckExcludes"`
+	ForbidigoRules   []ForbidigoRule `yaml:"forbidigoRules"`
+	SkipDirs         []string        `yaml:"skipDirs"`
+	Timeout          time.Duration   `yaml:"timeout"`
+	ReviveRules      []ReviveRule    `yaml:"reviveRules"`
 }
 
 // GoReleaserConfiguration appears in type Configuration.
