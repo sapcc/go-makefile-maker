@@ -400,8 +400,14 @@ func (c *Configuration) Validate() {
 	}
 
 	// Validate GolangciLintConfiguration.
-	if len(c.GolangciLint.ErrcheckExcludes) > 0 && !c.GolangciLint.CreateConfig {
+	if (len(c.GolangciLint.ErrcheckExcludes) > 0 || len(c.GolangciLint.ForbidigoRules) > 0) && !c.GolangciLint.CreateConfig {
 		logg.Fatal("golangciLint.createConfig must be set to 'true' if golangciLint.errcheckExcludes is defined")
+	}
+
+	for _, forbigoRule := range c.GolangciLint.ForbidigoRules {
+		if forbigoRule.Pkg == "" || forbigoRule.Pattern == "" {
+			logg.Fatal("golangciLint.forbidigoRules must have at least pkg or pattern for each rule defined")
+		}
 	}
 
 	// Validate GithubWorkflowConfiguration.
