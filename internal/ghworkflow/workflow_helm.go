@@ -30,31 +30,37 @@ func helmWorkflow(cfg core.Configuration) {
 	var helmPackageCmds []string
 	strategy := cfg.GitHubWorkflow.PushContainerToGhcr.TagStrategy
 	if !helmConfig.DisableVersioning {
+		helmPackageCmds = []string{
+			`APP_VERSION=""`,
+			`# use version from the helm chart itself as a base`,
+			`VERSION="$(helm show chart ` + chartPath + ` | grep -E "^version:" | awk '{print $2}')"`,
+		}
 		if slices.Contains(strategy, "semver") {
 			// try to detect a version from the git tags
 			w.On.Push.Tags = []string{"*"}
 			helmPackageCmds = append(helmPackageCmds,
 				`# try to detect a version from the git tags, set APP_VERSION only if this commit has been tagged`,
-				`APP_VERSION=$(git describe --tags --exact-match ${{ github.sha }} 2>/dev/null || echo "")`,
-				`if [ -n "$APP_VERSION" ]; then`,
-				`  VERSION=$(echo -n "$APP_VERSION" | sed -E 's/^v//')`,
-				`else`,
-				`  VERSION=$((git describe --tags --abbrev=0 2>/dev/null | sed -E 's/^v//') || echo "")`,
+				`CURRENT_TAG=$(git describe --tags --exact-match ${{ github.sha }} 2>/dev/null || echo "")`,
+				`LAST_TAG=$((git describe --tags --abbrev=0 2>/dev/null | sed -E 's/^v//') || echo "")`,
+				`if [ -n "$CURRENT_TAG" ]; then`,
+				`  APP_VERSION="$CURRENT_TAG"`,
+				`  VERSION=$(echo -n "$CURRENT_TAG" | sed -E 's/^v//')`,
+				`elif [ -n "$LAST_TAG" ]; then`,
+				`  VERSION="$LAST_TAG"`,
 				`fi`,
 				``,
 			)
 		}
 		if slices.Contains(strategy, "sha") {
 			w.On.Push.Branches = []string{cfg.GitHubWorkflow.Global.DefaultBranch}
-			// use the git sha as version, if no version could be detected from the tags
 			helmPackageCmds = append(helmPackageCmds,
-				`# use the git sha as app-version, if no version could be detected from the tags`,
+				`# use the git sha as app-version if no version could be detected from the tags`,
 				`if [ -z "$APP_VERSION" ]; then`,
-				`  APP_VERSION=$(echo -n "sha-${{ github.sha }}")`,
+				`  APP_VERSION="sha-${{ github.sha }}"`,
 				`fi`,
-				`# use the git sha as helm version suffix, version is semver`,
-				`if [ -z "$VERSION" ] && [ -n "$APP_VERSION" ]; then`,
-				`  VERSION="$(helm show chart `+chartPath+` | grep -E "^version:" | awk '{print $2}' )+${APP_VERSION:0:11}"`,
+				`# append truncated sha to version for uniqueness on untagged commits`,
+				`if [[ "$APP_VERSION" == sha-* ]]; then`,
+				`  VERSION="$VERSION+${APP_VERSION:0:11}"`,
 				`fi`,
 				``,
 			)
