@@ -106,6 +106,13 @@ linters:
           msg: github.com/coreos/go-oidc depends on gopkg.in/square/go-jose which has CVEs. Replace it with github.com/coreos/go-oidc/v3
         - pkg: ^github.com/howeyc/gopass$
           msg: github.com/howeyc/gopass is archived, use golang.org/x/term instead
+{{- range .ForbidigoRules }}
+        - {{ if .Pkg }}pkg: {{ .Pkg }}
+{{ end -}}
+{{- if .Pattern }}{{ if .Pkg }}          {{ end }}pattern: {{ .Pattern }}
+{{ end -}}
+{{- if .Msg }}{{ if or .Pkg .Pattern }}          {{ end }}msg: {{ .Msg }}{{ end -}}
+{{- end }}
     goconst:
       min-occurrences: 5
     gocritic:
