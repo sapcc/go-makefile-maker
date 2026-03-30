@@ -31,10 +31,12 @@ func main() {
 	bininfo.HandleVersionArgument()
 
 	var flags struct {
-		AutoupdateDeps bool
-		ShowHelp       bool
+		AutoupdateDeps   bool
+		AutoupdateConfig golang.AutoupdateConfiguration
+		ShowHelp         bool
 	}
-	pflag.BoolVar(&flags.AutoupdateDeps, "autoupdate-deps", false, "autoupdate dependencies matching the golang.autoupdateableDeps config option (if any)")
+	pflag.BoolVar(&flags.AutoupdateDeps, "autoupdate-deps", false, "try to autoupdate dependencies matched by the golang.autoupdateDeps.matchModule config option or the --additional-autoupdateable-dependencies switch (if any)")
+	pflag.StringArrayVar(&flags.AutoupdateConfig.ExtraDependencySets, "additional-autoupdateable-dependencies", nil, "path(s) to go.mod files of other projects; any dependencies in those will be considered for --autoupdate-deps")
 	pflag.BoolVar(&logg.ShowDebug, "debug", false, "print debug logs")
 	pflag.BoolVar(&flags.ShowHelp, "help", false, "print this message")
 	pflag.Parse()
@@ -73,9 +75,9 @@ func main() {
 	logg.Debug("reading go.mod")
 	sr := golang.Scan()
 
-	if flags.AutoupdateDeps && cfg.Golang.AutoupdateableDepsRx != "" {
+	if flags.AutoupdateDeps && cfg.Golang.AutoupdateDependencies.Enabled {
 		logg.Debug("autoupdating library dependencies")
-		golang.AutoupdateDependencies(sr, cfg.Golang)
+		golang.AutoupdateDependencies(sr, cfg.Golang, flags.AutoupdateConfig)
 	}
 
 	logg.Debug("rendering configs for Nix")
