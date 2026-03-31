@@ -408,7 +408,7 @@ func (c *Configuration) Validate() {
 	}
 
 	for _, forbigoRule := range c.GolangciLint.ForbidigoRules {
-		if forbigoRule.Pkg == "" || forbigoRule.Pattern == "" {
+		if forbigoRule.Pkg == "" && forbigoRule.Pattern == "" {
 			logg.Fatal("golangciLint.forbidigoRules must have at least pkg or pattern for each rule defined")
 		}
 	}
