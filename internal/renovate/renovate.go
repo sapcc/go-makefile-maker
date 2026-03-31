@@ -136,13 +136,7 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult) {
 	} else {
 		renovateConfig.Extends = append(renovateConfig.Extends, "docker:disable")
 	}
-	hasK8sIOPkgs := false
-	for _, v := range scanResult.GoDirectDependencies {
-		if strings.HasPrefix(v.Path, "k8s.io/") {
-			hasK8sIOPkgs = true
-		}
-	}
-	if hasK8sIOPkgs {
+	if scanResult.HasKubernetesDeps {
 		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
 			MatchPackageNames: []string{`/^k8s.io\//`},
 			// Since our clusters use k8s v1.32 and k8s has a support policy of -/+ 1 minor version we set the allowedVersions to `0.33.x`.

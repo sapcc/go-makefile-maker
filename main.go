@@ -31,10 +31,12 @@ func main() {
 	bininfo.HandleVersionArgument()
 
 	var flags struct {
-		AutoupdateDeps bool
-		ShowHelp       bool
+		AutoupdateDeps   bool
+		AutoupdateConfig golang.AutoupdateConfiguration
+		ShowHelp         bool
 	}
-	pflag.BoolVar(&flags.AutoupdateDeps, "autoupdate-deps", false, "autoupdate dependencies matching the golang.autoupdateableDeps config option (if any)")
+	pflag.BoolVar(&flags.AutoupdateDeps, "autoupdate-deps", false, "try to autoupdate dependencies according to the golang.autoupdateDependencies config section (if enabled)")
+	pflag.StringArrayVar(&flags.AutoupdateConfig.ExtraDependencySets, "additional-autoupdateable-dependencies", nil, "path(s) to go.mod files of other projects; any dependencies in those will be considered for --autoupdate-deps")
 	pflag.BoolVar(&logg.ShowDebug, "debug", false, "print debug logs")
 	pflag.BoolVar(&flags.ShowHelp, "help", false, "print this message")
 	pflag.Parse()
@@ -69,14 +71,14 @@ func main() {
 		cfg.Golang.EnableVendoring = true
 	}
 
+	if flags.AutoupdateDeps && cfg.Golang.AutoupdateDependencies.Enabled {
+		logg.Debug("autoupdating library dependencies")
+		golang.AutoupdateDependencies(cfg.Golang, flags.AutoupdateConfig)
+	}
+
 	// Scan go.mod file for additional context information.
 	logg.Debug("reading go.mod")
 	sr := golang.Scan()
-
-	if flags.AutoupdateDeps && cfg.Golang.AutoupdateableDepsRx != "" {
-		logg.Debug("autoupdating library dependencies")
-		golang.AutoupdateDependencies(sr, cfg.Golang)
-	}
 
 	logg.Debug("rendering configs for Nix")
 	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig.IsNone() && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled.UnwrapOr(false)) || cfg.GoReleaser.ShouldCreateConfig()

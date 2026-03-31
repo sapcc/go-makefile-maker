@@ -106,10 +106,13 @@ type CoverageConfiguration struct {
 
 // GolangConfiguration appears in type Configuration.
 type GolangConfiguration struct {
-	AutoupdateableDepsRx regexpext.PlainRegexp `yaml:"autoupdateableDeps"`
-	EnableVendoring      bool                  `yaml:"enableVendoring"`
-	LdFlags              map[string]string     `yaml:"ldflags"`
-	SetGoModVersion      bool                  `yaml:"setGoModVersion"`
+	AutoupdateDependencies struct {
+		Enabled      bool                  `yaml:"enabled"`
+		ModuleNameRx regexpext.PlainRegexp `yaml:"matchModule"`
+	} `yaml:"autoupdateDependencies"`
+	EnableVendoring bool              `yaml:"enableVendoring"`
+	LdFlags         map[string]string `yaml:"ldflags"`
+	SetGoModVersion bool              `yaml:"setGoModVersion"`
 }
 
 // ReviveRule appears in type GolangciLintConfiguration.

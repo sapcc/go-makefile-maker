@@ -10,7 +10,6 @@ import (
 
 	"github.com/sapcc/go-bits/must"
 	"golang.org/x/mod/modfile"
-	"golang.org/x/mod/module"
 	"golang.org/x/mod/semver"
 )
 
@@ -19,15 +18,15 @@ import (
 //
 // TODO: make ScanResult generic and move Golang specific fields into sub-struct and add Rust next to it
 type ScanResult struct {
-	ModulePath           string           // from "module" directive in go.mod, e.g. "github.com/foo/bar"
-	GoVersion            string           // from "go" directive in go.mod, e.g. "1.22.0"
-	GoVersionMajorMinor  string           // GoVersion but the patch version is stripped
-	GoDirectDependencies []module.Version // from "require" directive(s) in go.mod without the "// indirect" comment
-	HasBinInfo           bool             // whether we can produce linker instructions for "github.com/sapcc/go-api-declarations/bininfo"
-	UseGinkgo            bool             // whether to use ginkgo test runner instead of go test
-	UsesPostgres         bool             // whether postgres is used
-	KubernetesController bool             // whether the repository contains a Kubernetes controller
-	KubernetesVersion    string           // version of kubernetes to use, derived from k8s.io/api
+	ModulePath           string // from "module" directive in go.mod, e.g. "github.com/foo/bar"
+	GoVersion            string // from "go" directive in go.mod, e.g. "1.22.0"
+	GoVersionMajorMinor  string // GoVersion but the patch version is stripped
+	HasBinInfo           bool   // whether we can produce linker instructions for "github.com/sapcc/go-api-declarations/bininfo"
+	HasKubernetesDeps    bool   // whether there are any direct dependencies on k8s.io/* modules
+	UseGinkgo            bool   // whether to use ginkgo test runner instead of go test
+	UsesPostgres         bool   // whether postgres is used
+	KubernetesController bool   // whether the repository contains a Kubernetes controller
+	KubernetesVersion    string // version of kubernetes to use, derived from k8s.io/api
 }
 
 const ModFilename = "go.mod"
@@ -46,8 +45,8 @@ func Scan() ScanResult {
 	modFile := must.Return(modfile.Parse(ModFilename, modFileBytes, nil))
 
 	var (
-		goDeps               []module.Version
 		hasBinInfo           bool
+		hasKubernetesDeps    bool
 		kubernetesController bool
 		kubernetesVersion    string
 		useGinkgo            bool
@@ -55,13 +54,13 @@ func Scan() ScanResult {
 	)
 
 	for _, v := range modFile.Require {
-		if !v.Indirect {
-			goDeps = append(goDeps, v.Mod)
-		}
 		if v.Mod.Path == "github.com/sapcc/go-api-declarations" {
 			if semver.Compare(v.Mod.Version, "v1.2.0") >= 0 {
 				hasBinInfo = true
 			}
+		}
+		if !v.Indirect && strings.HasPrefix(v.Mod.Path, "k8s.io/") {
+			hasKubernetesDeps = true
 		}
 		if slices.Contains([]string{"github.com/lib/pq", "github.com/jackc/pgx/v5"}, v.Mod.Path) {
 			usesPostgres = true
@@ -90,8 +89,8 @@ func Scan() ScanResult {
 		GoVersion:            modFile.Go.Version,
 		GoVersionMajorMinor:  goVersion,
 		ModulePath:           modFile.Module.Mod.Path,
-		GoDirectDependencies: goDeps,
 		HasBinInfo:           hasBinInfo,
+		HasKubernetesDeps:    hasKubernetesDeps,
 		UseGinkgo:            useGinkgo,
 		UsesPostgres:         usesPostgres,
 		KubernetesController: kubernetesController,
