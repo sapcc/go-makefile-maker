@@ -293,7 +293,7 @@ for function signatures that `errcheck` accepts.
 
 `timeout` changes the `run.timeout` option. This should only be necessary to bump when in big projects like ones that use Kubernetes.
 
-`forbidigoRules` can specify extra forbidigo rules to be added to the generated config. A rule can consist out of `pattern`, `pkg` and ``msg`. See <https://golangci-lint.run/docs/linters/configuration/#forbidigo> for more details and examples.
+`forbidigoRules` can specify extra forbidigo rules to be added to the generated config. A rule can consist of `pattern`, `pkg` and `msg`. See <https://golangci-lint.run/docs/linters/configuration/#forbidigo> for more details and examples.
 
 `reviveRules` can be specified to activate the [revive](https://github.com/mgechev/revive) linter with only the mentioned rules.
 A rule must have a `name` and can optionally have `arguments`, which specify how the rule behaves.
