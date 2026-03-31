@@ -28,21 +28,15 @@ type AutoupdateConfiguration struct {
 // AutoupdateDependencies will:
 //   - run `go get -u $MODULEPATH@latest` for each direct dependency matching `cfg.AutoupdateDependencies.ModuleNameRx`, and
 //   - run `go get $MODULEPATH@$VERSION` for each existing dependency with a newer version in `aucfg.ExtraDependencySets`.
-func AutoupdateDependencies(sr ScanResult, cfg core.GolangConfiguration, aucfg AutoupdateConfiguration) {
+func AutoupdateDependencies(cfg core.GolangConfiguration, aucfg AutoupdateConfiguration) {
 	// we will know whether any dependencies are actually updated by looking at go.mod
 	modTimeOld := must.Return(getModTime(ModFilename))
 
-	// update dependencies matched by golang.autoupdateDeps.matchModule setting
-	if cfg.AutoupdateDependencies.ModuleNameRx != "" {
-		for _, dep := range sr.GoDirectDependencies {
-			if cfg.AutoupdateDependencies.ModuleNameRx.MatchString(dep.Path) {
-				must.Succeed(runGo("get", "-u", dep.Path+"@latest"))
-			}
-		}
-	}
-
-	// this might have changed our own go.mod file, so we will have to re-read it when comparing version numbers below;
-	// if we work with outdated version information in that step, we might accidentally end up downgrading
+	// helper function: machinery to re-read the modfile after every change; this is necessary for two reasons:
+	// 1. we cannot use a previous golang.ScanResult because we run before Scan()
+	//    on account of this autoupdate possibly changing the scan result
+	// 2. every dependency update can also change what's in the go.mod file, so we need to re-read it after every dependency update;
+	//    otherwise we might work with outdated version information in the next step and accidentally downgrade instead of upgrading
 	ourModfile := None[*modfile.File]()
 	getOurModfile := func() *modfile.File {
 		if mf, ok := ourModfile.Unpack(); ok {
@@ -55,6 +49,19 @@ func AutoupdateDependencies(sr ScanResult, cfg core.GolangConfiguration, aucfg A
 		}
 		ourModfile = Some(mf) // cache the parsed file until another dependency update is done
 		return mf
+	}
+
+	// update direct dependencies matched by golang.autoupdateDeps.matchModule setting
+	if cfg.AutoupdateDependencies.ModuleNameRx != "" {
+		for _, v := range getOurModfile().Require {
+			if v.Indirect {
+				continue
+			}
+			if cfg.AutoupdateDependencies.ModuleNameRx.MatchString(v.Mod.Path) {
+				must.Succeed(runGo("get", "-u", v.Mod.Path+"@latest"))
+				ourModfile = None[*modfile.File]()
+			}
+		}
 	}
 
 	// helper function: return the version of a specific dependency in our go.mod file (or None if we don't have this dependency)

@@ -71,14 +71,14 @@ func main() {
 		cfg.Golang.EnableVendoring = true
 	}
 
+	if flags.AutoupdateDeps && cfg.Golang.AutoupdateDependencies.Enabled {
+		logg.Debug("autoupdating library dependencies")
+		golang.AutoupdateDependencies(cfg.Golang, flags.AutoupdateConfig)
+	}
+
 	// Scan go.mod file for additional context information.
 	logg.Debug("reading go.mod")
 	sr := golang.Scan()
-
-	if flags.AutoupdateDeps && cfg.Golang.AutoupdateDependencies.Enabled {
-		logg.Debug("autoupdating library dependencies")
-		golang.AutoupdateDependencies(sr, cfg.Golang, flags.AutoupdateConfig)
-	}
 
 	logg.Debug("rendering configs for Nix")
 	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig.IsNone() && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled.UnwrapOr(false)) || cfg.GoReleaser.ShouldCreateConfig()
