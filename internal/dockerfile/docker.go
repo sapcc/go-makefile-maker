@@ -51,7 +51,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		)
 		entrypoint = `"/usr/bin/linkerd-await", "--shutdown", "--", ` + entrypoint
 	}
-	commands = append(commands, "apk del --no-cache --no-progress apk-tools alpine-keys musl-utils")
+	commands = append(commands, "apk del --no-cache --no-progress apk-tools musl-utils")
 
 	// these commands will be run after `make install` to see that all installed commands can be executed
 	// (e.g. that all required shared libraries can be loaded correctly)
