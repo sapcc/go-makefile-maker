@@ -51,7 +51,7 @@ func AutoupdateDependencies(cfg core.GolangConfiguration, aucfg AutoupdateConfig
 		return mf
 	}
 
-	// update direct dependencies matched by golang.autoupdateDeps.matchModule setting
+	// update direct dependencies matched by golang.autoupdateDependencies.matchModule setting
 	if cfg.AutoupdateDependencies.ModuleNameRx != "" {
 		for _, v := range getOurModfile().Require {
 			if v.Indirect {

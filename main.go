@@ -35,7 +35,7 @@ func main() {
 		AutoupdateConfig golang.AutoupdateConfiguration
 		ShowHelp         bool
 	}
-	pflag.BoolVar(&flags.AutoupdateDeps, "autoupdate-deps", false, "try to autoupdate dependencies matched by the golang.autoupdateDeps.matchModule config option or the --additional-autoupdateable-dependencies switch (if any)")
+	pflag.BoolVar(&flags.AutoupdateDeps, "autoupdate-deps", false, "try to autoupdate dependencies according to the golang.autoupdateDependencies config section (if enabled)")
 	pflag.StringArrayVar(&flags.AutoupdateConfig.ExtraDependencySets, "additional-autoupdateable-dependencies", nil, "path(s) to go.mod files of other projects; any dependencies in those will be considered for --autoupdate-deps")
 	pflag.BoolVar(&logg.ShowDebug, "debug", false, "print debug logs")
 	pflag.BoolVar(&flags.ShowHelp, "help", false, "print this message")

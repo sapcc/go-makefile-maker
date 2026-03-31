@@ -260,7 +260,7 @@ Automatic dependency updates are only performed if `golang.autoupdateDependencie
 They can be configured in two ways:
 - If `golang.autoupdateDependencies.matchModule` is filled with a [regular expression](https://pkg.go.dev/regexp/syntax), all module dependencies matching that regex are upgraded using `go get -u $MODULE@latest`.
   This is intended for internal dependencies that have already gone through approval processes as the code was developed.
-- If `--additional-autoupdateable-dependencies /path/to/other/go.mod` is given, any dependencies shared by both our `go.mod` and the provided other `go.mod` file will be upgraded to the version in the other file (using `go get -u $MODULE@$VERSION`) if that version is newer.
+- If `--additional-autoupdateable-dependencies /path/to/other/go.mod` is given, any dependencies shared by both our `go.mod` and the provided other `go.mod` file will be upgraded to the version in the other file (using `go get $MODULE@$VERSION`) if that version is newer.
   This is intended for external dependencies that were already vetted and accepted in a different repository.
 
 ### `golangciLint`
