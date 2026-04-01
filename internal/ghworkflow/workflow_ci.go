@@ -72,7 +72,7 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 	if !ghwCfg.IsSelfHostedRunner {
 		// see https://github.com/fgrosse/go-coverage-report#usage
 		codeCov := baseJob("Code coverage report", cfg.GitHubWorkflow)
-		codeCov.If = "github.event_name == 'pull_request'"
+		codeCov.If = "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository"
 		codeCov.Needs = []string{"test"}
 		codeCov.Permissions = permissions{
 			Contents:     "read",
