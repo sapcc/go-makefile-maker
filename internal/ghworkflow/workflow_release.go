@@ -43,7 +43,7 @@ func releaseWorkflow(cfg core.Configuration) {
 		Uses: core.GoreleaserAction,
 		With: map[string]any{
 			"version": "latest",
-			"args":    "release --clean --release-notes=./build/release-info",
+			"args":    "release --clean --release-notes=./build/release-info --parallelism=$(($(nproc)/2))",
 		},
 		Env: map[string]string{ //nolint:gosec // not a hardcoded secret, we are doing templating here
 			"GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
