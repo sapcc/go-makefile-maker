@@ -106,6 +106,8 @@ linters:
           msg: github.com/coreos/go-oidc depends on gopkg.in/square/go-jose which has CVEs. Replace it with github.com/coreos/go-oidc/v3
         - pkg: ^github\.com/howeyc/gopass
           msg: github.com/howeyc/gopass is archived, use golang.org/x/term instead
+        - pkg: ^github\.com/containers/image/v5
+          msg: github.com/containers/image/v5 is deprecated and was replaced with go.podman.io/image/v5
 {{- range .ForbidigoRules }}
         - {{ if .Pkg }}pkg: {{ .Pkg }}
 {{ end -}}
