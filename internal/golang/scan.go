@@ -18,15 +18,16 @@ import (
 //
 // TODO: make ScanResult generic and move Golang specific fields into sub-struct and add Rust next to it
 type ScanResult struct {
-	ModulePath           string // from "module" directive in go.mod, e.g. "github.com/foo/bar"
-	GoVersion            string // from "go" directive in go.mod, e.g. "1.22.0"
-	GoVersionMajorMinor  string // GoVersion but the patch version is stripped
-	HasBinInfo           bool   // whether we can produce linker instructions for "github.com/sapcc/go-api-declarations/bininfo"
-	HasKubernetesDeps    bool   // whether there are any direct dependencies on k8s.io/* modules
-	UseGinkgo            bool   // whether to use ginkgo test runner instead of go test
-	UsesPostgres         bool   // whether postgres is used
-	KubernetesController bool   // whether the repository contains a Kubernetes controller
-	KubernetesVersion    string // version of kubernetes to use, derived from k8s.io/api
+	ModulePath           string            // from "module" directive in go.mod, e.g. "github.com/foo/bar"
+	GoVersion            string            // from "go" directive in go.mod, e.g. "1.22.0"
+	GoVersionMajorMinor  string            // GoVersion but the patch version is stripped
+	HasBinInfo           bool              // whether we can produce linker instructions for "github.com/sapcc/go-api-declarations/bininfo"
+	HasKubernetesDeps    bool              // whether there are any direct dependencies on k8s.io/* modules
+	UseGinkgo            bool              // whether to use ginkgo test runner instead of go test
+	UsesPostgres         bool              // whether postgres is used
+	KubernetesController bool              // whether the repository contains a Kubernetes controller
+	KubernetesVersion    string            // version of kubernetes to use, derived from k8s.io/api
+	ModuleReplacements   map[string]string // key = replaced module path, value = replacing module path
 }
 
 const ModFilename = "go.mod"
@@ -85,6 +86,11 @@ func Scan() ScanResult {
 		goVersion = strings.Join(goVersionSlice[:len(goVersionSlice)-1], ".")
 	}
 
+	moduleReplacements := make(map[string]string)
+	for _, r := range modFile.Replace {
+		moduleReplacements[r.Old.Path] = r.New.Path
+	}
+
 	return ScanResult{
 		GoVersion:            modFile.Go.Version,
 		GoVersionMajorMinor:  goVersion,
@@ -95,5 +101,6 @@ func Scan() ScanResult {
 		UsesPostgres:         usesPostgres,
 		KubernetesController: kubernetesController,
 		KubernetesVersion:    kubernetesVersion,
+		ModuleReplacements:   moduleReplacements,
 	}
 }
