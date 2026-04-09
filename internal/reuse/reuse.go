@@ -89,8 +89,19 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 				License string `json:"license"`
 			}
 			must.Succeed(json.Unmarshal([]byte(dependencyString), &dep))
+
+			// when a dependency is introduced by a replace directive, it will be
+			// placed in vendor/ under the name of the replaced module
+			vendoredName := dep.Name
+			for oldPath, newPath := range sr.ModuleReplacements {
+				if dep.Name == newPath {
+					vendoredName = oldPath
+					break
+				}
+			}
+
 			allAnnotations = append(allAnnotations, core.ReuseAnnotation{
-				Paths:                 []string{fmt.Sprintf("vendor/%s/**", dep.Name)},
+				Paths:                 []string{fmt.Sprintf("vendor/%s/**", vendoredName)},
 				Precedence:            "override",
 				SPDXFileCopyrightText: "Other",
 				SPDXLicenseIdentifier: dep.License,
