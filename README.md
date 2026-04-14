@@ -268,6 +268,9 @@ They can be configured in two ways:
 ```yaml
 golangciLint:
   createConfig: true
+  replaceAllowList:
+    - github.com/go-gorp/gorp/v3
+    - go.podman.io/image/v5
   errcheckExcludes:
     - io/ioutil.ReadFile
     - io.Copy(*bytes.Buffer)
@@ -302,6 +305,8 @@ for function signatures that `errcheck` accepts.
 `timeout` changes the `run.timeout` option. This should only be necessary to bump when in big projects like ones that use Kubernetes.
 
 `forbidigoRules` can specify extra forbidigo rules to be added to the generated config. A rule can consist of `pattern`, `pkg` and `msg`. See <https://golangci-lint.run/docs/linters/configuration/#forbidigo> for more details and examples.
+
+`replaceAllowList` can be used to allow extra go mod replace directives in the gomoddirectives linter.
 
 `reviveRules` can be specified to activate the [revive](https://github.com/mgechev/revive) linter with only the mentioned rules.
 A rule must have a `name` and can optionally have `arguments`, which specify how the rule behaves.
