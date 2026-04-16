@@ -276,7 +276,8 @@ endif
 	}
 
 	handledVariables := []string{"GO_BUILDFLAGS", "GO_LDFLAGS", "GO_TESTFLAGS", "GO_TESTENV", "GO_BUILDENV"}
-	extraVariables := maps.Clone(cfg.VariableValues)
+	extraVariables := make(map[string]string)
+	maps.Copy(extraVariables, cfg.VariableValues)
 	maps.DeleteFunc(extraVariables, func(key, value string) bool {
 		return slices.Contains(handledVariables, key)
 	})
