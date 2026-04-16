@@ -130,6 +130,7 @@ type ForbidigoRule struct {
 
 // GolangciLintConfiguration appears in type Configuration.
 type GolangciLintConfiguration struct {
+	ReplaceAllowList []string        `yaml:"replaceAllowList"`
 	CreateConfig     bool            `yaml:"createConfig"`
 	ErrcheckExcludes []string        `yaml:"errcheckExcludes"`
 	ForbidigoRules   []ForbidigoRule `yaml:"forbidigoRules"`
@@ -403,8 +404,8 @@ func (c *Configuration) Validate() {
 	}
 
 	// Validate GolangciLintConfiguration.
-	if (len(c.GolangciLint.ErrcheckExcludes) > 0 || len(c.GolangciLint.ForbidigoRules) > 0) && !c.GolangciLint.CreateConfig {
-		logg.Fatal("golangciLint.createConfig must be set to 'true' if golangciLint.errcheckExcludes is defined")
+	if (len(c.GolangciLint.ErrcheckExcludes) > 0 || len(c.GolangciLint.ForbidigoRules) > 0 || len(c.GolangciLint.ReplaceAllowList) > 0) && !c.GolangciLint.CreateConfig {
+		logg.Fatal("golangciLint.createConfig must be set to 'true' if golangciLint.errcheckExcludes, golangciLint.forbidigoRules or golangciLint.replaceAllowList is defined")
 	}
 
 	for _, forbigoRule := range c.GolangciLint.ForbidigoRules {

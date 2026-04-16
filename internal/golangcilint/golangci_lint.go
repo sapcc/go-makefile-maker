@@ -29,6 +29,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	}
 
 	must.Succeed(util.WriteFileFromTemplate(".golangci.yaml", configTemplate, map[string]any{
+		"ReplaceAllowList":  cfg.GolangciLint.ReplaceAllowList,
 		"EnableVendoring":   cfg.Golang.EnableVendoring,
 		"ErrcheckExcludes":  cfg.GolangciLint.ErrcheckExcludes,
 		"ForbidigoRules":    cfg.GolangciLint.ForbidigoRules,
