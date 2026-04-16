@@ -7,8 +7,10 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"path"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -271,6 +273,19 @@ endif
 		build.addDefinition(`BININFO_VERSION     ?= $(shell git describe --tags --always --abbrev=7)`)
 		build.addDefinition(`BININFO_COMMIT_HASH ?= $(shell git rev-parse --verify HEAD)`)
 		build.addDefinition(`BININFO_BUILD_DATE  ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")`)
+	}
+
+	handledVariables := []string{"GO_BUILDFLAGS", "GO_LDFLAGS", "GO_TESTFLAGS", "GO_TESTENV", "GO_BUILDENV"}
+	extraVariables := maps.Clone(cfg.VariableValues)
+	maps.DeleteFunc(extraVariables, func(key, value string) bool {
+		return slices.Contains(handledVariables, key)
+	})
+	if len(extraVariables) > 0 {
+		build.addDefinition("")
+		build.addDefinition("# Custom variables provided in Makefile.maker.yaml")
+	}
+	for _, key := range slices.Sorted(maps.Keys(extraVariables)) {
+		build.addDefinition("export %s = %s", key, extraVariables[key])
 	}
 
 	if hasBinaries {
