@@ -33,6 +33,7 @@ type Configuration struct {
 	Coverage       CoverageConfiguration        `yaml:"coverageTest"`
 	ControllerGen  ControllerGen                `yaml:"controllerGen"`
 	Dockerfile     DockerfileConfig             `yaml:"dockerfile"`
+	EnvRc          EnvRcConfig                  `yaml:"envRc"`
 	GitHubWorkflow *GithubWorkflowConfiguration `yaml:"githubWorkflow"`
 	Golang         GolangConfiguration          `yaml:"golang"`
 	GolangciLint   GolangciLintConfiguration    `yaml:"golangciLint"`
@@ -289,6 +290,12 @@ type RenovateConfig struct {
 	CustomManagers []any         `yaml:"customManagers"`
 }
 
+// EnvRcConfig appears in type Configuration.
+type EnvRcConfig struct {
+	Enabled        Option[bool]      `yaml:"enabled"`
+	VariableValues map[string]string `yaml:"variables"`
+}
+
 // DockerfileConfig appears in type Configuration.
 type DockerfileConfig struct {
 	Enabled              bool     `yaml:"enabled"`
@@ -375,7 +382,6 @@ type NixConfig struct {
 	Enabled        Option[bool] `yaml:"enabled"`
 	ExtraLibraries []string     `yaml:"extraLibraries"`
 	ExtraPackages  []string     `yaml:"extraPackages"`
-	WriteEnvRc     Option[bool] `yaml:"writeEnvRc"`
 }
 
 ///////////////////////////////////////////////////////////////////////////////
