@@ -5,6 +5,7 @@ package core
 
 import (
 	_ "embed"
+	"maps"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -457,6 +458,12 @@ func (c *Configuration) Validate() {
 		}
 		if !c.Renovate.Enabled {
 			logg.Fatal("renovate.enabled must be set to true (Renovate is required for SAP projects to satisfy compliance requirements)")
+		}
+	}
+
+	for _, key := range slices.Sorted(maps.Keys(c.VariableValues)) {
+		if slices.Contains([]string{"BININFO_VERSION", "BININFO_COMMIT_HASH", "BININFO_BUILD_DATE"}, key) {
+			logg.Fatal("variables cannot contain %s as it is reserved for build information", key)
 		}
 	}
 }
