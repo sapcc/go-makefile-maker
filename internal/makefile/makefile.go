@@ -259,10 +259,10 @@ endif
 		build.addDefinition("# To add additional flags or values (before the default ones), specify the variable in the environment, e.g. `GO_BUILDFLAGS='-tags experimental' make`.")
 		build.addDefinition("# To override the default flags or values, specify the variable on the command line, e.g. `make GO_BUILDFLAGS='-tags experimental'`.")
 		build.addDefinition("GO_BUILDFLAGS +=%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
-		build.addDefinition("GO_LDFLAGS +=%s", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
-		build.addDefinition("GO_TESTFLAGS +=%s", cfg.Variable("GO_TESTFLAGS", ""))
-		build.addDefinition("GO_TESTENV +=%s", cfg.Variable("GO_TESTENV", ""))
-		build.addDefinition("GO_BUILDENV +=%s", cfg.Variable("GO_BUILDENV", ""))
+		build.addDefinition("GO_LDFLAGS    +=%s", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
+		build.addDefinition("GO_TESTFLAGS  +=%s", cfg.Variable("GO_TESTFLAGS", ""))
+		build.addDefinition("GO_TESTENV    +=%s", cfg.Variable("GO_TESTENV", ""))
+		build.addDefinition("GO_BUILDENV   +=%s", cfg.Variable("GO_BUILDENV", ""))
 	}
 	if sr.HasBinInfo {
 		build.addDefinition("")
