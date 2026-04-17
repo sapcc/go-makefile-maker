@@ -5,6 +5,7 @@ package core
 
 import (
 	_ "embed"
+	"maps"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -32,6 +33,7 @@ type Configuration struct {
 	Coverage       CoverageConfiguration        `yaml:"coverageTest"`
 	ControllerGen  ControllerGen                `yaml:"controllerGen"`
 	Dockerfile     DockerfileConfig             `yaml:"dockerfile"`
+	EnvRc          EnvRcConfig                  `yaml:"envRc"`
 	GitHubWorkflow *GithubWorkflowConfiguration `yaml:"githubWorkflow"`
 	Golang         GolangConfiguration          `yaml:"golang"`
 	GolangciLint   GolangciLintConfiguration    `yaml:"golangciLint"`
@@ -288,6 +290,12 @@ type RenovateConfig struct {
 	CustomManagers []any         `yaml:"customManagers"`
 }
 
+// EnvRcConfig appears in type Configuration.
+type EnvRcConfig struct {
+	Enabled        Option[bool]      `yaml:"enabled"`
+	VariableValues map[string]string `yaml:"variables"`
+}
+
 // DockerfileConfig appears in type Configuration.
 type DockerfileConfig struct {
 	Enabled              bool     `yaml:"enabled"`
@@ -374,7 +382,6 @@ type NixConfig struct {
 	Enabled        Option[bool] `yaml:"enabled"`
 	ExtraLibraries []string     `yaml:"extraLibraries"`
 	ExtraPackages  []string     `yaml:"extraPackages"`
-	WriteEnvRc     Option[bool] `yaml:"writeEnvRc"`
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -457,6 +464,12 @@ func (c *Configuration) Validate() {
 		}
 		if !c.Renovate.Enabled {
 			logg.Fatal("renovate.enabled must be set to true (Renovate is required for SAP projects to satisfy compliance requirements)")
+		}
+	}
+
+	for _, key := range slices.Sorted(maps.Keys(c.VariableValues)) {
+		if slices.Contains([]string{"BININFO_VERSION", "BININFO_COMMIT_HASH", "BININFO_BUILD_DATE"}, key) {
+			logg.Fatal("variables cannot contain %s as it is reserved for build information", key)
 		}
 	}
 }

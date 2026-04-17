@@ -12,6 +12,7 @@ import (
 	. "github.com/majewsky/gg/option"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
+	"github.com/sapcc/go-makefile-maker/internal/envrc"
 	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
@@ -48,6 +49,7 @@ func TestRenderShell_ConfigurationOptions(t *testing.T) {
 	tests := []struct {
 		name           string
 		nixConfig      core.NixConfig
+		envRc          core.EnvRcConfig
 		expectShellNix bool
 		expectEnvrc    bool
 	}{
@@ -76,28 +78,34 @@ func TestRenderShell_ConfigurationOptions(t *testing.T) {
 			expectEnvrc:    true,
 		},
 		{
-			name: "WriteEnvRc disabled",
+			name: "envRc disabled",
 			nixConfig: core.NixConfig{
-				Enabled:    Some(true),
-				WriteEnvRc: Some(false),
+				Enabled: Some(true),
+			},
+			envRc: core.EnvRcConfig{
+				Enabled: Some(false),
 			},
 			expectShellNix: true,
 			expectEnvrc:    false,
 		},
 		{
-			name: "WriteEnvRc enabled by default",
+			name: "envRc enabled by default",
 			nixConfig: core.NixConfig{
 				Enabled: Some(true),
-				// WriteEnvRc not set, should default to true
+			},
+			envRc: core.EnvRcConfig{
+				// Enabled not set, should default to true
 			},
 			expectShellNix: true,
 			expectEnvrc:    true,
 		},
 		{
-			name: "WriteEnvRc explicitly enabled",
+			name: "envRc explicitly enabled",
 			nixConfig: core.NixConfig{
-				Enabled:    Some(true),
-				WriteEnvRc: Some(true),
+				Enabled: Some(true),
+			},
+			envRc: core.EnvRcConfig{
+				Enabled: Some(true),
 			},
 			expectShellNix: true,
 			expectEnvrc:    true,
@@ -109,11 +117,13 @@ func TestRenderShell_ConfigurationOptions(t *testing.T) {
 			t.Chdir(t.TempDir())
 
 			cfg := core.Configuration{
-				Nix: tt.nixConfig,
+				Nix:   tt.nixConfig,
+				EnvRc: tt.envRc,
 			}
 			sr := golang.ScanResult{}
 
 			RenderShell(cfg, sr, false)
+			envrc.RenderEnvRc(cfg)
 
 			assertFileExists(t, "shell.nix", tt.expectShellNix)
 			assertFileExists(t, ".envrc", tt.expectEnvrc)
@@ -128,12 +138,15 @@ func TestRenderShell_WithExtraPackages(t *testing.T) {
 		Nix: core.NixConfig{
 			Enabled:       Some(true),
 			ExtraPackages: []string{"jq", "curl"},
-			WriteEnvRc:    Some(true),
+		},
+		EnvRc: core.EnvRcConfig{
+			Enabled: Some(true),
 		},
 	}
 	sr := golang.ScanResult{}
 
 	RenderShell(cfg, sr, false)
+	envrc.RenderEnvRc(cfg)
 
 	assertFileExists(t, "shell.nix", true)
 	assertFileExists(t, ".envrc", true)
@@ -145,8 +158,10 @@ func TestRenderShell_WithVariables(t *testing.T) {
 
 	cfg := core.Configuration{
 		Nix: core.NixConfig{
-			Enabled:    Some(true),
-			WriteEnvRc: Some(true),
+			Enabled: Some(true),
+		},
+		EnvRc: core.EnvRcConfig{
+			Enabled: Some(true),
 		},
 		VariableValues: map[string]string{
 			"TEST_VAR": "test_value",
@@ -155,6 +170,7 @@ func TestRenderShell_WithVariables(t *testing.T) {
 	sr := golang.ScanResult{}
 
 	RenderShell(cfg, sr, false)
+	envrc.RenderEnvRc(cfg)
 
 	assertFileExists(t, ".envrc", true)
 	assertFileContains(t, ".envrc", "TEST_VAR")
@@ -204,6 +220,7 @@ func TestRenderShell_PackageInclusion(t *testing.T) {
 			sr := golang.ScanResult{}
 
 			RenderShell(cfg, sr, tt.renderGoreleaserConfig)
+			envrc.RenderEnvRc(cfg)
 
 			assertFileContains(t, "shell.nix", tt.expectedPackages...)
 		})
@@ -219,7 +236,9 @@ func TestRenderShell_ComplexScenario(t *testing.T) {
 			Enabled:        Some(true),
 			ExtraPackages:  []string{"postgresql", "redis"},
 			ExtraLibraries: []string{"libpq", "libssl"},
-			WriteEnvRc:     Some(true),
+		},
+		EnvRc: core.EnvRcConfig{
+			Enabled: Some(true),
 		},
 		GolangciLint: core.GolangciLintConfiguration{
 			CreateConfig: true,
@@ -243,6 +262,7 @@ func TestRenderShell_ComplexScenario(t *testing.T) {
 	}
 
 	RenderShell(cfg, sr, true)
+	envrc.RenderEnvRc(cfg)
 
 	shellNixPath := filepath.Join(tempDir, "shell.nix")
 	envrcPath := filepath.Join(tempDir, ".envrc")

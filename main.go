@@ -16,6 +16,7 @@ import (
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/dockerfile"
+	"github.com/sapcc/go-makefile-maker/internal/envrc"
 	"github.com/sapcc/go-makefile-maker/internal/ghworkflow"
 	"github.com/sapcc/go-makefile-maker/internal/golang"
 	"github.com/sapcc/go-makefile-maker/internal/golangcilint"
@@ -80,8 +81,9 @@ func main() {
 	logg.Debug("reading go.mod")
 	sr := golang.Scan()
 
-	logg.Debug("rendering configs for Nix")
 	renderGoreleaserConfig := (cfg.GoReleaser.CreateConfig.IsNone() && cfg.GitHubWorkflow != nil && cfg.GitHubWorkflow.Release.Enabled.UnwrapOr(false)) || cfg.GoReleaser.ShouldCreateConfig()
+
+	// Render shell.nix file
 	nix.RenderShell(cfg, sr, renderGoreleaserConfig)
 
 	// Render Makefile
@@ -118,6 +120,9 @@ func main() {
 		logg.Debug("rendering GitHub Actions workflows")
 		ghworkflow.Render(cfg, sr)
 	}
+
+	// Render envrc file
+	envrc.RenderEnvRc(cfg)
 
 	// Render Renovate config
 	if cfg.Renovate.Enabled {
