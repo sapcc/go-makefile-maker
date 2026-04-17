@@ -60,6 +60,35 @@
       "dependencyDashboardApproval": true
     }
   ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "description": "Update GitHub Actions in constants.go (major-only versions)",
+      "extractVersionTemplate": "^v(?<version>\\d+)",
+      "managerFilePatterns": [
+        "internal/core/constants.go"
+      ],
+      "matchStrings": [
+        "\\w+\\s*=\\s*\"(?<depName>[\\w-]+/[\\w-]+)@v(?<currentValue>\\d+)\"",
+        "\\w+\\s*=\\s*\"(?<depName>[\\w-]+/[\\w-]+/[\\w-]+)@v(?<currentValue>\\d+)\""
+      ],
+      "versioningTemplate": "regex:^v?(?<major>\\d+)$"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "description": "Update GitHub Actions in constants.go (semver versions)",
+      "extractVersionTemplate": "^v(?<version>.*)$",
+      "managerFilePatterns": [
+        "internal/core/constants.go"
+      ],
+      "matchStrings": [
+        "\\w+\\s*=\\s*\"(?<depName>[\\w-]+/[\\w-]+)@v(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
+        "\\w+\\s*=\\s*\"(?<depName>[\\w-]+/[\\w-]+/[\\w-]+)@v(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ]
+    }
+  ],
   "prHourlyLimit": 0,
   "schedule": [
     "before 8am on Friday"
