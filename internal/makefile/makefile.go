@@ -7,8 +7,10 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"path"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -259,10 +261,10 @@ endif
 		build.addDefinition("# To add additional flags or values (before the default ones), specify the variable in the environment, e.g. `GO_BUILDFLAGS='-tags experimental' make`.")
 		build.addDefinition("# To override the default flags or values, specify the variable on the command line, e.g. `make GO_BUILDFLAGS='-tags experimental'`.")
 		build.addDefinition("GO_BUILDFLAGS +=%s", cfg.Variable("GO_BUILDFLAGS", defaultBuildFlags))
-		build.addDefinition("GO_LDFLAGS +=%s", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
-		build.addDefinition("GO_TESTFLAGS +=%s", cfg.Variable("GO_TESTFLAGS", ""))
-		build.addDefinition("GO_TESTENV +=%s", cfg.Variable("GO_TESTENV", ""))
-		build.addDefinition("GO_BUILDENV +=%s", cfg.Variable("GO_BUILDENV", ""))
+		build.addDefinition("GO_LDFLAGS    +=%s", cfg.Variable("GO_LDFLAGS", strings.TrimSpace(defaultLdFlags)))
+		build.addDefinition("GO_TESTFLAGS  +=%s", cfg.Variable("GO_TESTFLAGS", ""))
+		build.addDefinition("GO_TESTENV    +=%s", cfg.Variable("GO_TESTENV", ""))
+		build.addDefinition("GO_BUILDENV   +=%s", cfg.Variable("GO_BUILDENV", ""))
 	}
 	if sr.HasBinInfo {
 		build.addDefinition("")
@@ -271,6 +273,20 @@ endif
 		build.addDefinition(`BININFO_VERSION     ?= $(shell git describe --tags --always --abbrev=7)`)
 		build.addDefinition(`BININFO_COMMIT_HASH ?= $(shell git rev-parse --verify HEAD)`)
 		build.addDefinition(`BININFO_BUILD_DATE  ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")`)
+	}
+
+	handledVariables := []string{"GO_BUILDFLAGS", "GO_LDFLAGS", "GO_TESTFLAGS", "GO_TESTENV", "GO_BUILDENV"}
+	extraVariables := make(map[string]string)
+	maps.Copy(extraVariables, cfg.VariableValues)
+	maps.DeleteFunc(extraVariables, func(key, value string) bool {
+		return slices.Contains(handledVariables, key)
+	})
+	if len(extraVariables) > 0 {
+		build.addDefinition("")
+		build.addDefinition("# Custom variables provided in Makefile.maker.yaml")
+	}
+	for _, key := range slices.Sorted(maps.Keys(extraVariables)) {
+		build.addDefinition("export %s = %s", key, extraVariables[key])
 	}
 
 	if hasBinaries {

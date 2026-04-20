@@ -9,6 +9,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
@@ -19,8 +20,6 @@ import (
 var (
 	//go:embed shell.nix.tmpl
 	shellNixTemplate string
-	//go:embed envrc.tmpl
-	envrcTemplate string
 )
 
 // RenderShell renders the Nix shell.
@@ -28,6 +27,7 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 	if !cfg.Nix.Enabled.UnwrapOr(true) {
 		return
 	}
+	logg.Debug("rendering configs for Nix")
 
 	goVersionSlice := strings.Split(core.DefaultGoVersion, ".")
 	goPackage := fmt.Sprintf("go_%s_%s", goVersionSlice[0], goVersionSlice[1])
@@ -69,10 +69,4 @@ func RenderShell(cfg core.Configuration, sr golang.ScanResult, renderGoreleaserC
 		"Packages":       packages,
 		"ExtraLibraries": cfg.Nix.ExtraLibraries,
 	}))
-
-	if cfg.Nix.WriteEnvRc.UnwrapOr(true) {
-		must.Succeed(util.WriteFileFromTemplate(".envrc", envrcTemplate, map[string]any{
-			"Variables": cfg.VariableValues,
-		}))
-	}
 }
