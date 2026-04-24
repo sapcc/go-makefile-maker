@@ -352,6 +352,7 @@ endif
 		})
 
 		if runControllerGen {
+			test.addDefinition(`YEAR ?= $(shell date +%Y)`)
 			crdOutputPath := "crd"
 			if cfg.ControllerGen.CrdOutputPath != "" {
 				crdOutputPath = cfg.ControllerGen.CrdOutputPath
@@ -363,7 +364,7 @@ endif
 			}
 			objectParams := ""
 			if cfg.ControllerGen.ObjectHeaderFile != "" {
-				objectParams = fmt.Sprintf(`:headerFile="%s"`, cfg.ControllerGen.ObjectHeaderFile)
+				objectParams = fmt.Sprintf(`:headerFile="%s",year=$(YEAR)`, cfg.ControllerGen.ObjectHeaderFile)
 			}
 			applyconfigurationParams := ""
 			if cfg.ControllerGen.ApplyconfigurationHeaderFile != "" {
