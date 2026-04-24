@@ -39,5 +39,8 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		"SkipDirs":          cfg.GolangciLint.SkipDirs,
 		"Timeout":           timeout,
 		"WithControllerGen": cfg.ControllerGen.Enabled.UnwrapOr(sr.KubernetesController),
+		// liquid-ceph has an insane vendoring setup that we tried to replace with Go workspaces,
+		// but after getting stuck on bizarre module lookup errors, we decided to grandfather this in for now
+		"AllowReplaceLocal": sr.ModulePath == "github.com/cobaltcore-dev/liquid-ceph",
 	}))
 }

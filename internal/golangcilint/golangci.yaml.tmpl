@@ -143,6 +143,9 @@ linters:
         - weakCond
         - yodaStyleExpr
     gomoddirectives:
+{{- if .AllowReplaceLocal }}
+      replace-local: true
+{{- end }}
       replace-allow-list:
         # for go-pmtud
         - github.com/mdlayher/arp
