@@ -109,6 +109,9 @@ type job struct {
 	// Ref: https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
 	RunsOn any `yaml:"runs-on,flow"`
 
+	// Use a container to run the steps in a job.
+	Container string `yaml:"container,omitempty"`
+
 	// A map of environment variables that are available to all steps in the job.
 	Env map[string]string `yaml:"env,omitempty"`
 

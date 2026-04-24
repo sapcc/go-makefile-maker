@@ -42,11 +42,43 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 		"make build/cover.out",
 	}
 	if sr.UsesPostgres {
-		testCmd = append([]string{
-			"sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y",
-			"sudo apt-get install -y --no-install-recommends postgresql-" + core.DefaultPostgresVersion,
+		maybeSudo := "sudo "
+		var installPostgresCommands []string
+
+		if ghwCfg.IsSelfHostedRunner {
+			// Our self hosted runners do not have sudo installed
+			maybeSudo = ""
+			// I hate it, too...
+			testJob.Container = "keppel.eu-de-1.cloud.sap/ccloud-dockerhub-mirror/library/debian:stable"
+			installPostgresCommands = append([]string{
+				"apt-get update",
+				// Not pre-installed on our runners unlike to the official ones
+				// make is not in the default debian image we must use because of restrictions in the default runner image
+				"apt-get install -y --no-install-recommends postgresql-client-common make",
+				// https is blocked but luckily not http. Since releases are gpg signed anyhow, this is not a problem.
+				"sed -i 's/https:/http:/g' /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh",
+			}, installPostgresCommands...)
+
+			// and ofcourse we also need to download the self signed certificates
+			testJob.Steps = append([]jobStep{{
+				Name: "Get self signed certs",
+				Run: makeMultilineYAMLString([]string{
+					"apt update",
+					"apt install -y --no-install-recommends ca-certificates curl",
+					"curl -sSfL 'http://aia.pki.co.sap.com/aia/SAPNetCA_G2.crt' -o /usr/local/share/ca-certificates/SAPNetCA_G2.crt",
+					"curl -sSfL 'http://aia.pki.co.sap.com/aia/SAP%20Global%20Root%20CA.crt' -o /usr/local/share/ca-certificates/SAP_Global_Root_CA.crt",
+					"update-ca-certificates",
+				}),
+			}}, testJob.Steps...)
+		}
+
+		installPostgresCommands = append(installPostgresCommands,
+			maybeSudo+"/usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y",
+			maybeSudo+"apt-get install -y --no-install-recommends postgresql-"+core.DefaultPostgresVersion,
 			fmt.Sprintf("export PATH=/usr/lib/postgresql/%s/bin:$PATH", core.DefaultPostgresVersion),
-		}, testCmd...)
+		)
+
+		testCmd = append(installPostgresCommands, testCmd...)
 	}
 	testJob.addStep(jobStep{
 		Name: "Run tests and generate coverage report",
