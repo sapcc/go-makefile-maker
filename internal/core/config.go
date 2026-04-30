@@ -318,6 +318,7 @@ type ControllerGen struct {
 	CrdOutputPath                string       `yaml:"crdOutputPath"`
 	ObjectHeaderFile             string       `yaml:"objectHeaderFile"`
 	RBACRoleName                 string       `yaml:"rbacRoleName"`
+	RBACOutputPath               string       `yaml:"rbacOutputPath"`
 	ApplyconfigurationHeaderFile string       `yaml:"applyconfigurationHeaderFile"`
 	AllowDangerousTypes          bool         `yaml:"allowDangerousTypes"`
 }

@@ -356,6 +356,10 @@ endif
 			if cfg.ControllerGen.CrdOutputPath != "" {
 				crdOutputPath = cfg.ControllerGen.CrdOutputPath
 			}
+			rbacOutputPath := "config/rbac"
+			if cfg.ControllerGen.RBACOutputPath != "" {
+				rbacOutputPath = cfg.ControllerGen.RBACOutputPath
+			}
 			components := strings.Split(sr.ModulePath, "/")
 			roleName := components[len(components)-1]
 			if cfg.ControllerGen.RBACRoleName != "" {
@@ -378,7 +382,7 @@ endif
 				target:      "generate",
 				recipe: []string{
 					`@printf "\e[1;36m>> controller-gen\e[0m\n"`,
-					fmt.Sprintf(`@controller-gen crd%s rbac:roleName=%s webhook paths="./..." output:crd:artifacts:config=%s`, allowDangerousTypes, roleName, crdOutputPath),
+					fmt.Sprintf(`@controller-gen crd%s rbac:roleName=%s webhook paths="./..." output:crd:artifacts:config=%s output:rbac:artifacts:config=%s`, allowDangerousTypes, roleName, crdOutputPath, rbacOutputPath),
 					fmt.Sprintf(`@controller-gen object%s paths="./..."`, objectParams),
 					fmt.Sprintf(`@controller-gen applyconfiguration%s paths="./..."`, applyconfigurationParams),
 				},
