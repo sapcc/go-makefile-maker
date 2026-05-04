@@ -130,6 +130,7 @@ controllerGen:
   crdOutputPath: config/crd/bases
   objectHeaderFile: boilerplate.go.txt
   rbacRoleName: manager-role
+  rbacOutputPath: config/rbac
   applyconfigurationHeaderFile: boilerplate.go.txt
 ```
 
@@ -140,6 +141,7 @@ This is only relevant if your project is using controller-gen to autogenerate co
 - `crdOutputPath` allows changing the `output:crd:artifacts:config` argument given to `controller-gen rbac`. Defaults to `crd`.
 - `objectHeaderFile` allows changing the `headerFile` argument given to `controller-gen object`.
 - `rbacRoleName` allows changing the `roleName` argument given to `controller-gen rbac:role-name=`. Defaults to the last element in the go module name.
+- `rbacOutputPath` allows changing the `output:rbac:artifacts:config` argument given to `controller-gen`. Defaults to `config/rbac`.
 - `applyconfigurationHeaderFile` allows changing the `headerFile` argument given to `controller-gen applyconfiguration`.
 - Setting `allowDangerousTypes` to true will run `controller-gen` CRD generation with the `allowDangerousTypes=true` flag, allowing the use of float32 and float64 fields.
 
