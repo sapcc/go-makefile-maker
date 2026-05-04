@@ -102,6 +102,7 @@ linters:
           msg: github.com/containers/image/v5 is deprecated and was replaced with go.podman.io/image/v5
     goconst:
       min-occurrences: 5
+      ignore-tests: true
     gocritic:
       enabled-checks:
         - boolExprSimplify
