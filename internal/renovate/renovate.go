@@ -10,9 +10,9 @@ import (
 	"os/exec"
 	"strings"
 
-	. "github.com/majewsky/gg/option"
 	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
+	. "go.xyrillian.de/gg/option"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/golang"

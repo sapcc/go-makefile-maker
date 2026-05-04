@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/majewsky/gg/option"
 	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
+	. "go.xyrillian.de/gg/option"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/mod/semver"
 
