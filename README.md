@@ -206,6 +206,7 @@ dockerfile:
   extraPackages:
     - curl
     - openssl
+  crossCompile: true
   runAsRoot: true
   useBuildKit: true
   withLinkerdAwait: true
@@ -221,6 +222,7 @@ As an additional smoke test, the compiled binaries are invoked with the `--versi
 With [go-api-declarations](https://github.com/sapcc/go-api-declarations)'s [`bininfo.HandleVersionArgument` function](https://pkg.go.dev/github.com/sapcc/go-api-declarations/bininfo#HandleVersionArgument), this can be implemented in one line. If you are using Cobra or any other library to handle arguments, the [`bininfo.Version` function](https://pkg.go.dev/github.com/sapcc/go-api-declarations/bininfo#Version) is recommended instead.
 
 * `checkEnv` sets environment variables for `make check` inside the docker check build.
+* `crossCompile` enables cross-compilation for multi-platform Docker builds. When enabled, the builder stage runs natively on the build platform and cross-compiles using `GOOS`/`GOARCH`, avoiding slow QEMU emulation. This disables CGO (`CGO_ENABLED=0`), so set this to `false` if your project requires CGO. When unset, cross-compilation is automatically enabled if `pushContainerToGhcr.platforms` contains multiple architectures.
 * `entrypoint` allows overwriting the final entrypoint.
 * `extraBuildStages` prepends additional build stages at the top of the Dockerfile. This is useful for bringing in precompiled assets from other images, or if a non-Go compilation step is required.
 * `extraBuildPackages` installs extra Alpine packages in the Docker layer where `make install` is executed. We always install `ca-certificates`, `gcc`, `git`, `make` and `musl-dev`.

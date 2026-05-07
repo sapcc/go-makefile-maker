@@ -44,7 +44,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	if cfg.Dockerfile.WithLinkerdAwait {
 		commands = append(commands,
 			fmt.Sprintf(
-				"wget -qO /usr/bin/linkerd-await https://github.com/linkerd/linkerd-await/releases/download/release%%2Fv%[1]s/linkerd-await-v%[1]s-amd64",
+				"wget -qO /usr/bin/linkerd-await https://github.com/linkerd/linkerd-await/releases/download/release%%2Fv%[1]s/linkerd-await-v%[1]s-$TARGETARCH",
 				core.DefaultLinkerdAwaitVersion,
 			),
 			"chmod 755 /usr/bin/linkerd-await",
@@ -94,6 +94,10 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		extraTestPackages = append(extraTestPackages, "postgresql")
 	}
 
+	crossCompile := cfg.Dockerfile.CrossCompile.UnwrapOr(
+		cfg.GitHubWorkflow != nil && strings.Contains(cfg.GitHubWorkflow.PushContainerToGhcr.Platforms, ","),
+	)
+
 	must.Succeed(util.WriteFileFromTemplate("Dockerfile", dockerfileTemplate, map[string]any{
 		"Config": cfg,
 		"Constants": map[string]any{
@@ -109,6 +113,8 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		"RunCommands":        strings.Join(commands, " \\\n  && "),
 		"RunVersionCommands": strings.Join(runVersionCommands, " \\\n  && "),
 		"UseBuildKit":        cfg.Dockerfile.UseBuildKit,
+		"CrossCompile":       crossCompile,
+		"WithLinkerdAwait":   cfg.Dockerfile.WithLinkerdAwait,
 	}))
 
 	ignores := cfg.Dockerfile.ExtraIgnores

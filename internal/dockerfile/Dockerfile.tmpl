@@ -10,15 +10,18 @@
 
 {{ end -}}
 
-FROM {{ .DockerHubMirror }}golang:{{ .Constants.DefaultGoVersion }}-alpine{{ .Constants.DefaultAlpineImage }} AS builder
+FROM {{ if .CrossCompile }}--platform=$BUILDPLATFORM {{ end }}{{ .DockerHubMirror }}golang:{{ .Constants.DefaultGoVersion }}-alpine{{ .Constants.DefaultAlpineImage }} AS builder
 
-RUN apk add --no-cache --no-progress ca-certificates gcc git make musl-dev {{- range $dcfg.ExtraBuildPackages }} {{.}}{{ end }}
+RUN apk add --no-cache --no-progress ca-certificates{{ if not .CrossCompile }} gcc musl-dev{{ end }} git make {{- range $dcfg.ExtraBuildPackages }} {{.}}{{ end }}
 
 COPY . /src
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION # provided to 'make install'
+{{ if .CrossCompile -}}
+ARG TARGETOS TARGETARCH
+{{ end -}}
 RUN {{ if .UseBuildKit }}--mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-  {{ end }}make -C /src install PREFIX=/pkg GOTOOLCHAIN=local{{ if .Config.Golang.EnableVendoring }} GO_BUILDFLAGS='-mod vendor'{{ end }}
+  {{ end }}{{ if .CrossCompile }}CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH {{ end }}make -C /src install PREFIX=/pkg GOTOOLCHAIN=local{{ if .Config.Golang.EnableVendoring }} GO_BUILDFLAGS='-mod vendor'{{ end }}
 
 {{ range $dcfg.ExtraBuildDirectives -}}
 {{ . }}
@@ -67,6 +70,9 @@ FROM {{ .DockerHubMirror }}alpine:{{ .Constants.DefaultAlpineImage }}
 RUN addgroup -g 4200 appgroup \
   && adduser -h /home/appuser -s /sbin/nologin -G appgroup -D -u 4200 appuser
 
+{{ end -}}
+{{ if .WithLinkerdAwait -}}
+ARG TARGETARCH
 {{ end -}}
 # upgrade all installed packages to fix potential CVEs in advance
 # also remove apk package manager to hopefully remove dependency on OpenSSL 🤞
