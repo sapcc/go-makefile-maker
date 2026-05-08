@@ -93,6 +93,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	if sr.UsesPostgres {
 		extraTestPackages = append(extraTestPackages, "postgresql")
 	}
+	extraTestPackages = append(extraTestPackages, cfg.Dockerfile.ExtraTestPackages...)
 
 	must.Succeed(util.WriteFileFromTemplate("Dockerfile", dockerfileTemplate, map[string]any{
 		"Config": cfg,

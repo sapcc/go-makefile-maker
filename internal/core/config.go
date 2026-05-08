@@ -307,6 +307,7 @@ type DockerfileConfig struct {
 	ExtraDirectives      []string `yaml:"extraDirectives"`
 	ExtraIgnores         []string `yaml:"extraIgnores"`
 	ExtraPackages        []string `yaml:"extraPackages"`
+	ExtraTestPackages    []string `yaml:"extraTestPackages"`
 	RunAsRoot            bool     `yaml:"runAsRoot"`
 	UseBuildKit          bool     `yaml:"useBuildKit"`
 	WithLinkerdAwait     bool     `yaml:"withLinkerdAwait"`
