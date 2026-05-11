@@ -300,6 +300,7 @@ type EnvRcConfig struct {
 type DockerfileConfig struct {
 	Enabled              bool         `yaml:"enabled"`
 	CheckEnv             []string     `yaml:"checkEnv"`
+	SkipTestTarget       bool         `yaml:"skipTestTarget"`
 	CrossCompile         Option[bool] `yaml:"crossCompile"`
 	Entrypoint           []string     `yaml:"entrypoint"`
 	ExtraBuildDirectives []string     `yaml:"extraBuildDirectives"`
