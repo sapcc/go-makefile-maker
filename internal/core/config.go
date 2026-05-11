@@ -298,18 +298,19 @@ type EnvRcConfig struct {
 
 // DockerfileConfig appears in type Configuration.
 type DockerfileConfig struct {
-	Enabled              bool     `yaml:"enabled"`
-	CheckEnv             []string `yaml:"checkEnv"`
-	Entrypoint           []string `yaml:"entrypoint"`
-	ExtraBuildDirectives []string `yaml:"extraBuildDirectives"`
-	ExtraBuildPackages   []string `yaml:"extraBuildPackages"`
-	ExtraBuildStages     []string `yaml:"extraBuildStages"`
-	ExtraDirectives      []string `yaml:"extraDirectives"`
-	ExtraIgnores         []string `yaml:"extraIgnores"`
-	ExtraPackages        []string `yaml:"extraPackages"`
-	RunAsRoot            bool     `yaml:"runAsRoot"`
-	UseBuildKit          bool     `yaml:"useBuildKit"`
-	WithLinkerdAwait     bool     `yaml:"withLinkerdAwait"`
+	Enabled              bool         `yaml:"enabled"`
+	CheckEnv             []string     `yaml:"checkEnv"`
+	CrossCompile         Option[bool] `yaml:"crossCompile"`
+	Entrypoint           []string     `yaml:"entrypoint"`
+	ExtraBuildDirectives []string     `yaml:"extraBuildDirectives"`
+	ExtraBuildPackages   []string     `yaml:"extraBuildPackages"`
+	ExtraBuildStages     []string     `yaml:"extraBuildStages"`
+	ExtraDirectives      []string     `yaml:"extraDirectives"`
+	ExtraIgnores         []string     `yaml:"extraIgnores"`
+	ExtraPackages        []string     `yaml:"extraPackages"`
+	RunAsRoot            bool         `yaml:"runAsRoot"`
+	UseBuildKit          bool         `yaml:"useBuildKit"`
+	WithLinkerdAwait     bool         `yaml:"withLinkerdAwait"`
 }
 
 // ControllerGen appears in type Configuration.
