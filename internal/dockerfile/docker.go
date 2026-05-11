@@ -7,6 +7,7 @@ import (
 	_ "embed"
 	"fmt"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/sapcc/go-bits/logg"
@@ -85,7 +86,10 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		dockerHubMirror = "keppel.eu-de-1.cloud.sap/ccloud-dockerhub-mirror/library/"
 	}
 
-	var extraTestPackages []string
+	// testing also includes building all binaries, so we must install the extra_build_packages during the test phase, too
+	extraTestPackages := slices.Clone(cfg.Dockerfile.ExtraBuildPackages)
+
+	// install additional runtime dependencies for linters and tests
 	reuseEnabled := cfg.Reuse.Enabled.UnwrapOr(true)
 	if reuseEnabled {
 		extraTestPackages = append(extraTestPackages, "py3-pip")
