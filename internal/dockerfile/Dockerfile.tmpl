@@ -27,6 +27,8 @@ RUN {{ if .UseBuildKit }}--mount=type=cache,target=/go/pkg/mod \
 {{ . }}
 
 {{ end -}}
+
+{{ if .WithTestTarget -}}
 ################################################################################
 
 # To only build the tests run: docker build . --target test
@@ -61,6 +63,7 @@ USER 4200:4200
 RUN cd /src \
   && git config --global --add safe.directory /src \
   && {{ range $dcfg.CheckEnv }}{{ . }} {{ end }}make build/cover.out
+{{ end -}}
 
 ################################################################################
 
