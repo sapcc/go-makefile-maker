@@ -36,6 +36,26 @@ renovate:
   enabled: true
   assignees:
     - SuperSandro2000
+  customManagers:
+    - customType: regex
+      description: Update GitHub Actions in constants.go (major-only versions)
+      managerFilePatterns:
+        - internal/core/constants.go
+      matchStrings:
+        - '\w+\s*=\s*"(?<depName>[\w-]+/[\w-]+)@v(?<currentValue>\d+)"'
+        - '\w+\s*=\s*"(?<depName>[\w-]+/[\w-]+/[\w-]+)@v(?<currentValue>\d+)"'
+      datasourceTemplate: github-releases
+      versioningTemplate: "regex:^v?(?<major>\\d+)$"
+      extractVersionTemplate: "^v(?<version>\\d+)"
+    - customType: regex
+      description: Update GitHub Actions in constants.go (semver versions)
+      managerFilePatterns:
+        - internal/core/constants.go
+      matchStrings:
+        - '\w+\s*=\s*"(?<depName>[\w-]+/[\w-]+)@v(?<currentValue>\d+\.\d+\.\d+)"'
+        - '\w+\s*=\s*"(?<depName>[\w-]+/[\w-]+/[\w-]+)@v(?<currentValue>\d+\.\d+\.\d+)"'
+      datasourceTemplate: github-releases
+      extractVersionTemplate: "^v(?<version>.*)$"
 
 reuse:
   annotations:
