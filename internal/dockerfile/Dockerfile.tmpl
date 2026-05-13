@@ -28,7 +28,7 @@ RUN {{ if .UseBuildKit }}--mount=type=cache,target=/go/pkg/mod \
 
 {{ end -}}
 
-{{ if not .SkipTestTarget -}}
+{{ if .WithTestTarget -}}
 ################################################################################
 
 # To only build the tests run: docker build . --target test
