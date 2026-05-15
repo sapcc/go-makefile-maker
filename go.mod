@@ -8,7 +8,7 @@ require (
 	github.com/spf13/pflag v1.0.10
 	go.xyrillian.de/gg v1.7.0
 	go.yaml.in/yaml/v3 v3.0.4
-	golang.org/x/mod v0.35.0
+	golang.org/x/mod v0.36.0
 )
 
 require github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
