@@ -7,7 +7,7 @@ const (
 	DefaultAlpineImage         = "3.23"
 	DefaultGoVersion           = "1.26.3"
 	DefaultPostgresVersion     = "18"
-	DefaultLinkerdAwaitVersion = "0.2.7"
+	DefaultLinkerdAwaitVersion = "0.3.2"
 	DefaultGitHubComRunsOn     = "ubuntu-latest"
 )
 
