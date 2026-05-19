@@ -18,6 +18,10 @@ COPY . /src
 ARG BININFO_BUILD_DATE BININFO_COMMIT_HASH BININFO_VERSION # provided to 'make install'
 {{ if .CrossCompile -}}
 ARG TARGETOS TARGETARCH
+RUN if [ -z "$TARGETOS" ] || [ -z "$TARGETARCH" ]; then \
+      echo 'This image must be built with BuildKit (otherwise the required variables $TARGETOS and $TARGETARCH will not be present). If you cannot enable BuildKit, pass them explicitly via --build-arg.' >&2; \
+      exit 1; \
+    fi
 {{ end -}}
 RUN {{ if .UseBuildKit }}--mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
@@ -73,6 +77,10 @@ RUN addgroup -g 4200 appgroup \
 {{ end -}}
 {{ if .WithLinkerdAwait -}}
 ARG TARGETARCH
+RUN if [ -z "$TARGETARCH" ]; then \
+      echo 'This image must be built with BuildKit (otherwise the required variable $TARGETARCH will not be present). If you cannot enable BuildKit, pass it explicitly via --build-arg.' >&2; \
+      exit 1; \
+    fi
 {{ end -}}
 # upgrade all installed packages to fix potential CVEs in advance
 # also remove apk package manager to hopefully remove dependency on OpenSSL 🤞
