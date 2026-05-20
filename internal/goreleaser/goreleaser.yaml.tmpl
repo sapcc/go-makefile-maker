@@ -6,7 +6,7 @@ version: 2
 archives:
   - name_template: '{{ .nameTemplate }}'
 {{- if .format }}
-    format: {{ .format }}
+    formats: [ {{ .format }} ]
 {{- end }}
     format_overrides:
       - goos: windows
