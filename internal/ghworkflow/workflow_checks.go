@@ -67,20 +67,6 @@ func checksWorkflow(cfg core.Configuration) {
 		})
 	}
 
-	if ghwCfg.SecurityChecks.IsEnabled() {
-		// we are not using golang/govulncheck-action because that always wants to install go again
-		// https://github.com/golang/govulncheck-action/blob/master/action.yml
-		j.addStep(jobStep{
-			Name: "Install govulncheck",
-			Run:  "go install golang.org/x/vuln/cmd/govulncheck@latest",
-		})
-
-		j.addStep(jobStep{
-			Name: "Run govulncheck",
-			Run:  "govulncheck -format text ./...",
-		})
-	}
-
 	w.Jobs = map[string]job{"checks": j}
 
 	writeWorkflowToFile(w)

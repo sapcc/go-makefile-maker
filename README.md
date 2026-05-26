@@ -785,10 +785,6 @@ If `securityChecks` is enabled then it will generate the following workflows:
   will raise an error if any new dependencies have existing vulnerabilities.
   It uses the [GitHub Advisory Database](https://github.com/advisories) as a source.
 
-* [govulncheck] workflow will scan your dependencies for vulnerabilities and
-  will raise an error if any dependency has an existing vulnerability and the code path is in use.
-  It uses the [Go Vulnerability Database](https://pkg.go.dev/vuln/) as a source.
-
 ```yaml
 githubWorkflow:
   securityChecks:
@@ -819,7 +815,6 @@ githubWorkflow:
 [codeql]: https://codeql.github.com/
 [doublestar-pattern]: https://github.com/bmatcuk/doublestar#patterns
 [go-licence-detector]: https://github.com/elastic/go-licence-detector
-[govulncheck]: https://github.com/golang/vuln
 [ref-onpushpull]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths
 [ref-pattern-cheat-sheet]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
 [ref-runs-on]: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
