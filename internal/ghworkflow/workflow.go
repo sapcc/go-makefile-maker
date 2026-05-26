@@ -9,6 +9,8 @@ import (
 	"strings"
 
 	"github.com/sapcc/go-bits/must"
+
+	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
 func newWorkflow(name, defaultBranch string, ignorePaths []string) *workflow {
@@ -177,7 +179,7 @@ type jobStep struct {
 	// else it could break workflow when the action owner publishes an update.
 	// Some actions require inputs that you must set using the with keyword.
 	// Review the action's README file to determine the inputs required.
-	Uses string `yaml:"uses,omitempty"`
+	Uses util.RawString `yaml:"uses,omitempty"`
 
 	// A map of the input parameters defined by the action. Each input
 	// parameter is a key/value pair. Input parameters are set as environment
