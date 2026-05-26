@@ -20,7 +20,7 @@ func checksWorkflow(cfg core.Configuration) {
 		Name: "Run golangci-lint",
 		Uses: core.GolangciLintAction,
 		With: map[string]any{
-			"version": "latest",
+			"version": core.GolangCiLintVersion,
 		},
 	})
 
