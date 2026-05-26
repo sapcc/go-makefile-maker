@@ -79,13 +79,17 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 			Actions:      "read",
 			PullRequests: "write",
 		}
+		with := map[string]any{
+			"coverage-artifact-name": coverageArtifactName,
+			"coverage-file-name":     "cover.out",
+		}
+		if sr.ModulePath != "" {
+			with["root-package"] = sr.ModulePath
+		}
 		codeCov.addStep(jobStep{
 			Name: "Post coverage report",
 			Uses: core.GoCoverageReportAction,
-			With: map[string]any{
-				"coverage-artifact-name": coverageArtifactName,
-				"coverage-file-name":     "cover.out",
-			},
+			With: with,
 		})
 		w.Jobs["code_coverage"] = codeCov
 	}
