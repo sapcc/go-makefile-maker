@@ -36,6 +36,15 @@ renovate:
   enabled: true
   assignees:
     - SuperSandro2000
+  customManagers:
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - 'DefaultAlpineImage\s+=\s+"(?<currentValue>[^"]+)"'
+      depNameTemplate: alpine
+      datasourceTemplate: docker
+      versioningTemplate: docker
 
 reuse:
   annotations:
