@@ -6,7 +6,7 @@ github.com/hashicorp/golang-lru/v2/simplelru
 # github.com/sapcc/go-api-declarations v1.22.0
 ## explicit; go 1.24
 github.com/sapcc/go-api-declarations/bininfo
-# github.com/sapcc/go-bits v0.0.0-20260526084158-fcb8a0bff0a3
+# github.com/sapcc/go-bits v0.0.0-20260527114813-6f867d03059b
 ## explicit; go 1.26
 github.com/sapcc/go-bits/logg
 github.com/sapcc/go-bits/must
