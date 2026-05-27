@@ -57,6 +57,14 @@ renovate:
       managerFilePatterns:
         - /^internal\/core\/constants\.go$/
       matchStrings:
+        - 'DefaultPostgresVersion\s+=\s+"(?<currentValue>[^"]+)"'
+      depNameTemplate: postgres
+      datasourceTemplate: docker
+      versioningTemplate: docker
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
         - 'DefaultLinkerdAwaitVersion\s+=\s+"(?<currentValue>[^"]+)"'
       depNameTemplate: linkerd/linkerd-await
       datasourceTemplate: github-releases

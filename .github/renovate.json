@@ -87,6 +87,18 @@
     },
     {
       "customType": "regex",
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "postgres",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "DefaultPostgresVersion\\s+=\\s+\"(?<currentValue>[^\"]+)\""
+      ],
+      "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "linkerd/linkerd-await",
       "extractVersionTemplate": "^release/v(?<version>.*)$",
