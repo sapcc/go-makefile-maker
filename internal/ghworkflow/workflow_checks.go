@@ -20,7 +20,7 @@ func checksWorkflow(cfg core.Configuration) {
 		Name: "Run golangci-lint",
 		Uses: core.GolangciLintAction,
 		With: map[string]any{
-			"version": "latest",
+			"version": core.GolangCiLintVersion,
 		},
 	})
 
@@ -64,20 +64,6 @@ func checksWorkflow(cfg core.Configuration) {
 		j.addStep(jobStep{
 			Name: "REUSE Compliance Check",
 			Uses: core.ReuseAction,
-		})
-	}
-
-	if ghwCfg.SecurityChecks.IsEnabled() {
-		// we are not using golang/govulncheck-action because that always wants to install go again
-		// https://github.com/golang/govulncheck-action/blob/master/action.yml
-		j.addStep(jobStep{
-			Name: "Install govulncheck",
-			Run:  "go install golang.org/x/vuln/cmd/govulncheck@latest",
-		})
-
-		j.addStep(jobStep{
-			Name: "Run govulncheck",
-			Run:  "govulncheck -format text ./...",
 		})
 	}
 

@@ -71,6 +71,7 @@ const (
 
 	DownloadSyftAction     = "anchore/sbom-action/download-syft@v0"
 	GoCoverageReportAction = "fgrosse/go-coverage-report@v1.3.0"
+	GolangCiLintVersion    = "v2.12.2"
 	GolangciLintAction     = "golangci/golangci-lint-action@v9"
 	GoreleaserAction       = "goreleaser/goreleaser-action@v7"
 	ReuseAction            = "fsfe/reuse-action@v6"
