@@ -45,6 +45,14 @@ renovate:
       depNameTemplate: alpine
       datasourceTemplate: docker
       versioningTemplate: docker
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - 'DefaultGoVersion\s+=\s+"(?<currentValue>[^"]+)"'
+      depNameTemplate: go
+      datasourceTemplate: golang-version
+      versioningTemplate: semver
 
 reuse:
   annotations:

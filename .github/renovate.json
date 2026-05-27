@@ -72,6 +72,18 @@
         "DefaultAlpineImage\\s+=\\s+\"(?<currentValue>[^\"]+)\""
       ],
       "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "golang-version",
+      "depNameTemplate": "go",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "DefaultGoVersion\\s+=\\s+\"(?<currentValue>[^\"]+)\""
+      ],
+      "versioningTemplate": "semver"
     }
   ],
   "prHourlyLimit": 0,
