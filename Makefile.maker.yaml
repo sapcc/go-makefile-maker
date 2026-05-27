@@ -53,6 +53,15 @@ renovate:
       depNameTemplate: go
       datasourceTemplate: golang-version
       versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - 'DefaultLinkerdAwaitVersion\s+=\s+"(?<currentValue>[^"]+)"'
+      depNameTemplate: linkerd/linkerd-await
+      datasourceTemplate: github-releases
+      versioningTemplate: semver
+      extractVersionTemplate: ^release/v(?<version>.*)$
 
 reuse:
   annotations:

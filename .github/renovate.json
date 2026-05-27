@@ -84,6 +84,19 @@
         "DefaultGoVersion\\s+=\\s+\"(?<currentValue>[^\"]+)\""
       ],
       "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "linkerd/linkerd-await",
+      "extractVersionTemplate": "^release/v(?<version>.*)$",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "DefaultLinkerdAwaitVersion\\s+=\\s+\"(?<currentValue>[^\"]+)\""
+      ],
+      "versioningTemplate": "semver"
     }
   ],
   "prHourlyLimit": 0,
