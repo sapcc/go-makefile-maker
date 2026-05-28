@@ -60,6 +60,57 @@
       "dependencyDashboardApproval": true
     }
   ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "alpine",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "DefaultAlpineImage\\s+=\\s+\"(?<currentValue>[^\"]+)\""
+      ],
+      "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "golang-version",
+      "depNameTemplate": "go",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "DefaultGoVersion\\s+=\\s+\"(?<currentValue>[^\"]+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "postgres",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "DefaultPostgresVersion\\s+=\\s+\"(?<currentValue>[^\"]+)\""
+      ],
+      "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "linkerd/linkerd-await",
+      "extractVersionTemplate": "^release/v(?<version>.*)$",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "DefaultLinkerdAwaitVersion\\s+=\\s+\"(?<currentValue>[^\"]+)\""
+      ],
+      "versioningTemplate": "semver"
+    }
+  ],
   "prHourlyLimit": 0,
   "schedule": [
     "before 8am on Friday"
