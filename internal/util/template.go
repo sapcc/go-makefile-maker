@@ -13,6 +13,7 @@ import (
 	"text/template"
 
 	"github.com/sapcc/go-bits/logg"
+	"go.yaml.in/yaml/v3"
 )
 
 // WriteFileFromTemplate generates and writes the contents of `fileName` by
@@ -49,4 +50,25 @@ func WriteFileFromTemplate(fileName, templateCode string, data map[string]any) e
 func WriteFile(fileName string, contents []byte) error {
 	logg.Debug("-> writing file %s", fileName)
 	return os.WriteFile(fileName, contents, 0o666)
+}
+
+// RawString is a string type that marshals into a plain (unquoted) YAML scalar.
+// If the string contains " # ", everything from " # " onwards is emitted as an inline YAML comment
+// rather than as part of the scalar value.
+type RawString string
+
+// MarshalYAML implements yaml.Marshaler.
+func (s RawString) MarshalYAML() (any, error) {
+	value := string(s)
+	var comment string
+	if left, right, ok := strings.Cut(value, " # "); ok {
+		comment = "# " + right
+		value = strings.TrimSpace(left)
+	}
+	return &yaml.Node{
+		Kind:        yaml.ScalarNode,
+		Tag:         "!!str",
+		Value:       value,
+		LineComment: comment,
+	}, nil
 }
