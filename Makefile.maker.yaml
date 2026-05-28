@@ -70,6 +70,150 @@ renovate:
       datasourceTemplate: github-releases
       versioningTemplate: semver
       extractVersionTemplate: ^release/v(?<version>.*)$
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"actions/upload-artifact@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: actions/upload-artifact
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"github/codeql-action/init@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: github/codeql-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"github/codeql-action/analyze@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: github/codeql-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"github/codeql-action/autobuild@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: github/codeql-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"actions/checkout@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: actions/checkout
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"actions/setup-go@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: actions/setup-go
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"docker/login-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: docker/login-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"docker/metadata-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: docker/metadata-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"docker/setup-buildx-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: docker/setup-buildx-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"docker/setup-qemu-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: docker/setup-qemu-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"docker/build-push-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: docker/build-push-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"anchore/sbom-action/download-syft@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: anchore/sbom-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"fgrosse/go-coverage-report@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: fgrosse/go-coverage-report
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"golangci/golangci-lint-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: golangci/golangci-lint-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"goreleaser/goreleaser-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: goreleaser/goreleaser-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"fsfe/reuse-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: fsfe/reuse-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"crate-ci/typos@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: crate-ci/typos
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"azure/setup-helm@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: azure/setup-helm
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
 
 reuse:
   annotations:

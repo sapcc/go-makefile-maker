@@ -109,6 +109,222 @@
         "DefaultLinkerdAwaitVersion\\s+=\\s+\"(?<currentValue>[^\"]+)\""
       ],
       "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "actions/upload-artifact",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"actions/upload-artifact@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "github/codeql-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"github/codeql-action/init@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "github/codeql-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"github/codeql-action/analyze@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "github/codeql-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"github/codeql-action/autobuild@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "actions/checkout",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"actions/checkout@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "actions/setup-go",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"actions/setup-go@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "docker/login-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"docker/login-action@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "docker/metadata-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"docker/metadata-action@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "docker/setup-buildx-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"docker/setup-buildx-action@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "docker/setup-qemu-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"docker/setup-qemu-action@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "docker/build-push-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"docker/build-push-action@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "anchore/sbom-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"anchore/sbom-action/download-syft@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "fgrosse/go-coverage-report",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"fgrosse/go-coverage-report@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "golangci/golangci-lint-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"golangci/golangci-lint-action@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "goreleaser/goreleaser-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"goreleaser/goreleaser-action@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "fsfe/reuse-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"fsfe/reuse-action@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "crate-ci/typos",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"crate-ci/typos@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "azure/setup-helm",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"azure/setup-helm@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
     }
   ],
   "prHourlyLimit": 0,
