@@ -13,8 +13,8 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/util"
 )
 
-func newWorkflow(name, defaultBranch string, ignorePaths []string) *workflow {
-	return &workflow{
+func newWorkflow(name, defaultBranch string, ignorePaths []string) workflow {
+	return workflow{
 		Name: name,
 		On:   pushAndPRTriggers(defaultBranch, ignorePaths),
 		Permissions: permissions{
@@ -39,7 +39,7 @@ func (w workflow) getPath() string {
 	return filepath.Join(workflowDir, fileName+".yaml")
 }
 
-func (w workflow) deleteIf(condition bool) bool {
+func (w workflow) deleteUnless(condition bool) bool {
 	if !condition {
 		must.Succeed(os.RemoveAll(w.getPath()))
 		return true

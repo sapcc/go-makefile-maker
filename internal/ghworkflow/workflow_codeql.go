@@ -4,16 +4,18 @@
 package ghworkflow
 
 import (
+	. "go.xyrillian.de/gg/option"
+
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func codeQLWorkflow(cfg core.Configuration) {
+func codeQLWorkflow(cfg core.Configuration) Option[workflow] {
 	ghwCfg := cfg.GitHubWorkflow
 	w := newWorkflow("CodeQL", ghwCfg.Global.DefaultBranch, nil)
 	w.On.WorkflowDispatch.manualTrigger = true
 
-	if w.deleteIf(ghwCfg.SecurityChecks.IsEnabled()) {
-		return
+	if w.deleteUnless(ghwCfg.SecurityChecks.IsEnabled()) {
+		return None[workflow]()
 	}
 
 	w.Permissions.Actions = tokenScopeRead         // for github/codeql-action/init to get workflow details
@@ -41,7 +43,7 @@ func codeQLWorkflow(cfg core.Configuration) {
 		Name: "Perform CodeQL Analysis",
 		Uses: core.GetCodeqlAnalyzeAction(ghwCfg.IsSelfHostedRunner),
 	})
-	w.Jobs = map[string]job{"analyze": j}
 
-	writeWorkflowToFile(w)
+	w.Jobs = map[string]job{"analyze": j}
+	return Some(w)
 }

@@ -8,10 +8,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"go.yaml.in/yaml/v3"
-
 	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
+	. "go.xyrillian.de/gg/option"
+	"go.yaml.in/yaml/v3"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/golang"
@@ -20,7 +20,8 @@ import (
 const workflowDir = ".github/workflows"
 
 // Render renders GitHub workflows.
-func Render(cfg core.Configuration, sr golang.ScanResult) {
+// Returns a list of filenames for all files that were generated.
+func Render(cfg core.Configuration, sr golang.ScanResult) []string {
 	ghwCfg := cfg.GitHubWorkflow
 
 	must.Succeed(os.MkdirAll(workflowDir, 0o755))
@@ -32,17 +33,28 @@ func Render(cfg core.Configuration, sr golang.ScanResult) {
 	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "spell.yaml")))
 
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
+	var allWorkflows []Option[workflow]
 	if sr.GoVersion != "" {
-		checksWorkflow(cfg)
-		ciWorkflow(cfg, sr)
-		codeQLWorkflow(cfg)
+		allWorkflows = append(allWorkflows, checksWorkflow(cfg))
+		allWorkflows = append(allWorkflows, ciWorkflow(cfg, sr))
+		allWorkflows = append(allWorkflows, codeQLWorkflow(cfg))
 	}
-	helmWorkflow(cfg)
-	ghcrWorkflow(ghwCfg)
-	releaseWorkflow(cfg)
+	allWorkflows = append(allWorkflows, helmWorkflow(cfg))
+	allWorkflows = append(allWorkflows, ghcrWorkflow(ghwCfg))
+	allWorkflows = append(allWorkflows, releaseWorkflow(cfg))
+
+	var result []string
+	for _, workflowOrNone := range allWorkflows {
+		w, ok := workflowOrNone.Unpack()
+		if ok {
+			writeWorkflowToFile(w)
+			result = append(result, w.getPath())
+		}
+	}
+	return result
 }
 
-func writeWorkflowToFile(w *workflow) {
+func writeWorkflowToFile(w workflow) {
 	path := w.getPath()
 	logg.Debug("-> writing file %s", path)
 	f := must.Return(os.Create(path))

@@ -7,16 +7,18 @@ import (
 	"slices"
 	"strings"
 
+	. "go.xyrillian.de/gg/option"
+
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func helmWorkflow(cfg core.Configuration) {
+func helmWorkflow(cfg core.Configuration) Option[workflow] {
 	// https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#publishing-a-package-using-an-action
 	w := newWorkflow("Helm OCI Package GHCR", cfg.GitHubWorkflow.Global.DefaultBranch, nil)
 
-	if w.deleteIf(cfg.GitHubWorkflow.PushHelmChartToGhcr.Path.IsSome() &&
+	if w.deleteUnless(cfg.GitHubWorkflow.PushHelmChartToGhcr.Path.IsSome() &&
 		strings.HasPrefix(cfg.Metadata.URL, "https://github.com")) {
-		return
+		return None[workflow]()
 	}
 
 	var helmConfig = cfg.GitHubWorkflow.PushHelmChartToGhcr
@@ -120,7 +122,7 @@ func helmWorkflow(cfg core.Configuration) {
 		Name: "Push Helm Chart to " + registry,
 		Run:  "helm push ./chart/*.tgz oci://" + registry + "/${{ github.repository_owner }}/charts",
 	})
-	w.Jobs = map[string]job{"build-and-push-helm-package": j}
 
-	writeWorkflowToFile(w)
+	w.Jobs = map[string]job{"build-and-push-helm-package": j}
+	return Some(w)
 }

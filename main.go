@@ -116,9 +116,10 @@ func main() {
 	}
 
 	// Render GitHub workflows
+	var ghworkflowPaths []string
 	if cfg.GitHubWorkflow != nil {
 		logg.Debug("rendering GitHub Actions workflows")
-		ghworkflow.Render(cfg, sr)
+		ghworkflowPaths = ghworkflow.Render(cfg, sr)
 	}
 
 	// Render envrc file
@@ -130,7 +131,7 @@ func main() {
 		if cfg.Renovate.GoVersion == "" {
 			cfg.Renovate.GoVersion = sr.GoVersionMajorMinor
 		}
-		renovate.RenderConfig(cfg, sr)
+		renovate.RenderConfig(cfg, sr, ghworkflowPaths)
 	}
 
 	// Render REUSE config file

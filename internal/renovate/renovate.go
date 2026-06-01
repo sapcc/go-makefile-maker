@@ -40,7 +40,7 @@ type config struct {
 }
 
 // RenderConfig writes the renovate configuration files from the provided config and scan results.
-func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult) {
+func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generatedGHWorkflowPaths []string) {
 	isGoMakefileMakerRepo := scanResult.ModulePath == "github.com/sapcc/go-makefile-maker"
 	isInternalRenovate := strings.HasPrefix(cfg.Metadata.URL, "https://github.wdf.sap.corp")
 
@@ -135,6 +135,11 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult) {
 		renovateConfig.Extends = append(renovateConfig.Extends, "docker:enableMajor", "customManagers:dockerfileVersions")
 	} else {
 		renovateConfig.Extends = append(renovateConfig.Extends, "docker:disable")
+		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
+			MatchDepTypes:  []string{"action"},
+			MatchFileNames: generatedGHWorkflowPaths,
+			Enabled:        Some(false),
+		})
 	}
 	if scanResult.HasKubernetesDeps {
 		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{

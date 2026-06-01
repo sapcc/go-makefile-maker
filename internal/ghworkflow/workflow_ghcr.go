@@ -8,16 +8,17 @@ import (
 	"strings"
 
 	"github.com/sapcc/go-bits/logg"
+	. "go.xyrillian.de/gg/option"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) {
+func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) Option[workflow] {
 	// https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#publishing-a-package-using-an-action
 	w := newWorkflow("Container Registry GHCR", cfg.Global.DefaultBranch, nil)
 
-	if w.deleteIf(cfg.PushContainerToGhcr.Enabled) {
-		return
+	if w.deleteUnless(cfg.PushContainerToGhcr.Enabled) {
+		return None[workflow]()
 	}
 
 	w.Permissions.Contents = tokenScopeRead
@@ -120,7 +121,7 @@ type=sha,format=long
 			"platforms": platforms,
 		},
 	})
-	w.Jobs = map[string]job{"build-and-push-image": j}
 
-	writeWorkflowToFile(w)
+	w.Jobs = map[string]job{"build-and-push-image": j}
+	return Some(w)
 }

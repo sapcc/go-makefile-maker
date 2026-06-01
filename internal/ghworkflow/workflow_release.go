@@ -3,15 +3,19 @@
 
 package ghworkflow
 
-import "github.com/sapcc/go-makefile-maker/internal/core"
+import (
+	. "go.xyrillian.de/gg/option"
 
-func releaseWorkflow(cfg core.Configuration) {
+	"github.com/sapcc/go-makefile-maker/internal/core"
+)
+
+func releaseWorkflow(cfg core.Configuration) Option[workflow] {
 	// https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#publishing-a-package-using-an-action
 	ghwCfg := cfg.GitHubWorkflow
 	w := newWorkflow("goreleaser", ghwCfg.Global.DefaultBranch, nil)
 
-	if w.deleteIf(ghwCfg.Release.Enabled.UnwrapOr(cfg.GoReleaser.ShouldCreateConfig())) {
-		return
+	if w.deleteUnless(ghwCfg.Release.Enabled.UnwrapOr(cfg.GoReleaser.ShouldCreateConfig())) {
+		return None[workflow]()
 	}
 
 	w.Permissions.Contents = tokenScopeWrite
@@ -49,7 +53,7 @@ func releaseWorkflow(cfg core.Configuration) {
 			"GITHUB_TOKEN": "${{ secrets.GITHUB_TOKEN }}",
 		},
 	})
-	w.Jobs = map[string]job{"release": j}
 
-	writeWorkflowToFile(w)
+	w.Jobs = map[string]job{"release": j}
+	return Some(w)
 }

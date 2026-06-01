@@ -6,11 +6,13 @@ package ghworkflow
 import (
 	"fmt"
 
+	. "go.xyrillian.de/gg/option"
+
 	"github.com/sapcc/go-makefile-maker/internal/core"
 	"github.com/sapcc/go-makefile-maker/internal/golang"
 )
 
-func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
+func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) Option[workflow] {
 	ghwCfg := cfg.GitHubWorkflow
 	ignorePaths := ghwCfg.CI.IgnorePaths
 	if len(ignorePaths) == 0 {
@@ -21,8 +23,8 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 	w.On.WorkflowDispatch.manualTrigger = true
 	w.On.Push.Branches = []string{ghwCfg.Global.DefaultBranch}
 
-	if w.deleteIf(ghwCfg.CI.Enabled) {
-		return
+	if w.deleteUnless(ghwCfg.CI.Enabled) {
+		return None[workflow]()
 	}
 
 	w.Jobs = make(map[string]job)
@@ -94,5 +96,5 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) {
 		w.Jobs["code_coverage"] = codeCov
 	}
 
-	writeWorkflowToFile(w)
+	return Some(w)
 }
