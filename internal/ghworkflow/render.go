@@ -42,6 +42,7 @@ func Render(cfg core.Configuration, sr golang.ScanResult) []string {
 	allWorkflows = append(allWorkflows, helmWorkflow(cfg))
 	allWorkflows = append(allWorkflows, ghcrWorkflow(ghwCfg))
 	allWorkflows = append(allWorkflows, releaseWorkflow(cfg))
+	allWorkflows = append(allWorkflows, releasePRWorkflow(cfg))
 
 	var result []string
 	for _, workflowOrNone := range allWorkflows {
