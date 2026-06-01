@@ -186,6 +186,7 @@ dockerfile:
   enabled: true
   checkEnv:
     - CHECK_SKIPS_FUNCTIONAL_TEST=true
+  withTestTarget: false # explicit false omits `test` target in the Dockerfile; otherwise the target is always set up
   entrypoint: [ "/bin/bash", "--", "--arg" ]
   extraBuildStages:
     - |
