@@ -135,7 +135,9 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 	if isGoMakefileMakerRepo {
 		renovateConfig.Extends = append(renovateConfig.Extends, "docker:enableMajor", "customManagers:dockerfileVersions")
 	} else {
-		renovateConfig.Extends = append(renovateConfig.Extends, "docker:disable")
+		if cfg.Dockerfile.Enabled {
+			renovateConfig.Extends = append(renovateConfig.Extends, "docker:disable")
+		}
 		if len(generatedGHWorkflowPaths) > 0 {
 			renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
 				MatchDepTypes:  []string{"action"},
