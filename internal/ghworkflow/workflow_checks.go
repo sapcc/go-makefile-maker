@@ -9,7 +9,8 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
 
-// basically a collection of other linters and checks which run fast to reduce the amount of created githbu action workflows
+// This workflow contains only linters and checks which run fast.
+// It runs before the other workflows to reduce the amount of created GitHub Action workflows in case of basic errors.
 func checksWorkflow(cfg core.Configuration) Option[workflow] {
 	ghwCfg := cfg.GitHubWorkflow
 	w := newWorkflow("Checks", ghwCfg.Global.DefaultBranch, nil)
