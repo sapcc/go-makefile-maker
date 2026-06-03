@@ -130,7 +130,8 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 		})
 	}
 
-	// Only enable Dockerfile and github-actions updates for go-makefile-maker itself.
+	// in repos that are not go-makefile-maker itself, disable updates of
+	// Docker images and GitHub actions that are managed by go-makefile-maker
 	if isGoMakefileMakerRepo {
 		renovateConfig.Extends = append(renovateConfig.Extends, "docker:enableMajor", "customManagers:dockerfileVersions")
 	} else {
@@ -143,6 +144,7 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 			})
 		}
 	}
+
 	if scanResult.HasKubernetesDeps {
 		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
 			MatchPackageNames: []string{`/^k8s.io\//`},
