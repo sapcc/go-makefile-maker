@@ -7,7 +7,7 @@ import "github.com/sapcc/go-makefile-maker/internal/util"
 
 const (
 	DefaultAlpineImage         = "3.23"
-	DefaultGoVersion           = "1.26.3"
+	DefaultGoVersion           = "1.26.4"
 	DefaultPostgresVersion     = "18"
 	DefaultLinkerdAwaitVersion = "0.3.3"
 	DefaultGitHubComRunsOn     = "ubuntu-latest"
