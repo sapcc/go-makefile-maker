@@ -135,11 +135,13 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 		renovateConfig.Extends = append(renovateConfig.Extends, "docker:enableMajor", "customManagers:dockerfileVersions")
 	} else {
 		renovateConfig.Extends = append(renovateConfig.Extends, "docker:disable")
-		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
-			MatchDepTypes:  []string{"action"},
-			MatchFileNames: generatedGHWorkflowPaths,
-			Enabled:        Some(false),
-		})
+		if len(generatedGHWorkflowPaths) > 0 {
+			renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
+				MatchDepTypes:  []string{"action"},
+				MatchFileNames: generatedGHWorkflowPaths,
+				Enabled:        Some(false),
+			})
+		}
 	}
 	if scanResult.HasKubernetesDeps {
 		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
