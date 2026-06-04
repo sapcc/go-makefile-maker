@@ -131,7 +131,7 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 	}
 
 	// in repos that are not go-makefile-maker itself, disable updates of
-	// Docker images and GitHub actions that are managed by go-makefile-maker
+	// Docker images and everything in the GitHub Actions managed by go-makefile-maker
 	if isGoMakefileMakerRepo {
 		renovateConfig.Extends = append(renovateConfig.Extends, "docker:enableMajor", "customManagers:dockerfileVersions")
 	} else {
@@ -140,7 +140,6 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 		}
 		if len(generatedGHWorkflowPaths) > 0 {
 			renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
-				MatchDepTypes:  []string{"action"},
 				MatchFileNames: generatedGHWorkflowPaths,
 				Enabled:        Some(false),
 			})
