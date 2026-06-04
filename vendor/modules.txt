@@ -6,7 +6,7 @@ github.com/hashicorp/golang-lru/v2/simplelru
 # github.com/sapcc/go-api-declarations v1.22.0
 ## explicit; go 1.24
 github.com/sapcc/go-api-declarations/bininfo
-# github.com/sapcc/go-bits v0.0.0-20260604095421-6bd206943957
+# github.com/sapcc/go-bits v0.0.0-20260604144931-8ccecc37024f
 ## explicit; go 1.26
 github.com/sapcc/go-bits/logg
 github.com/sapcc/go-bits/must
@@ -14,7 +14,7 @@ github.com/sapcc/go-bits/regexpext
 # github.com/spf13/pflag v1.0.10
 ## explicit; go 1.12
 github.com/spf13/pflag
-# go.xyrillian.de/gg v1.8.1
+# go.xyrillian.de/gg v1.9.0
 ## explicit; go 1.24
 go.xyrillian.de/gg/option
 # go.yaml.in/yaml/v3 v3.0.4
