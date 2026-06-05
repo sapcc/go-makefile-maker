@@ -77,6 +77,6 @@ const (
 	GolangciLintAction     = util.RawString("golangci/golangci-lint-action@82606bf257cbaff209d206a39f5134f0cfbfd2ee # v9")
 	GoreleaserAction       = util.RawString("goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7")
 	ReuseAction            = util.RawString("fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6")
-	TyposAction            = util.RawString("crate-ci/typos@44e2070e6017f834bf069503acb35ca0ca0b75f2 # v1")
+	TyposAction            = util.RawString("crate-ci/typos@37bb98842b0d8c4ffebdb75301a13db0267cef89 # v1")
 	HelmSetupAction        = util.RawString("azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5")
 )
