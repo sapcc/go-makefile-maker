@@ -70,6 +70,7 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 		Extends: []string{
 			"config:recommended",
 			"default:pinDigestsDisabled",
+			"docker:pinDigests",
 			"mergeConfidence:all-badges",
 		},
 		Assignees: cfg.Renovate.Assignees,
