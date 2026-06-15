@@ -197,10 +197,11 @@ type GithubWorkflowConfiguration struct {
 
 // CIWorkflowConfig appears in type Configuration.
 type CIWorkflowConfig struct {
-	Enabled           bool     `yaml:"enabled"`
-	PrepareMakeTarget string   `yaml:"prepareMakeTarget"`
-	IgnorePaths       []string `yaml:"ignorePaths"`
-	RunsOn            []string `yaml:"runOn"`
+	Enabled           bool         `yaml:"enabled"`
+	PrepareMakeTarget string       `yaml:"prepareMakeTarget"`
+	IgnorePaths       []string     `yaml:"ignorePaths"`
+	RunsOn            []string     `yaml:"runOn"`
+	InstallPostgres   Option[bool] `yaml:"installPostgres"`
 }
 
 // LicenseWorkflowConfig appears in type Configuration.

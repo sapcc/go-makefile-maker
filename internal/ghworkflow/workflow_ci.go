@@ -43,7 +43,7 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) Option[workflow] {
 	testCmd := []string{
 		"make build/cover.out",
 	}
-	if sr.UsesPostgres {
+	if sr.UsesPostgres && ghwCfg.CI.InstallPostgres.UnwrapOr(true) {
 		testCmd = append([]string{
 			"sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y",
 			"sudo apt-get install -y --no-install-recommends postgresql-" + core.DefaultPostgresVersion,
