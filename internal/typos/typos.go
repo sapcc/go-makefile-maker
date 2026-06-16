@@ -26,7 +26,8 @@ func RenderConfig(cfg core.Configuration) {
 	extendExcludes = append(extendExcludes, cfg.Typos.ExtendExcludes...)
 
 	must.Succeed(util.WriteFileFromTemplate(".typos.toml", typosConfigTemplate, map[string]any{
-		"ExtendExcludes": extendExcludes,
-		"ExtendWords":    cfg.Typos.ExtendWords,
+		"ExtendExcludes":            extendExcludes,
+		"ExtendIgnoreIdentifiersRe": cfg.Typos.ExtendIgnoreIdentifiersRe,
+		"ExtendWords":               cfg.Typos.ExtendWords,
 	}))
 }

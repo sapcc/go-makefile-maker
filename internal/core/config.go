@@ -163,9 +163,10 @@ type SpellCheckConfiguration struct {
 
 // TyposConfiguration appears in type Configuration.
 type TyposConfiguration struct {
-	Enabled        Option[bool]      `yaml:"enabled"`
-	ExtendExcludes []string          `yaml:"extendExcludes"`
-	ExtendWords    map[string]string `yaml:"extendWords"`
+	Enabled                   Option[bool]      `yaml:"enabled"`
+	ExtendExcludes            []string          `yaml:"extendExcludes"`
+	ExtendIgnoreIdentifiersRe []string          `yaml:"extendIgnoreIdentifiersRe"`
+	ExtendWords               map[string]string `yaml:"extendWords"`
 }
 
 // IsEnabled encodes that the default state for the Enabled field is `true`.

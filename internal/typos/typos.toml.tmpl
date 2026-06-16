@@ -6,6 +6,16 @@
 {{ range $key, $value := .ExtendWords -}}
 {{$key}} = "{{$value}}"
 {{ end }}
+
+[default]
+{{- if .ExtendIgnoreIdentifiersRe }}
+extend-ignore-identifiers-re = [
+{{- range .ExtendIgnoreIdentifiersRe }}
+  "{{ . }}",
+{{- end }}
+]
+{{- end }}
+
 [files]
 extend-exclude = [
 {{- range .ExtendExcludes}}
