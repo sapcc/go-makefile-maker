@@ -137,7 +137,8 @@ type job struct {
 }
 
 type jobContainer struct {
-	Image string `yaml:"image,omitempty"`
+	Image   string `yaml:"image,omitempty"`
+	Options string `yaml:"options,omitempty"`
 }
 
 type jobStrategy struct {
