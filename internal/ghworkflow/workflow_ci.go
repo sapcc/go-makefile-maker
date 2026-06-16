@@ -27,8 +27,14 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) Option[workflow] {
 		return None[workflow]()
 	}
 
+	containerImage := fmt.Sprintf("keppel.eu-de-1.cloud.sap/ccloud/shared-base-images/golang-alpine-ci:%s-latest", sr.GoVersion)
+
 	w.Jobs = make(map[string]job)
 	build := baseJobWithGo("Build", cfg)
+	// technically not required here, but running the build and tests in different environments is too big a source for edge cases
+	if cfg.GitHubWorkflow.IsSelfHostedRunner {
+		build.Container.Image = containerImage
+	}
 	if len(cfg.Binaries) > 0 {
 		build.addStep(jobStep{
 			Name: "Build all binaries",
@@ -39,11 +45,15 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) Option[workflow] {
 	w.Jobs["build"] = build
 
 	testJob := baseJobWithGo("Test", cfg)
+	if cfg.GitHubWorkflow.IsSelfHostedRunner {
+		testJob.Container.Image = containerImage
+	}
 	testJob.Needs = []string{"build"}
 	testCmd := []string{
 		"make build/cover.out",
 	}
-	if sr.UsesPostgres {
+	// Self-hosted runners use an Alpine Docker container where Postgres is already installed
+	if sr.UsesPostgres && !cfg.GitHubWorkflow.IsSelfHostedRunner {
 		testCmd = append([]string{
 			"sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y",
 			"sudo apt-get install -y --no-install-recommends postgresql-" + core.DefaultPostgresVersion,

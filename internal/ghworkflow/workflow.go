@@ -111,6 +111,9 @@ type job struct {
 	// Ref: https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
 	RunsOn any `yaml:"runs-on,flow"`
 
+	// Run the steps in a custom container. This can be used to ship tools and packages on restricted self-hosted runners.
+	Container jobContainer `yaml:"container,omitempty"`
+
 	// A map of environment variables that are available to all steps in the job.
 	Env map[string]string `yaml:"env,omitempty"`
 
@@ -131,6 +134,10 @@ type job struct {
 	// specify the access for any of the scopes, all of those that are not specified are
 	// set to 'none'.
 	Permissions permissions `yaml:"permissions,omitempty"`
+}
+
+type jobContainer struct {
+	Image string `yaml:"image,omitempty"`
 }
 
 type jobStrategy struct {
