@@ -7,8 +7,8 @@
 {{$key}} = "{{$value}}"
 {{ end }}
 
-[default]
 {{- if .ExtendIgnoreIdentifiersRe }}
+[default]
 extend-ignore-identifiers-re = [
 {{- range .ExtendIgnoreIdentifiersRe }}
   "{{ . }}",
