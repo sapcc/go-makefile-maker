@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company
 # SPDX-License-Identifier: Apache-2.0
 
+ARG IMAGE={{ .DockerHubMirror }}golang:{{ .Constants.DefaultGoVersion }}-alpine{{ .Constants.DefaultAlpineImage }}
+
 {{- $dcfg := .Config.Dockerfile }}
 
 {{ range $dcfg.ExtraBuildStages -}}
@@ -10,7 +12,7 @@
 
 {{ end -}}
 
-FROM {{ if .CrossCompile }}--platform=$BUILDPLATFORM {{ end }}{{ .DockerHubMirror }}golang:{{ .Constants.DefaultGoVersion }}-alpine{{ .Constants.DefaultAlpineImage }} AS builder
+FROM {{ if .CrossCompile }}--platform=$BUILDPLATFORM {{ end }}$IMAGE AS builder
 
 RUN apk add --no-cache --no-progress ca-certificates{{ if not .CrossCompile }} gcc musl-dev{{ end }} git make {{- range $dcfg.ExtraBuildPackages }} {{.}}{{ end }}
 
@@ -38,7 +40,8 @@ RUN {{ if .UseBuildKit }}--mount=type=cache,target=/go/pkg/mod \
 # To only build the tests run: docker build . --target test
 # We can't do `FROM builder AS test` here, as then make prepare-static-check would not be cached during interactive use when developing
 # and caching all the tools, especially golangci-lint, takes a few minutes.
-FROM {{ .DockerHubMirror }}golang:{{ .Constants.DefaultGoVersion }}-alpine{{ .Constants.DefaultAlpineImage }} AS test
+# Optionally the base image can be overwritten with one where the tools are already installed and cached in.
+FROM $IMAGE AS test
 
 COPY Makefile /src/Makefile
 
@@ -68,7 +71,7 @@ USER 4200:4200
 RUN cd /src \
   && { if test -d .git; then git config --global --add safe.directory /src; fi; } \
   && {{ range $dcfg.CheckEnv }}{{ . }} {{ end }}make build/cover.out
-{{ end -}}
+{{- end }}
 
 ################################################################################
 
