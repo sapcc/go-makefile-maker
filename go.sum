@@ -6,8 +6,8 @@ github.com/sapcc/go-bits v0.0.0-20260626143732-3999ce9f8fdc h1:oflzbbZ1C2tc0EMCw
 github.com/sapcc/go-bits v0.0.0-20260626143732-3999ce9f8fdc/go.mod h1:WIr0qdewi9zEDh4egX9c7zB4e6JwrzTS3AA02y0EVxk=
 github.com/spf13/pflag v1.0.10 h1:4EBh2KAYBwaONj6b2Ye1GiHfwjqyROoF4RwYO+vPwFk=
 github.com/spf13/pflag v1.0.10/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
-go.xyrillian.de/gg v1.10.1 h1:V6oSU+tl25vaRQaMy6Y3jl/0kNoY/a25x4WIk5zQFAw=
-go.xyrillian.de/gg v1.10.1/go.mod h1:DoO4fQSWIrBRlNlCjVyrYM0kAEBt/Jg2GkMH+cGRZ0k=
+go.xyrillian.de/gg v1.11.1 h1:7P3kDFkTmR7jx2riYi0GwX5uhgrsL37QSrN16xH/n8E=
+go.xyrillian.de/gg v1.11.1/go.mod h1:DoO4fQSWIrBRlNlCjVyrYM0kAEBt/Jg2GkMH+cGRZ0k=
 go.yaml.in/yaml/v3 v3.0.4 h1:tfq32ie2Jv2UxXFdLJdh3jXuOzWiL1fo0bu/FbuKpbc=
 go.yaml.in/yaml/v3 v3.0.4/go.mod h1:DhzuOOF2ATzADvBadXxruRBLzYTpT36CKvDb3+aBEFg=
 golang.org/x/mod v0.37.0 h1:vF1DjpVEshcIqoEaauuHebaLk1O1forxjxBaVn884JQ=
