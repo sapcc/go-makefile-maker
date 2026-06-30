@@ -73,6 +73,12 @@ func RenderConfig(cfg core.Configuration) {
 		branch = cfg.GitHubWorkflow.Global.DefaultBranch
 	}
 
+	releasePR := false
+	if cfg.GitHubWorkflow != nil {
+		releaseEnabled := cfg.GitHubWorkflow.Release.Enabled.UnwrapOr(cfg.GoReleaser.ShouldCreateConfig())
+		releasePR = releaseEnabled && cfg.GitHubWorkflow.Release.ReleasePR.UnwrapOr(true)
+	}
+
 	must.Succeed(util.WriteFileFromTemplate(".goreleaser.yaml", goreleaserTemplate, map[string]any{
 		"nameTemplate": nameTemplate,
 		"format":       cfg.GoReleaser.Format,
@@ -84,6 +90,7 @@ func RenderConfig(cfg core.Configuration) {
 		"githubDomain": metadataURL,
 	}))
 	must.Succeed(util.WriteFileFromTemplate("RELEASE.md", releaseMDTemplate, map[string]any{
-		"branch": branch,
+		"branch":    branch,
+		"releasePR": releasePR,
 	}))
 }

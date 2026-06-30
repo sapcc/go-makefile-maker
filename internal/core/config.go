@@ -233,6 +233,8 @@ type PushHelmChartToGhcrConfig struct {
 // ReleaseWorkflowConfig appears in type ReleaseWorkflowConfig.
 type ReleaseWorkflowConfig struct {
 	Enabled Option[bool] `yaml:"enabled"`
+	// ReleasePR opts into PR-driven release automation. Defaults to true.
+	ReleasePR Option[bool] `yaml:"releasePR"`
 }
 
 // SecurityChecksWorkflowConfig appears in type Configuration.
@@ -455,6 +457,13 @@ func (c *Configuration) Validate() {
 			if len(ghwCfg.CI.RunsOn) > 1 && !strings.HasPrefix(ghwCfg.CI.RunsOn[0], "ubuntu") {
 				logg.Fatal("githubWorkflow.ci.runOn must only define a single Ubuntu based runner when githubWorkflow.ci.enabled is true")
 			}
+		}
+
+		// Validate Release workflow configuration. Only flag explicit `releasePR: true`
+		// without a release workflow being rendered; the default-on case is silently
+		// inert when the release workflow itself is disabled.
+		if ghwCfg.Release.ReleasePR.UnwrapOr(false) && !ghwCfg.Release.Enabled.UnwrapOr(c.GoReleaser.ShouldCreateConfig()) {
+			logg.Fatal("githubWorkflow.release.releasePR requires githubWorkflow.release.enabled (or goReleaser.createConfig) to be true")
 		}
 	}
 
