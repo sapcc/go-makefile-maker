@@ -56,7 +56,7 @@ func baseJob(name string, cfg *core.GithubWorkflowConfiguration) job {
 		strategy.Matrix.OS = cfg.CI.RunsOn
 	}
 
-	return job{
+	j := job{
 		Name:   name,
 		Env:    envs,
 		RunsOn: runsOn,
@@ -70,6 +70,18 @@ func baseJob(name string, cfg *core.GithubWorkflowConfiguration) job {
 		}},
 		Strategy: strategy,
 	}
+	// Self-hosted runners mount $GITHUB_WORKSPACE into the job container, but
+	// the mount point is owned by the runner user (not the container user), so
+	// git refuses to operate on it with "detected dubious ownership". This
+	// breaks anything that shells out to git — most notably `go build`'s VCS
+	// stamping. Marking the workspace as safe fixes it globally for the job.
+	if cfg.IsSelfHostedRunner {
+		j.Steps = append(j.Steps, jobStep{
+			Name: "Mark workspace as safe for git",
+			Run:  "git config --global --add safe.directory \"$GITHUB_WORKSPACE\"",
+		})
+	}
+	return j
 }
 
 func baseJobWithGo(name string, cfg core.Configuration) job {
