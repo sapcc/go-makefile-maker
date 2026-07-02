@@ -21,6 +21,7 @@ import (
 	"github.com/sapcc/go-makefile-maker/internal/golang"
 	"github.com/sapcc/go-makefile-maker/internal/golangcilint"
 	"github.com/sapcc/go-makefile-maker/internal/goreleaser"
+	"github.com/sapcc/go-makefile-maker/internal/hyperspace"
 	"github.com/sapcc/go-makefile-maker/internal/makefile"
 	"github.com/sapcc/go-makefile-maker/internal/nix"
 	"github.com/sapcc/go-makefile-maker/internal/renovate"
@@ -121,6 +122,10 @@ func main() {
 		logg.Debug("rendering GitHub Actions workflows")
 		ghworkflowPaths = ghworkflow.Render(cfg, sr)
 	}
+
+	// Render Hyperspace config file
+	logg.Debug("rendering hyperspace configuration")
+	hyperspace.RenderConfig(cfg)
 
 	// Render envrc file
 	envrc.RenderEnvRc(cfg)
