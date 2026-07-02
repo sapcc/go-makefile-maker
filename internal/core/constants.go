@@ -74,7 +74,7 @@ const (
 	DownloadSyftAction     = util.RawString("anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0")
 	GoCoverageReportAction = util.RawString("fgrosse/go-coverage-report@cbeb2ab2e32591d690337146ba02a911cc566f3f # v1.3.0")
 	GolangCiLintVersion    = "v2.12.2"
-	GolangciLintAction     = util.RawString("golangci/golangci-lint-action@82606bf257cbaff209d206a39f5134f0cfbfd2ee # v9")
+	GolangciLintAction     = util.RawString("golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9")
 	GoreleaserAction       = util.RawString("goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7")
 	ReuseAction            = util.RawString("fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6")
 	TyposAction            = util.RawString("crate-ci/typos@37bb98842b0d8c4ffebdb75301a13db0267cef89 # v1")
