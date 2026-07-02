@@ -69,7 +69,7 @@ const (
 	DockerMetadataAction  = util.RawString("docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6")
 	DockerBuildxAction    = util.RawString("docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4")
 	DockerQemuAction      = util.RawString("docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4")
-	DockerBuildPushAction = util.RawString("docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7")
+	DockerBuildPushAction = util.RawString("docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7")
 
 	DownloadSyftAction     = util.RawString("anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0")
 	GoCoverageReportAction = util.RawString("fgrosse/go-coverage-report@cbeb2ab2e32591d690337146ba02a911cc566f3f # v1.3.0")
