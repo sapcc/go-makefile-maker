@@ -67,7 +67,7 @@ const (
 
 	DockerLoginAction     = util.RawString("docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4")
 	DockerMetadataAction  = util.RawString("docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6")
-	DockerBuildxAction    = util.RawString("docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4")
+	DockerBuildxAction    = util.RawString("docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4")
 	DockerQemuAction      = util.RawString("docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4")
 	DockerBuildPushAction = util.RawString("docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7")
 
