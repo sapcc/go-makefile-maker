@@ -28,7 +28,7 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) Option[workflow] {
 	}
 
 	containerImage := fmt.Sprintf("keppel.eu-de-1.cloud.sap/ccloud/shared-base-images/golang-alpine-ci:%s-latest", sr.GoVersionMajorMinor)
-	containerOption := "--user 1000"
+	containerOption := "--user 1001"
 
 	w.Jobs = make(map[string]job)
 	build := baseJobWithGo("Build", cfg)
