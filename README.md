@@ -770,6 +770,45 @@ If `release` is enabled a workflow is generated which creates a new GitHub relea
 
 `goReleaser.createConfig` will be set to true automatically when the option isn't set yet.
 
+#### `githubWorkflow.release.releasePR`
+
+Automatically create a release PR to bump the version and changelog whenever there are unreleased changes in the `CHANGELOG.md` file.
+This allows you to have a human in the loop for releases without having to manually prepare the release PR,
+and ensures that the release commit message contains the changelog entries.
+
+`releasePR` defaults to `true` whenever the release workflow is rendered. Set it to `false` to opt out.
+
+##### Flow
+1. Whenever the `[Unreleased]` section of `CHANGELOG.md` has content, the `release-pr` workflow opens (or updates)
+   a PR on the `chore/release-next` branch that bumps the changelog and version.
+2. Merging that PR triggers a new `tag` job in the `goreleaser` workflow which creates and pushes the release tag,
+   after which the existing `release` job runs goreleaser.
+
+##### Choosing the version bump
+
+By default the `release-pr` workflow runs on every push to the default branch and bumps the **patch** version.
+To cut a minor or major release, trigger the workflow manually:
+
+1. Open the **Actions** tab on GitHub and pick the **release-pr** workflow.
+2. Click **Run workflow**.
+3. In the dropdown, select the desired `version` bump (`patch`, `minor`, or `major`) and confirm.
+
+The dispatched run replaces the default patch bump for that release PR; the resulting commit and tag will use
+the selected bump type.
+
+##### Project-specific release preparation
+
+If your project needs additional steps during the version bump (regenerating generated files, bumping version strings
+in other manifests, etc.), define a `release-prepare` target in your `Makefile` (for example via `verbatim:`).
+The `release-pr` workflow will run `make release-prepare` automatically when the target exists.
+
+```yaml
+githubWorkflow:
+  release:
+    enabled: true
+    # releasePR: false   # opt out of PR-driven releases
+```
+
 #### `githubWorkflow.securityChecks`
 
 If `securityChecks` is enabled then it will generate the following workflows:

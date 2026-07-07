@@ -86,15 +86,26 @@ type pushAndPRTriggerOpts struct {
 	Paths       []string `yaml:"paths,omitempty"`
 	PathsIgnore []string `yaml:"paths-ignore,omitempty"`
 	Tags        []string `yaml:"tags,omitempty"`
+	Types       []string `yaml:"types,omitempty"`
 }
 
 type workflowDispatch struct {
-	manualTrigger bool `yaml:"-"`
+	manualTrigger bool                             `yaml:"-"`
+	Inputs        map[string]workflowDispatchInput `yaml:"inputs,omitempty"`
+}
+
+// workflowDispatchInput models a single input definition under workflow_dispatch.inputs.
+type workflowDispatchInput struct {
+	Description string   `yaml:"description,omitempty"`
+	Required    bool     `yaml:"required,omitempty"`
+	Default     string   `yaml:"default,omitempty"`
+	Type        string   `yaml:"type,omitempty"`
+	Options     []string `yaml:"options,omitempty"`
 }
 
 // IsZero defines whether a workflowDispatch is zero (not set).
 func (w workflowDispatch) IsZero() bool {
-	return !w.manualTrigger
+	return !w.manualTrigger && len(w.Inputs) == 0
 }
 
 type job struct {
@@ -116,6 +127,10 @@ type job struct {
 
 	// A map of environment variables that are available to all steps in the job.
 	Env map[string]string `yaml:"env,omitempty"`
+
+	// A map of outputs for the job. Outputs are available to downstream jobs
+	// that depend on this job via `needs.<job_id>.outputs.<output_name>`.
+	Outputs map[string]string `yaml:"outputs,omitempty"`
 
 	// Steps can run commands, run setup tasks, or run an action. Not all steps
 	// run actions, but all actions run as a step. Each step runs in its own
