@@ -91,6 +91,17 @@ func baseJobWithGo(name string, cfg core.Configuration) job {
 	return j
 }
 
+// markWorkspaceSafeStep marks the checked-out workspace as a safe git
+// directory. On self-hosted runners the CI container user differs from the
+// owner of the checkout tree, which makes git refuse to operate on it
+// ("detected dubious ownership") and breaks `go build`'s VCS stamping.
+func markWorkspaceSafeStep() jobStep {
+	return jobStep{
+		Name: "Mark workspace safe for git",
+		Run:  `git config --global --add safe.directory "$GITHUB_WORKSPACE"`,
+	}
+}
+
 // makeMultilineYAMLString adds \n to the strings and joins them.
 // yaml.Marshal() takes care of the rest.
 func makeMultilineYAMLString(in []string) string {

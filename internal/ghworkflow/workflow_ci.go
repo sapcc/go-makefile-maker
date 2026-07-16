@@ -28,14 +28,13 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) Option[workflow] {
 	}
 
 	containerImage := fmt.Sprintf("keppel.eu-de-1.cloud.sap/ccloud/shared-base-images/golang-alpine-ci:%s-latest", sr.GoVersionMajorMinor)
-	containerOption := "--user 1001"
 
 	w.Jobs = make(map[string]job)
 	build := baseJobWithGo("Build", cfg)
 	// technically not required here, but running the build and tests in different environments is too big a source for edge cases
 	if cfg.GitHubWorkflow.IsSelfHostedRunner {
 		build.Container.Image = containerImage
-		build.Container.Options = containerOption
+		build.addStep(markWorkspaceSafeStep())
 	}
 	if len(cfg.Binaries) > 0 {
 		build.addStep(jobStep{
@@ -49,7 +48,7 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) Option[workflow] {
 	testJob := baseJobWithGo("Test", cfg)
 	if cfg.GitHubWorkflow.IsSelfHostedRunner {
 		testJob.Container.Image = containerImage
-		testJob.Container.Options = containerOption
+		testJob.addStep(markWorkspaceSafeStep())
 	}
 	testJob.Needs = []string{"build"}
 	testCmd := []string{
