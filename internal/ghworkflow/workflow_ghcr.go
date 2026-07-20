@@ -123,5 +123,24 @@ type=sha,format=long
 	})
 
 	w.Jobs = map[string]job{"build-and-push-image": j}
+
+	if slices.Contains(cfg.PushContainerToGhcr.TagStrategy, "edge") {
+		cleanupJob := baseJob("Cleanup untagged GHCR versions", cfg)
+		cleanupJob.RunsOn = "ubuntu-latest"
+		cleanupJob.Needs = []string{"build-and-push-image"}
+		cleanupJob.addStep(jobStep{
+			Name: "Cleanup untagged GHCR versions",
+			Uses: core.GHCRCleanupAction,
+			With: map[string]any{
+				"delete-untagged": "true",
+				// TODO: revisit those later
+				// "delete-ghost-images": "true",
+				// "delete-partial-images": "true",
+				// "delete-orphaned-images": "true",
+			},
+		})
+		w.Jobs["cleanup-untagged-versions"] = cleanupJob
+	}
+
 	return Some(w)
 }

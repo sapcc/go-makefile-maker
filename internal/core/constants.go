@@ -73,12 +73,13 @@ const (
 
 	CreatePullRequestAction = util.RawString("peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1")
 	DownloadSyftAction      = util.RawString("anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0")
+	GHCRCleanupAction       = util.RawString("dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1")
 	GoCoverageReportAction  = util.RawString("fgrosse/go-coverage-report@cbeb2ab2e32591d690337146ba02a911cc566f3f # v1.3.0")
 	GolangCiLintVersion     = "v2.12.2"
 	GolangciLintAction      = util.RawString("golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9")
 	GoreleaserAction        = util.RawString("goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7")
+	HelmSetupAction         = util.RawString("azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5")
 	KeepAChangelogAction    = util.RawString("release-flow/keep-a-changelog-action@74931dec7ecdbfc8e38ac9ae7e8dd84c08db2f32 # v3.0.0")
 	ReuseAction             = util.RawString("fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6")
 	TyposAction             = util.RawString("crate-ci/typos@bee27e3a4fd1ea2111cf90ab89cd076c870fce14 # v1")
-	HelmSetupAction         = util.RawString("azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5")
 )

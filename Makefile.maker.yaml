@@ -214,6 +214,14 @@ renovate:
       depNameTemplate: azure/setup-helm
       datasourceTemplate: github-tags
       versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"dataaxiom/ghcr-cleanup-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: dataaxiom/ghcr-cleanup-action
+      datasourceTemplate: github-tags
+      versioningTemplate: semver
 
 reuse:
   annotations:

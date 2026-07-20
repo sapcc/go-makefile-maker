@@ -326,6 +326,18 @@
         "\"azure/setup-helm@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
       ],
       "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "dataaxiom/ghcr-cleanup-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"dataaxiom/ghcr-cleanup-action@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
     }
   ],
   "prHourlyLimit": 0,
