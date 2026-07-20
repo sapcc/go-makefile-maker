@@ -28,6 +28,8 @@ func ciWorkflow(cfg core.Configuration, sr golang.ScanResult) Option[workflow] {
 	}
 
 	containerImage := fmt.Sprintf("keppel.eu-de-1.cloud.sap/ccloud/shared-base-images/golang-alpine-ci:%s-latest", sr.GoVersionMajorMinor)
+	// see https://docs.github.com/en/actions/how-tos/manage-runners/use-actions-runner-controller/deploy-runner-scale-sets#example-running-dind-rootless
+	// and https://github.com/actions/runner-images/issues/10936
 	containerOption := "--user 1001"
 
 	w.Jobs = make(map[string]job)
