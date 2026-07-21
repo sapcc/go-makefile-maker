@@ -76,7 +76,7 @@ renovate:
       matchStrings:
         - '"actions/upload-artifact@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: actions/upload-artifact
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -84,7 +84,7 @@ renovate:
       matchStrings:
         - '"github/codeql-action/init@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: github/codeql-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -92,7 +92,7 @@ renovate:
       matchStrings:
         - '"github/codeql-action/analyze@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: github/codeql-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -100,7 +100,7 @@ renovate:
       matchStrings:
         - '"github/codeql-action/autobuild@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: github/codeql-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -108,7 +108,7 @@ renovate:
       matchStrings:
         - '"actions/checkout@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: actions/checkout
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -116,7 +116,7 @@ renovate:
       matchStrings:
         - '"actions/setup-go@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: actions/setup-go
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -124,7 +124,7 @@ renovate:
       matchStrings:
         - '"docker/login-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: docker/login-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -132,7 +132,7 @@ renovate:
       matchStrings:
         - '"docker/metadata-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: docker/metadata-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -140,7 +140,7 @@ renovate:
       matchStrings:
         - '"docker/setup-buildx-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: docker/setup-buildx-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -148,7 +148,7 @@ renovate:
       matchStrings:
         - '"docker/setup-qemu-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: docker/setup-qemu-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -156,7 +156,7 @@ renovate:
       matchStrings:
         - '"docker/build-push-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: docker/build-push-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -164,7 +164,7 @@ renovate:
       matchStrings:
         - '"anchore/sbom-action/download-syft@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: anchore/sbom-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -172,7 +172,7 @@ renovate:
       matchStrings:
         - '"fgrosse/go-coverage-report@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: fgrosse/go-coverage-report
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -180,7 +180,7 @@ renovate:
       matchStrings:
         - '"golangci/golangci-lint-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: golangci/golangci-lint-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -188,7 +188,7 @@ renovate:
       matchStrings:
         - '"goreleaser/goreleaser-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: goreleaser/goreleaser-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -196,7 +196,7 @@ renovate:
       matchStrings:
         - '"fsfe/reuse-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: fsfe/reuse-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -204,7 +204,7 @@ renovate:
       matchStrings:
         - '"crate-ci/typos@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: crate-ci/typos
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -212,7 +212,7 @@ renovate:
       matchStrings:
         - '"azure/setup-helm@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: azure/setup-helm
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
@@ -220,7 +220,7 @@ renovate:
       matchStrings:
         - '"dataaxiom/ghcr-cleanup-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: dataaxiom/ghcr-cleanup-action
-      datasourceTemplate: github-tags
+      datasourceTemplate: github-releases
       versioningTemplate: semver
 
 reuse:

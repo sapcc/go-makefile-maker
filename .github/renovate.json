@@ -113,7 +113,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "actions/upload-artifact",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -125,7 +125,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "github/codeql-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -137,7 +137,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "github/codeql-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -149,7 +149,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "github/codeql-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -161,7 +161,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "actions/checkout",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -173,7 +173,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "actions/setup-go",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -185,7 +185,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "docker/login-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -197,7 +197,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "docker/metadata-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -209,7 +209,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "docker/setup-buildx-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -221,7 +221,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "docker/setup-qemu-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -233,7 +233,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "docker/build-push-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -245,7 +245,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "anchore/sbom-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -257,7 +257,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "fgrosse/go-coverage-report",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -269,7 +269,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "golangci/golangci-lint-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -281,7 +281,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "goreleaser/goreleaser-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -293,7 +293,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "fsfe/reuse-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -305,7 +305,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "crate-ci/typos",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -317,7 +317,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "azure/setup-helm",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -329,7 +329,7 @@
     },
     {
       "customType": "regex",
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "dataaxiom/ghcr-cleanup-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
