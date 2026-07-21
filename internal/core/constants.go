@@ -62,7 +62,7 @@ func GetCodeqlAutobuildAction(isSelfHostedRunner bool) util.RawString {
 }
 
 const (
-	CheckoutAction = util.RawString("actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7")
+	CheckoutAction = util.RawString("actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7")
 	SetupGoAction  = util.RawString("actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6")
 
 	DockerLoginAction     = util.RawString("docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4")
