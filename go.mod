@@ -4,7 +4,7 @@ go 1.26
 
 require (
 	github.com/sapcc/go-api-declarations v1.24.0
-	github.com/sapcc/go-bits v0.0.0-20260721120810-39934d5e307e
+	github.com/sapcc/go-bits v0.0.0-20260723092948-9f0287025f54
 	github.com/spf13/pflag v1.0.10
 	go.xyrillian.de/gg v1.11.1
 	go.yaml.in/yaml/v3 v3.0.4
