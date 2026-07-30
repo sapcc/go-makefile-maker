@@ -95,14 +95,6 @@ SPDX-License-Identifier = "MPL-2.0"
 
 [[annotations]]
 path = [
-  "vendor/gopkg.in/check.v1/**",
-]
-precedence = "override"
-SPDX-FileCopyrightText = "Other"
-SPDX-License-Identifier = "BSD-2-Clause"
-
-[[annotations]]
-path = [
   "vendor/gopkg.in/yaml.v2/**",
 ]
 precedence = "override"
