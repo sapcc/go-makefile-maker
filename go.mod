@@ -7,7 +7,7 @@ require (
 	github.com/sapcc/go-bits v0.0.0-20260723170232-89c8670b5841
 	github.com/spf13/pflag v1.0.10
 	go.xyrillian.de/gg v1.11.1
-	go.yaml.in/yaml/v3 v3.0.4
+	go.yaml.in/yaml/v3 v3.0.5
 	golang.org/x/mod v0.38.0
 )
 
