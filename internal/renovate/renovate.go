@@ -135,6 +135,13 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 	// Docker images and everything in the GitHub Actions managed by go-makefile-maker
 	if isGoMakefileMakerRepo {
 		renovateConfig.Extends = append(renovateConfig.Extends, "docker:enableMajor", "customManagers:dockerfileVersions")
+		// Disable pinDigests for Docker images managed through custom.regex managers
+		// since those are tracked as plain version strings in constants.go, not as digests.
+		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
+			MatchPackageNames: []string{"alpine", "postgres"},
+			MatchManagers:     []string{"custom.regex"},
+			PinDigests:        Some(false),
+		})
 	} else {
 		if cfg.Dockerfile.Enabled {
 			renovateConfig.Extends = append(renovateConfig.Extends, "docker:disable")

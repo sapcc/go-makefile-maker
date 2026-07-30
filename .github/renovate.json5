@@ -60,6 +60,16 @@
         "major"
       ],
       "dependencyDashboardApproval": true
+    },
+    {
+      "matchPackageNames": [
+        "alpine",
+        "postgres"
+      ],
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "pinDigests": false
     }
   ],
   "customManagers": [
