@@ -435,11 +435,13 @@ renovate:
       matchUpdateTypes: []
       matchDepTypes: []
       matchFileNames: []
+      matchManagers: []
       extends: []
       allowedVersions: ""
       minimumReleaseAge: ""
       autoMerge: false
       enabled: false
+      pinDigests: false
   customManagers: []
 ```
 

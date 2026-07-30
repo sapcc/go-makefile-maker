@@ -274,6 +274,7 @@ type PackageRule struct {
 	MatchUpdateTypes            []string     `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
 	MatchDepTypes               []string     `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
 	MatchFileNames              []string     `yaml:"matchFileNames" json:"matchFileNames,omitempty"`
+	MatchManagers               []string     `yaml:"matchManagers" json:"matchManagers,omitempty"`
 	Extends                     []string     `yaml:"extends" json:"extends,omitempty"`
 	AllowedVersions             string       `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
 	AutoMerge                   bool         `yaml:"automerge" json:"automerge,omitempty"`
@@ -281,6 +282,7 @@ type PackageRule struct {
 	Enabled                     Option[bool] `yaml:"enabled" json:"enabled,omitzero"`
 	GroupName                   string       `yaml:"groupName" json:"groupName,omitempty"`
 	MinimumReleaseAge           string       `yaml:"minimumReleaseAge" json:"minimumReleaseAge,omitempty"`
+	PinDigests                  Option[bool] `yaml:"pinDigests" json:"pinDigests,omitzero"`
 	SeparateMinorPatch          Option[bool] `yaml:"separateMinorPatch" json:"separateMinorPatch,omitzero"`
 }
 
