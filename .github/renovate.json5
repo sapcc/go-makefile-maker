@@ -13,6 +13,9 @@
     "SuperSandro2000"
   ],
   "commitMessageAction": "Renovate: Update",
+  "ignorePaths": [
+    "**/Dockerfile.tmpl"
+  ],
   "constraints": {
     "go": "1.26"
   },

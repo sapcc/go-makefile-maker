@@ -28,6 +28,7 @@ type config struct {
 	Extends                                    []string           `json:"extends"`
 	Assignees                                  []string           `json:"assignees,omitempty"`
 	CommitMessageAction                        string             `json:"commitMessageAction,omitempty"`
+	IgnorePaths                                []string           `json:"ignorePaths,omitempty"`
 	Constraints                                *constraints       `json:"constraints,omitempty"`
 	DependencyDashboardOSVVulnerabilitySummary string             `json:"dependencyDashboardOSVVulnerabilitySummary,omitempty"`
 	OsvVulnerabilityAlerts                     bool               `json:"osvVulnerabilityAlerts,omitempty"`
@@ -135,6 +136,9 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 	// Docker images and everything in the GitHub Actions managed by go-makefile-maker
 	if isGoMakefileMakerRepo {
 		renovateConfig.Extends = append(renovateConfig.Extends, "docker:enableMajor", "customManagers:dockerfileVersions")
+		// Ignore Dockerfile templates that contain Go template expressions which
+		// confuse the dockerfile manager (it tries to resolve e.g. "{{" as an image name).
+		renovateConfig.IgnorePaths = append(renovateConfig.IgnorePaths, "**/Dockerfile.tmpl")
 		// Disable pinDigests for Docker images managed through custom.regex managers
 		// since those are tracked as plain version strings in constants.go, not as digests.
 		renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
