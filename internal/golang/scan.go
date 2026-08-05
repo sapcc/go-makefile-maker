@@ -22,7 +22,6 @@ type ScanResult struct {
 	GoVersion            string            // from "go" directive in go.mod, e.g. "1.22.0"
 	GoVersionMajorMinor  string            // GoVersion but the patch version is stripped
 	HasBinInfo           bool              // whether we can produce linker instructions for "github.com/sapcc/go-api-declarations/bininfo"
-	HasKubernetesDeps    bool              // whether there are any direct dependencies on k8s.io/* modules
 	UseGinkgo            bool              // whether to use ginkgo test runner instead of go test
 	UsesPostgres         bool              // whether postgres is used
 	KubernetesController bool              // whether the repository contains a Kubernetes controller
@@ -47,7 +46,6 @@ func Scan() ScanResult {
 
 	var (
 		hasBinInfo           bool
-		hasKubernetesDeps    bool
 		kubernetesController bool
 		kubernetesVersion    string
 		useGinkgo            bool
@@ -59,9 +57,6 @@ func Scan() ScanResult {
 			if semver.Compare(v.Mod.Version, "v1.2.0") >= 0 {
 				hasBinInfo = true
 			}
-		}
-		if !v.Indirect && strings.HasPrefix(v.Mod.Path, "k8s.io/") {
-			hasKubernetesDeps = true
 		}
 		if slices.Contains([]string{"github.com/lib/pq", "github.com/jackc/pgx/v5"}, v.Mod.Path) {
 			usesPostgres = true
@@ -96,7 +91,6 @@ func Scan() ScanResult {
 		GoVersionMajorMinor:  goVersion,
 		ModulePath:           modFile.Module.Mod.Path,
 		HasBinInfo:           hasBinInfo,
-		HasKubernetesDeps:    hasKubernetesDeps,
 		UseGinkgo:            useGinkgo,
 		UsesPostgres:         usesPostgres,
 		KubernetesController: kubernetesController,
