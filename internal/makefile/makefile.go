@@ -456,12 +456,13 @@ endif
 			},
 		}
 
-		// The current design of `easypg.WithTestDB()` came about because we wanted to get rid of the `./testing/with-postgres-db.sh` wrapper.
+		// The current design of `pgruntime.WithTestDB()` from go.xyrillian.de/gg/pgruntime
+		// came about because we wanted to get rid of the `./testing/with-postgres-db.sh` wrapper.
 		// Since wrappers outside of go test are not desirable, we can only hook into the TestMain level,
 		// and then there is no good way to deal with multiple test binaries running in parallel.
 		// We could use file locking to make them wait for each other, but that would just reverse this change with extra steps.
 		//
-		// usesPostgres reflects whether `github.com/lib/pq` is loaded. `github.com/sapcc/go-bits/easypg` hard depends on `github.com/lib/pq`.
+		// usesPostgres reflects whether a PostgreSQL driver (either `github.com/lib/pq` or `github.com/jackc/pgx`) is loaded.
 		singleThreaded := ""
 		if sr.UsesPostgres {
 			singleThreaded = "-p 1 "

@@ -700,8 +700,8 @@ sheet][ref-pattern-cheat-sheet]. This option is not defined by default.
 This is useful when you need to run some additional commands before being able to run `go build` or `golangci-lint`.
 For example when you are using `mockgen` or `go-bindata` through `verbatim`, you want to run the extra `verbatim` target through this option.
 
-If your application depends on `github.com/lib/pq`, the latest PostgreSQL server binaries will be available in the container when tests are executed.
-This is intended for use with `github.com/sapcc/go-bits/easypg`, which can launch a PostgreSQL server during `func TestMain`; see documentation in package easypg for details.
+If your application depends on `github.com/lib/pq` or `github.com/jackc/pgx`, the latest PostgreSQL server binaries will be available in the container when tests are executed.
+This is intended for use with [go.xyrillian.de/gg/pgruntime](https://pkg.go.dev/go.xyrillian.de/gg/pgruntime), which can launch a PostgreSQL server during `func TestMain`; see documentation over there for details.
 
 ### `githubWorkflow.pushContainerToGhcr`
 
