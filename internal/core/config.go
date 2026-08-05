@@ -376,13 +376,14 @@ type Metadata struct {
 
 // IsSAPProject returns whether the project URL is below one of the scopes known to belong to SAP.
 func (m Metadata) IsSAPProject() bool {
-	return strings.HasPrefix(m.URL, "https://github.com/sapcc/") ||
-		strings.HasPrefix(m.URL, "https://github.com/SAP-cloud-infrastructure/") ||
-		strings.HasPrefix(m.URL, "https://github.com/cobaltcore-dev/") ||
-		strings.HasPrefix(m.URL, "https://github.com/cloudoperators/") ||
-		strings.HasPrefix(m.URL, "https://github.com/ironcore-dev/") ||
-		strings.HasPrefix(m.URL, "https://github.wdf.sap.corp/") ||
-		strings.HasPrefix(m.URL, "https://github.tools.sap/")
+	urlLowerCase := strings.ToLower(m.URL)
+	return strings.HasPrefix(urlLowerCase, "https://github.com/sapcc/") ||
+		strings.HasPrefix(urlLowerCase, "https://github.com/sap-cloud-infrastructure/") ||
+		strings.HasPrefix(urlLowerCase, "https://github.com/cobaltcore-dev/") ||
+		strings.HasPrefix(urlLowerCase, "https://github.com/cloudoperators/") ||
+		strings.HasPrefix(urlLowerCase, "https://github.com/ironcore-dev/") ||
+		strings.HasPrefix(urlLowerCase, "https://github.wdf.sap.corp/") ||
+		strings.HasPrefix(urlLowerCase, "https://github.tools.sap/")
 }
 
 // NixConfig appears in type Configuration.
