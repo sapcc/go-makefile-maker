@@ -4,6 +4,7 @@
 package golangcilint
 
 import (
+	"cmp"
 	_ "embed"
 	"strconv"
 	"strings"
@@ -23,11 +24,6 @@ var (
 
 // RenderConfig writes the golanci-lint configuration files from the provided config and scan results.
 func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
-	timeout := 3 * time.Minute
-	if cfg.GolangciLint.Timeout != 0 {
-		timeout = cfg.GolangciLint.Timeout
-	}
-
 	must.Succeed(util.WriteFileFromTemplate(".golangci.yaml", configTemplate, map[string]any{
 		"ReplaceAllowList":  cfg.GolangciLint.ReplaceAllowList,
 		"EnableVendoring":   cfg.Golang.EnableVendoring,
@@ -37,7 +33,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		"ModulePath":        sr.ModulePath,
 		"ReviveRules":       cfg.GolangciLint.ReviveRules,
 		"SkipDirs":          cfg.GolangciLint.SkipDirs,
-		"Timeout":           timeout,
+		"Timeout":           cmp.Or(cfg.GolangciLint.Timeout, 5*time.Minute), // default to 5m0s
 		"WithControllerGen": cfg.ControllerGen.Enabled.UnwrapOr(sr.KubernetesController),
 		// liquid-ceph has an insane vendoring setup that we tried to replace with Go workspaces,
 		// but after getting stuck on bizarre module lookup errors, we decided to grandfather this in for now
