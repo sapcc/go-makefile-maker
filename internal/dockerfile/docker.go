@@ -82,7 +82,7 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 	}
 
 	var dockerHubMirror string
-	if strings.HasPrefix(cfg.Metadata.URL, "https://github.wdf.sap.corp") {
+	if cfg.Metadata.IsSAPInternalProject() {
 		dockerHubMirror = "keppel.eu-de-1.cloud.sap/ccloud-dockerhub-mirror/library/"
 	}
 
