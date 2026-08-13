@@ -81,8 +81,8 @@ func RenderConfig(cfg core.Configuration, sr golang.ScanResult) {
 		}
 	}
 
-	var dockerHubMirror string
-	if cfg.Metadata.IsSAPInternalProject() {
+	var dockerHubMirror = cfg.Dockerfile.DockerHubMirror //nolint:staticcheck // SA1019: this use of deprecated field is only temporary
+	if dockerHubMirror == "" && cfg.Metadata.IsSAPInternalProject() {
 		dockerHubMirror = "keppel.eu-de-1.cloud.sap/ccloud-dockerhub-mirror/library/"
 	}
 

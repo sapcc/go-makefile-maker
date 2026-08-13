@@ -317,6 +317,11 @@ type DockerfileConfig struct {
 	RunAsRoot            bool         `yaml:"runAsRoot"`
 	UseBuildKit          bool         `yaml:"useBuildKit"`
 	WithLinkerdAwait     bool         `yaml:"withLinkerdAwait"`
+	// Deprecated: it's a temporary field that could go away w/ notice.
+	//
+	// TODO: remove when keppel issues with anonymous unauthenticated
+	// 	pulls are sorted out (ref: /archives/CE3JA3VSL/p1785758618816019)
+	DockerHubMirror string `yaml:"dockerHubMirror"`
 }
 
 // ControllerGen appears in type Configuration.
