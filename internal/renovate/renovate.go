@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/sapcc/go-bits/logg"
 	"github.com/sapcc/go-bits/must"
@@ -43,15 +42,13 @@ type config struct {
 // RenderConfig writes the renovate configuration files from the provided config and scan results.
 func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generatedGHWorkflowPaths []string) {
 	isGoMakefileMakerRepo := scanResult.ModulePath == "github.com/sapcc/go-makefile-maker"
-	isInternalRenovate := strings.HasPrefix(cfg.Metadata.URL, "https://github.wdf.sap.corp")
-
 	// Our default rule is to have Renovate send us PRs once a week. (More
 	// frequent PRs become too overwhelming with the sheer amount of repos that
 	// we manage.) Friday works well for this because when we merge, we can let
 	// the changes simmer in QA over the weekend, and then have high confidence
 	// when we deploy these updates on Monday.
 	schedule := "before 8am on Friday"
-	if isInternalRenovate {
+	if cfg.Metadata.IsSAPInternalProject() {
 		schedule = "on Friday"
 	}
 	// However, for pure library repos, we do the PRs on Thursday instead, so
@@ -61,7 +58,7 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
 	if scanResult.GoVersion != "" && len(cfg.Binaries) == 0 {
 		schedule = "before 8am on Thursday"
-		if isInternalRenovate {
+		if cfg.Metadata.IsSAPInternalProject() {
 			schedule = "on Thursday"
 		}
 	}
