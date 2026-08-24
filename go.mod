@@ -1,6 +1,6 @@
 module github.com/sapcc/go-makefile-maker
 
-go 1.26
+go 1.27
 
 require (
 	github.com/sapcc/go-api-declarations v1.25.0
