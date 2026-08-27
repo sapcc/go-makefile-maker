@@ -296,6 +296,18 @@
     {
       "customType": "regex",
       "datasourceTemplate": "github-releases",
+      "depNameTemplate": "golangci/golangci-lint",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "GolangCiLintVersion\\s+=\\s+\"(?<currentValue>v[^\"]+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "goreleaser/goreleaser-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
