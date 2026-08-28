@@ -81,5 +81,5 @@ const (
 	HelmSetupAction         = util.RawString("azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5")
 	KeepAChangelogAction    = util.RawString("release-flow/keep-a-changelog-action@74931dec7ecdbfc8e38ac9ae7e8dd84c08db2f32 # v3.0.0")
 	ReuseAction             = util.RawString("fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6")
-	TyposAction             = util.RawString("crate-ci/typos@8a48f81b6c64dcfea44b3633223084c4be58ac5f # v1")
+	TyposAction             = util.RawString("crate-ci/typos@a8168dc2984a9e2352f183ffe788f0f23a300389 # v1")
 )
