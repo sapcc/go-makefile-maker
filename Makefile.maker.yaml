@@ -186,6 +186,14 @@ renovate:
       managerFilePatterns:
         - /^internal\/core\/constants\.go$/
       matchStrings:
+        - 'GolangCiLintVersion\s+=\s+"(?<currentValue>v[^"]+)"'
+      depNameTemplate: golangci/golangci-lint
+      datasourceTemplate: github-releases
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
         - '"goreleaser/goreleaser-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: goreleaser/goreleaser-action
       datasourceTemplate: github-releases
