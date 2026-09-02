@@ -43,7 +43,7 @@ jobs:
       - name: Dependency Licenses Review
         run: make check-dependency-licenses
       - name: Check for spelling errors
-        uses: crate-ci/typos@a8168dc2984a9e2352f183ffe788f0f23a300389 # v1
+        uses: crate-ci/typos@d43b6c087ac471e2ea7b8af622ff15f05c0c365b # v1
         env:
           CLICOLOR: "1"
       - name: Check if source code files have license header
