@@ -87,6 +87,17 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 		SemanticCommits:                            "disabled",
 	}
 
+	// Digest-only updates (e.g. pinned GitHub Actions) don't include a version bump,
+	// so Renovate can't fetch release notes and the PR body's changelog link falls
+	// back to an empty "/compare/<old>..<new>" URL without repo prefix. Populate a
+	// templated changelogUrl so the link resolves to the correct GitHub compare view.
+	// See https://www.jvt.me/posts/2025/05/08/renovate-digest-changelog/
+	renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
+		MatchSourceUrls:  []string{"https://github.com/**/*"},
+		MatchUpdateTypes: []string{"digest"},
+		ChangelogURL:     "{{sourceUrl}}/compare/{{currentDigest}}..{{newDigest}}",
+	})
+
 	if scanResult.GoVersion != "" {
 		renovateConfig.Constraints = &constraints{
 			Go: cfg.Renovate.GoVersion,
