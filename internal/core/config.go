@@ -275,9 +275,11 @@ type PackageRule struct {
 	MatchDepTypes               []string     `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
 	MatchFileNames              []string     `yaml:"matchFileNames" json:"matchFileNames,omitempty"`
 	MatchManagers               []string     `yaml:"matchManagers" json:"matchManagers,omitempty"`
+	MatchSourceUrls             []string     `yaml:"matchSourceUrls" json:"matchSourceUrls,omitempty"`
 	Extends                     []string     `yaml:"extends" json:"extends,omitempty"`
 	AllowedVersions             string       `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
 	AutoMerge                   bool         `yaml:"automerge" json:"automerge,omitempty"`
+	ChangelogURL                string       `yaml:"changelogUrl" json:"changelogUrl,omitempty"`
 	DependencyDashboardApproval Option[bool] `yaml:"dependencyDashboardApproval" json:"dependencyDashboardApproval,omitzero"`
 	Enabled                     Option[bool] `yaml:"enabled" json:"enabled,omitzero"`
 	GroupName                   string       `yaml:"groupName" json:"groupName,omitempty"`
