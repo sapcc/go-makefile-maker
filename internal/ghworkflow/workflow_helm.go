@@ -120,7 +120,13 @@ func helmWorkflow(cfg core.Configuration) Option[workflow] {
 	})
 	j.addStep(jobStep{
 		Name: "Push Helm Chart to " + registry,
-		Run:  "helm push ./chart/*.tgz oci://" + registry + "/${{ github.repository_owner }}/charts",
+		// OCI repository references must be lowercase, but github.repository_owner can be
+		// mixed-case (e.g. "SAP-cloud-infrastructure"), which makes `helm push` fail with
+		// "invalid reference". Lowercase the owner before pushing.
+		Run: makeMultilineYAMLString([]string{
+			`OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')`,
+			`helm push ./chart/*.tgz "oci://` + registry + `/${OWNER}/charts"`,
+		}),
 	})
 
 	w.Jobs = map[string]job{"build-and-push-helm-package": j}
