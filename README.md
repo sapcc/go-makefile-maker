@@ -442,6 +442,7 @@ renovate:
       autoMerge: false
       enabled: false
       pinDigests: false
+      bumpVersions: []
   customManagers: []
 ```
 
