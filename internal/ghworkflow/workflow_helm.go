@@ -4,10 +4,13 @@
 package ghworkflow
 
 import (
+	"net/url"
 	"slices"
 	"strings"
 
 	. "go.xyrillian.de/gg/option"
+
+	"github.com/sapcc/go-bits/logg"
 
 	"github.com/sapcc/go-makefile-maker/internal/core"
 )
@@ -80,6 +83,15 @@ func helmWorkflow(cfg core.Configuration) Option[workflow] {
 	}
 
 	const registry = "ghcr.io"
+	// derive the repository owner from Metadata.URL
+	// it must be lowercase according to the spec, see https://github.com/opencontainers/distribution-spec/issues/81
+	metadataURL, err := url.Parse(cfg.Metadata.URL)
+	if err != nil {
+		logg.Fatal("Metadata.URL is not a parsable URL: %s", err.Error())
+	}
+	repoOwner, _, _ := strings.Cut(strings.TrimPrefix(metadataURL.Path, "/"), "/")
+	repoOwner = strings.ToLower(repoOwner)
+
 	j := baseJob("Build and publish Helm Chart OCI", cfg.GitHubWorkflow)
 	j.Steps[0].With = map[string]any{
 		"fetch-depth": 0,    // we need the full git history to be able to detect versions from tags
@@ -120,7 +132,7 @@ func helmWorkflow(cfg core.Configuration) Option[workflow] {
 	})
 	j.addStep(jobStep{
 		Name: "Push Helm Chart to " + registry,
-		Run:  "helm push ./chart/*.tgz oci://" + registry + "/${{ github.repository_owner }}/charts",
+		Run:  "helm push ./chart/*.tgz oci://" + registry + "/" + repoOwner + "/charts",
 	})
 
 	w.Jobs = map[string]job{"build-and-push-helm-package": j}
