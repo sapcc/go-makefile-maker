@@ -286,6 +286,7 @@ type PackageRule struct {
 	MinimumReleaseAge           string       `yaml:"minimumReleaseAge" json:"minimumReleaseAge,omitempty"`
 	PinDigests                  Option[bool] `yaml:"pinDigests" json:"pinDigests,omitzero"`
 	SeparateMinorPatch          Option[bool] `yaml:"separateMinorPatch" json:"separateMinorPatch,omitzero"`
+	BumpVersions                []any        `yaml:"bumpVersions" json:"bumpVersions,omitempty"`
 }
 
 // RenovateConfig appears in type Configuration.
