@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"os"
-	"strings"
 
 	"github.com/sapcc/go-bits/must"
 
@@ -51,8 +50,7 @@ var defaultConfig = config{
 
 // RenderConfig writes the renovate configuration files from the provided config and scan results.
 func RenderConfig(cfg core.Configuration) {
-	isInternalRepo := strings.HasPrefix(cfg.Metadata.URL, "https://github.wdf.sap.corp") || strings.HasPrefix(cfg.Metadata.URL, "https://github.tools.sap")
-	if !isInternalRepo {
+	if !cfg.Metadata.IsSAPInternalProject() {
 		return
 	}
 
