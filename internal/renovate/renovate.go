@@ -91,11 +91,16 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 	// so Renovate can't fetch release notes and the PR body's changelog link falls
 	// back to an empty "/compare/<old>..<new>" URL without repo prefix. Populate a
 	// templated changelogUrl so the link resolves to the correct GitHub compare view.
+	//
+	// We match on the github-releases datasource (used by our custom regex managers
+	// and the native github-actions manager) and template the URL from packageName
+	// directly, because {{sourceUrl}} is not always populated for digest updates
+	// tracked via custom regex managers.
 	// See https://www.jvt.me/posts/2025/05/08/renovate-digest-changelog/
 	renovateConfig.PackageRules = append(renovateConfig.PackageRules, core.PackageRule{
-		MatchSourceUrls:  []string{"https://github.com/**/*"},
+		MatchDatasources: []string{"github-releases", "github-tags"},
 		MatchUpdateTypes: []string{"digest"},
-		ChangelogURL:     "{{sourceUrl}}/compare/{{currentDigest}}..{{newDigest}}",
+		ChangelogURL:     "https://github.com/{{packageName}}/compare/{{currentDigest}}..{{newDigest}}",
 	})
 
 	if scanResult.GoVersion != "" {

@@ -272,6 +272,7 @@ func (s ShellCheckConfiguration) IsEnabled() bool {
 type PackageRule struct {
 	MatchPackageNames           []string     `yaml:"matchPackageNames" json:"matchPackageNames,omitempty"`
 	MatchUpdateTypes            []string     `yaml:"matchUpdateTypes" json:"matchUpdateTypes,omitempty"`
+	MatchDatasources            []string     `yaml:"matchDatasources" json:"matchDatasources,omitempty"`
 	MatchDepTypes               []string     `yaml:"matchDepTypes" json:"matchDepTypes,omitempty"`
 	MatchFileNames              []string     `yaml:"matchFileNames" json:"matchFileNames,omitempty"`
 	MatchManagers               []string     `yaml:"matchManagers" json:"matchManagers,omitempty"`
