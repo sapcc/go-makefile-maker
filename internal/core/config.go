@@ -280,6 +280,7 @@ type PackageRule struct {
 	Extends                     []string     `yaml:"extends" json:"extends,omitempty"`
 	AllowedVersions             string       `yaml:"allowedVersions" json:"allowedVersions,omitempty"`
 	AutoMerge                   bool         `yaml:"automerge" json:"automerge,omitempty"`
+	PlatformAutomerge           Option[bool] `yaml:"platformAutomerge" json:"platformAutomerge,omitzero"`
 	ChangelogURL                string       `yaml:"changelogUrl" json:"changelogUrl,omitempty"`
 	DependencyDashboardApproval Option[bool] `yaml:"dependencyDashboardApproval" json:"dependencyDashboardApproval,omitzero"`
 	Enabled                     Option[bool] `yaml:"enabled" json:"enabled,omitzero"`
