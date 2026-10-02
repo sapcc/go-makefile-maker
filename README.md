@@ -440,6 +440,7 @@ renovate:
       allowedVersions: ""
       minimumReleaseAge: ""
       autoMerge: false
+      platformAutomerge: false
       enabled: false
       pinDigests: false
       bumpVersions: []
