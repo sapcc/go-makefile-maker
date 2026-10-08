@@ -4,9 +4,9 @@ go 1.27
 
 require (
 	github.com/sapcc/go-api-declarations v1.25.1
-	github.com/sapcc/go-bits v0.0.0-20261001170337-e86369bc8beb
+	github.com/sapcc/go-bits v0.0.0-20261005151228-62a588a6b663
 	github.com/spf13/pflag v1.0.10
-	go.xyrillian.de/gg v1.16.0
+	go.xyrillian.de/gg v1.19.0
 	go.yaml.in/yaml/v3 v3.0.5
 	golang.org/x/mod v0.41.0
 )
