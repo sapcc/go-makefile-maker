@@ -77,7 +77,7 @@ const (
 	GoCoverageReportAction  = util.RawString("fgrosse/go-coverage-report@c4bf7e78d1379325814b4dd42d80e526082e788b # v1.5.0")
 	GolangCiLintVersion     = "v2.14.0"
 	GolangciLintAction      = util.RawString("golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9")
-	GoreleaserAction        = util.RawString("goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7")
+	GoreleaserAction        = util.RawString("goreleaser/goreleaser-action@a4f02ab5355a589de60d917a659ce617ed19b3de # v7")
 	HelmSetupAction         = util.RawString("azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5")
 	KeepAChangelogAction    = util.RawString("release-flow/keep-a-changelog-action@74931dec7ecdbfc8e38ac9ae7e8dd84c08db2f32 # v3.0.0")
 	ReuseAction             = util.RawString("fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6")
