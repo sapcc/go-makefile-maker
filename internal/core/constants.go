@@ -75,7 +75,7 @@ const (
 	DownloadSyftAction      = util.RawString("anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0")
 	GHCRCleanupAction       = util.RawString("dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1")
 	GoCoverageReportAction  = util.RawString("fgrosse/go-coverage-report@c4bf7e78d1379325814b4dd42d80e526082e788b # v1.5.0")
-	GolangCiLintVersion     = "v2.14.0"
+	GolangCiLintVersion     = "v2.15.0"
 	GolangciLintAction      = util.RawString("golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9")
 	GoreleaserAction        = util.RawString("goreleaser/goreleaser-action@a4f02ab5355a589de60d917a659ce617ed19b3de # v7")
 	HelmSetupAction         = util.RawString("azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5")
