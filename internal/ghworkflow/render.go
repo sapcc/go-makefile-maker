@@ -38,6 +38,7 @@ func Render(cfg core.Configuration, sr golang.ScanResult) []string {
 		allWorkflows = append(allWorkflows, checksWorkflow(cfg))
 		allWorkflows = append(allWorkflows, ciWorkflow(cfg, sr))
 		allWorkflows = append(allWorkflows, codeQLWorkflow(cfg))
+		allWorkflows = append(allWorkflows, goMakefileMakerWorkflow(cfg))
 	}
 	allWorkflows = append(allWorkflows, helmWorkflow(cfg))
 	allWorkflows = append(allWorkflows, ghcrWorkflow(ghwCfg))
