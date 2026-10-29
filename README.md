@@ -448,6 +448,8 @@ renovate:
 
 Generate [RenovateBot](https://renovatebot.com/) config to automatically create pull requests weekly on Fridays with dependency updates.
 
+Dependency updates have a default `minimumReleaseAge` of `3 days`. Override it for selected dependencies using `renovate.packageRules`, for example with `minimumReleaseAge: "7 days"` (or `"0 days"` to disable the delay).
+
 To assign people to the PRs created by renovate, add their GitHub handle to the `assignees` list.
 
 Optionally overwrite go version with `goVersion`, by default the Go version from `go.mod` file will be used.

@@ -29,6 +29,7 @@ type config struct {
 	Assignees                                  []string           `json:"assignees,omitempty"`
 	CommitMessageAction                        string             `json:"commitMessageAction,omitempty"`
 	IgnorePaths                                []string           `json:"ignorePaths,omitempty"`
+	MinimumReleaseAge                          string             `json:"minimumReleaseAge,omitempty"`
 	Constraints                                *constraints       `json:"constraints,omitempty"`
 	DependencyDashboardOSVVulnerabilitySummary string             `json:"dependencyDashboardOSVVulnerabilitySummary,omitempty"`
 	OsvVulnerabilityAlerts                     bool               `json:"osvVulnerabilityAlerts,omitempty"`
@@ -82,9 +83,14 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 		CommitMessageAction:                        "Renovate: Update",
 		DependencyDashboardOSVVulnerabilitySummary: "all",
 		OsvVulnerabilityAlerts:                     true,
+		MinimumReleaseAge:                          "3 days",
 		PrHourlyLimit:                              0,
 		Schedule:                                   []string{schedule},
 		SemanticCommits:                            "disabled",
+	}
+	if isGoMakefileMakerRepo {
+		// receive e.g. critical Go compiler updates immediately
+		renovateConfig.MinimumReleaseAge = ""
 	}
 
 	// Digest-only updates (e.g. pinned GitHub Actions) don't include a version bump,
