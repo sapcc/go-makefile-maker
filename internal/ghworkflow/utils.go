@@ -41,8 +41,8 @@ func baseJob(name string, cfg *core.GithubWorkflowConfiguration) job {
 	case 0:
 		// If no runsOn is specified, we use reasonable defaults
 		if cfg.IsSelfHostedRunner {
-			if cfg.IsSugarRunner {
-				runsOn = core.SugarRunsOn
+			if cfg.IsSciRunner {
+				runsOn = core.SciRunsOn
 			} else {
 				runsOn = core.DefaultGitHubEnterpriseRunsOn
 			}

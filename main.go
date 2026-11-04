@@ -59,9 +59,7 @@ func main() {
 	// The github.com/ prefix is just a safeguard to avoid false positives when the metadata.url is not complete.
 	if cfg.GitHubWorkflow != nil && !strings.Contains(cfg.Metadata.URL, "github.com/") {
 		cfg.GitHubWorkflow.IsSelfHostedRunner = true
-		if strings.Contains(cfg.Metadata.URL, "/sap-cloud-infrastructure/") {
-			cfg.GitHubWorkflow.IsSugarRunner = true
-		}
+		cfg.GitHubWorkflow.IsSciRunner = strings.Contains(cfg.Metadata.URL, "/sap-cloud-infrastructure/")
 	}
 
 	if cfg.Golang.SetGoModVersion {

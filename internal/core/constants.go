@@ -18,8 +18,8 @@ var DefaultGitHubEnterpriseRunsOn = map[string]string{
 	"group": "organization/Default",
 }
 
-// SugarRunsOn is an array of Sugar runners.
-var SugarRunsOn = []string{"self-hosted"}
+// SciRunsOn selects SALT runners for the SCI organization.
+var SciRunsOn = []string{"sci"}
 
 // GetUploadArtifactAction works around GitHub not supporting their own stuff
 // https://github.com/actions/upload-artifact/issues/537
