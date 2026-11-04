@@ -210,6 +210,18 @@
     {
       "customType": "regex",
       "datasourceTemplate": "github-releases",
+      "depNameTemplate": "actions/github-script",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"actions/github-script@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "docker/login-action",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"

@@ -122,6 +122,14 @@ renovate:
       managerFilePatterns:
         - /^internal\/core\/constants\.go$/
       matchStrings:
+        - '"actions/github-script@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: actions/github-script
+      datasourceTemplate: github-releases
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
         - '"docker/login-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: docker/login-action
       datasourceTemplate: github-releases
