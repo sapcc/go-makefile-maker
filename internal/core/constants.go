@@ -39,7 +39,7 @@ func GetCodeqlInitAction(isSelfHostedRunner bool) util.RawString {
 	if isSelfHostedRunner {
 		return "Security-Testing/codeql-action/init@14e82a807226aece1a9f38735d8c69d48c26627f # v4"
 	} else {
-		return "github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4"
+		return "github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4"
 	}
 }
 
@@ -48,7 +48,7 @@ func GetCodeqlAnalyzeAction(isSelfHostedRunner bool) util.RawString {
 	if isSelfHostedRunner {
 		return "Security-Testing/codeql-action/analyze@14e82a807226aece1a9f38735d8c69d48c26627f # v4"
 	} else {
-		return "github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4"
+		return "github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4"
 	}
 }
 
@@ -57,7 +57,7 @@ func GetCodeqlAutobuildAction(isSelfHostedRunner bool) util.RawString {
 	if isSelfHostedRunner {
 		return "Security-Testing/codeql-action/autobuild@14e82a807226aece1a9f38735d8c69d48c26627f # v4"
 	} else {
-		return "github/codeql-action/autobuild@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4"
+		return "github/codeql-action/autobuild@33d7b85da1a04171e211befe2c739303b9a4c066 # v4"
 	}
 }
 
