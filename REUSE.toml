@@ -73,11 +73,11 @@ SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
 path = [
-  "vendor/go.yaml.in/yaml/v3/**",
+  "vendor/go.yaml.in/yaml/v4/**",
 ]
 precedence = "override"
 SPDX-FileCopyrightText = "Other"
-SPDX-License-Identifier = "MIT"
+SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
 path = [

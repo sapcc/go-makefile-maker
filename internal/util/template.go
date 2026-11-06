@@ -13,7 +13,7 @@ import (
 	"text/template"
 
 	"github.com/sapcc/go-bits/logg"
-	"go.yaml.in/yaml/v3"
+	"go.yaml.in/yaml/v4"
 )
 
 // WriteFileFromTemplate generates and writes the contents of `fileName` by
