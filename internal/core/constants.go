@@ -66,7 +66,7 @@ const (
 	SetupGoAction      = util.RawString("actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7")
 	GitHubScriptAction = util.RawString("actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0")
 
-	DockerLoginAction     = util.RawString("docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4")
+	DockerLoginAction     = util.RawString("docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4")
 	DockerMetadataAction  = util.RawString("docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6")
 	DockerBuildxAction    = util.RawString("docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4")
 	DockerQemuAction      = util.RawString("docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4")
