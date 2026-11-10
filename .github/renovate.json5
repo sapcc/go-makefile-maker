@@ -210,6 +210,18 @@
     {
       "customType": "regex",
       "datasourceTemplate": "github-releases",
+      "depNameTemplate": "actions/setup-node",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"actions/setup-node@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "actions/github-script",
       "managerFilePatterns": [
         "/^internal\\/core\\/constants\\.go$/"
@@ -276,6 +288,18 @@
       ],
       "matchStrings": [
         "\"docker/build-push-action@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "peter-evans/create-pull-request",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"peter-evans/create-pull-request@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
       ],
       "versioningTemplate": "semver"
     },
@@ -372,6 +396,18 @@
       ],
       "matchStrings": [
         "\"azure/setup-helm@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "release-flow/keep-a-changelog-action",
+      "managerFilePatterns": [
+        "/^internal\\/core\\/constants\\.go$/"
+      ],
+      "matchStrings": [
+        "\"release-flow/keep-a-changelog-action@(?<currentDigest>[a-f0-9]+)\\s+#\\s+(?<currentValue>v\\S+)\""
       ],
       "versioningTemplate": "semver"
     },
