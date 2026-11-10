@@ -37,7 +37,7 @@ func GetUploadArtifactAction(isSelfHostedRunner bool) util.RawString {
 // and https://github.wdf.sap.corp/Security-Testing/codeql-action/releases
 func GetCodeqlInitAction(isSelfHostedRunner bool) util.RawString {
 	if isSelfHostedRunner {
-		return "Security-Testing/codeql-action/init@14e82a807226aece1a9f38735d8c69d48c26627f # v4"
+		return "Security-Testing/codeql-action/init@6551ad85cdc2ebf529cfd121b0f4879b2c3d91e6 # v4"
 	} else {
 		return "github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4"
 	}
@@ -46,7 +46,7 @@ func GetCodeqlInitAction(isSelfHostedRunner bool) util.RawString {
 // GetCodeqlAnalyzeAction returns the right CodeQL analyze action for the chosen Runner.
 func GetCodeqlAnalyzeAction(isSelfHostedRunner bool) util.RawString {
 	if isSelfHostedRunner {
-		return "Security-Testing/codeql-action/analyze@14e82a807226aece1a9f38735d8c69d48c26627f # v4"
+		return "Security-Testing/codeql-action/analyze@6551ad85cdc2ebf529cfd121b0f4879b2c3d91e6 # v4"
 	} else {
 		return "github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4"
 	}
@@ -55,7 +55,7 @@ func GetCodeqlAnalyzeAction(isSelfHostedRunner bool) util.RawString {
 // GetCodeqlAutobuildAction returns the right CodeQL autobild action for the chosen Runner.
 func GetCodeqlAutobuildAction(isSelfHostedRunner bool) util.RawString {
 	if isSelfHostedRunner {
-		return "Security-Testing/codeql-action/autobuild@14e82a807226aece1a9f38735d8c69d48c26627f # v4"
+		return "Security-Testing/codeql-action/autobuild@6551ad85cdc2ebf529cfd121b0f4879b2c3d91e6 # v4"
 	} else {
 		return "github/codeql-action/autobuild@33d7b85da1a04171e211befe2c739303b9a4c066 # v4"
 	}
@@ -73,15 +73,15 @@ const (
 	DockerQemuAction      = util.RawString("docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4")
 	DockerBuildPushAction = util.RawString("docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7")
 
-	CreatePullRequestAction = util.RawString("peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1")
-	DownloadSyftAction      = util.RawString("anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0")
+	CreatePullRequestAction = util.RawString("peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8")
+	DownloadSyftAction      = util.RawString("anchore/sbom-action/download-syft@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0")
 	GHCRCleanupAction       = util.RawString("dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1")
 	GoCoverageReportAction  = util.RawString("fgrosse/go-coverage-report@c4bf7e78d1379325814b4dd42d80e526082e788b # v1.5.0")
 	GolangCiLintVersion     = "v2.15.0"
 	GolangciLintAction      = util.RawString("golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9")
 	GoreleaserAction        = util.RawString("goreleaser/goreleaser-action@a4f02ab5355a589de60d917a659ce617ed19b3de # v7")
 	HelmSetupAction         = util.RawString("azure/setup-helm@2f5e7bc67f1f9972ab16657bb795f36d8f04de0e # v5")
-	KeepAChangelogAction    = util.RawString("release-flow/keep-a-changelog-action@74931dec7ecdbfc8e38ac9ae7e8dd84c08db2f32 # v3.0.0")
+	KeepAChangelogAction    = util.RawString("release-flow/keep-a-changelog-action@74931dec7ecdbfc8e38ac9ae7e8dd84c08db2f32 # v3")
 	ReuseAction             = util.RawString("fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6")
-	TyposAction             = util.RawString("crate-ci/typos@53821664afd79bb88fcdd22fdc2f49d8d3f6cac9 # v1")
+	TyposAction             = util.RawString("crate-ci/typos@2611abd15acb0c2e317fb9e45855aabb8b35a414 # v1")
 )
