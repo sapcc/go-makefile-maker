@@ -93,9 +93,6 @@ func goMakefileMakerWorkflow(cfg core.Configuration) Option[workflow] {
 			runJob.addStep(jobStep{
 				Name: "Set up Node.js",
 				Uses: core.SetupNodeAction,
-				With: map[string]any{
-					"node-version": "lts/*",
-				},
 			})
 		}
 		runJob.addStep(jobStep{
