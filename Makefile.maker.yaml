@@ -122,6 +122,14 @@ renovate:
       managerFilePatterns:
         - /^internal\/core\/constants\.go$/
       matchStrings:
+        - '"actions/setup-node@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: actions/setup-node
+      datasourceTemplate: github-releases
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
         - '"actions/github-script@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: actions/github-script
       datasourceTemplate: github-releases
@@ -164,6 +172,14 @@ renovate:
       matchStrings:
         - '"docker/build-push-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: docker/build-push-action
+      datasourceTemplate: github-releases
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"peter-evans/create-pull-request@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: peter-evans/create-pull-request
       datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
@@ -228,6 +244,14 @@ renovate:
       matchStrings:
         - '"azure/setup-helm@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
       depNameTemplate: azure/setup-helm
+      datasourceTemplate: github-releases
+      versioningTemplate: semver
+    - customType: regex
+      managerFilePatterns:
+        - /^internal\/core\/constants\.go$/
+      matchStrings:
+        - '"release-flow/keep-a-changelog-action@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
+      depNameTemplate: release-flow/keep-a-changelog-action
       datasourceTemplate: github-releases
       versioningTemplate: semver
     - customType: regex
