@@ -292,11 +292,12 @@ type PackageRule struct {
 
 // RenovateConfig appears in type Configuration.
 type RenovateConfig struct {
-	Enabled        bool          `yaml:"enabled"`
-	Assignees      []string      `yaml:"assignees"`
-	GoVersion      string        `yaml:"goVersion"`
-	PackageRules   []PackageRule `yaml:"packageRules"`
-	CustomManagers []any         `yaml:"customManagers"`
+	Enabled           bool           `yaml:"enabled"`
+	Assignees         []string       `yaml:"assignees"`
+	GoVersion         string         `yaml:"goVersion"`
+	PackageRules      []PackageRule  `yaml:"packageRules"`
+	CustomManagers    []any          `yaml:"customManagers"`
+	CustomDatasources map[string]any `yaml:"customDatasources"`
 }
 
 // EnvRcConfig appears in type Configuration.

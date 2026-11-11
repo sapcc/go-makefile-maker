@@ -444,6 +444,7 @@ renovate:
       pinDigests: false
       bumpVersions: []
   customManagers: []
+  customDatasources: {}
 ```
 
 Generate [RenovateBot](https://renovatebot.com/) config to automatically create pull requests weekly on Fridays with dependency updates.
@@ -495,6 +496,8 @@ customManagers:
     depNameTemplate: "kubernetes-sigs/controller-tools"
     extractVersionTemplate: "^envtest.v(?<version>.*)$"
 ```
+
+Custom datasources can be configured with `customDatasources` and referenced by custom managers using the `custom.<name>` datasource. See the [Renovate custom datasource documentation](https://docs.renovatebot.com/modules/datasource/custom/) for supported options.
 
 ### `reuse`
 
