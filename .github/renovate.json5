@@ -221,6 +221,18 @@
     },
     {
       "customType": "regex",
+      "datasourceTemplate": "custom.node-lts",
+      "depNameTemplate": "node-lts",
+      "managerFilePatterns": [
+        "/^internal\\/ghworkflow\\/workflow_gomm\\.go$/"
+      ],
+      "matchStrings": [
+        "\"node-version\":\\s+\"(?<currentValue>\\d+)\""
+      ],
+      "versioningTemplate": "semver-coerced"
+    },
+    {
+      "customType": "regex",
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "actions/github-script",
       "managerFilePatterns": [
@@ -424,6 +436,14 @@
       "versioningTemplate": "semver"
     }
   ],
+  "customDatasources": {
+    "node-lts": {
+      "defaultRegistryUrlTemplate": "https://nodejs.org/dist/index.json",
+      "transformTemplates": [
+        "{\"releases\":[{\"version\":$split($substringAfter($[lts][0].version, \"v\"), \".\")[0],\"releaseTimestamp\":$[lts][0].date}]}"
+      ]
+    }
+  },
   "prHourlyLimit": 0,
   "schedule": [
     "before 8am on Friday"

@@ -128,6 +128,14 @@ renovate:
       versioningTemplate: semver
     - customType: regex
       managerFilePatterns:
+        - /^internal\/ghworkflow\/workflow_gomm\.go$/
+      matchStrings:
+        - '"node-version":\s+"(?<currentValue>\d+)"'
+      depNameTemplate: node-lts
+      datasourceTemplate: custom.node-lts
+      versioningTemplate: semver-coerced
+    - customType: regex
+      managerFilePatterns:
         - /^internal\/core\/constants\.go$/
       matchStrings:
         - '"actions/github-script@(?<currentDigest>[a-f0-9]+)\s+#\s+(?<currentValue>v\S+)"'
@@ -262,6 +270,12 @@ renovate:
       depNameTemplate: dataaxiom/ghcr-cleanup-action
       datasourceTemplate: github-releases
       versioningTemplate: semver
+  customDatasources:
+    node-lts:
+      defaultRegistryUrlTemplate: https://nodejs.org/dist/index.json
+      transformTemplates:
+        # Node's index is newest-first; use the latest entry marked as LTS and track its major.
+        - '{"releases":[{"version":$split($substringAfter($[lts][0].version, "v"), ".")[0],"releaseTimestamp":$[lts][0].date}]}'
 
 reuse:
   annotations:
