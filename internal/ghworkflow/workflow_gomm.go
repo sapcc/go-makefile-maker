@@ -94,7 +94,7 @@ func goMakefileMakerWorkflow(cfg core.Configuration) Option[workflow] {
 				Name: "Set up Node.js",
 				Uses: core.SetupNodeAction,
 				With: map[string]any{
-					"node-version": "24",
+					"node-version": "26",
 				},
 			})
 		}
