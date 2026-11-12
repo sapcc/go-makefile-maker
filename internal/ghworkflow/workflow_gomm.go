@@ -51,6 +51,13 @@ func goMakefileMakerWorkflow(cfg core.Configuration) Option[workflow] {
 
 	if isGoMakefileMakerRepository {
 		runJob.addStep(jobStep{
+			Name: "Set up Node.js",
+			Uses: core.SetupNodeAction,
+			With: map[string]any{
+				"node-version": "26",
+			},
+		})
+		runJob.addStep(jobStep{
 			Name: "Install Renovate config validator",
 			Run:  "npm install --global renovate",
 		})
@@ -89,15 +96,13 @@ func goMakefileMakerWorkflow(cfg core.Configuration) Option[workflow] {
 			},
 			Run: `git symbolic-ref refs/remotes/origin/HEAD "refs/remotes/origin/$DEFAULT_BRANCH"`,
 		})
-		if cfg.GitHubWorkflow.IsSelfHostedRunner {
-			runJob.addStep(jobStep{
-				Name: "Set up Node.js",
-				Uses: core.SetupNodeAction,
-				With: map[string]any{
-					"node-version": "26",
-				},
-			})
-		}
+		runJob.addStep(jobStep{
+			Name: "Set up Node.js",
+			Uses: core.SetupNodeAction,
+			With: map[string]any{
+				"node-version": "26",
+			},
+		})
 		runJob.addStep(jobStep{
 			Name: "Install Renovate config validator",
 			Run:  "npm install --global renovate",

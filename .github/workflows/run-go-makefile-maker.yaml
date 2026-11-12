@@ -36,6 +36,10 @@ jobs:
         with:
           check-latest: true
           go-version: 1.27.4
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: "26"
       - name: Install Renovate config validator
         run: npm install --global renovate
       - name: Build and run go-makefile-maker
