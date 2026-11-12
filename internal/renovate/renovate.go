@@ -24,22 +24,22 @@ type constraints struct {
 }
 
 type config struct {
-	Schema                                     string             `json:"$schema"`
-	Extends                                    []string           `json:"extends"`
-	Assignees                                  []string           `json:"assignees,omitempty"`
-	CommitMessageAction                        string             `json:"commitMessageAction,omitempty"`
-	IgnorePaths                                []string           `json:"ignorePaths,omitempty"`
-	MinimumReleaseAge                          string             `json:"minimumReleaseAge,omitempty"`
-	Constraints                                *constraints       `json:"constraints,omitempty"`
-	DependencyDashboardOSVVulnerabilitySummary string             `json:"dependencyDashboardOSVVulnerabilitySummary,omitempty"`
-	OsvVulnerabilityAlerts                     bool               `json:"osvVulnerabilityAlerts,omitempty"`
-	PostUpdateOptions                          []string           `json:"postUpdateOptions,omitempty"`
-	PackageRules                               []core.PackageRule `json:"packageRules,omitempty"`
-	CustomManagers                             []any              `json:"customManagers,omitempty"`
-	CustomDatasources                          map[string]any     `json:"customDatasources,omitempty"`
-	PrHourlyLimit                              int                `json:"prHourlyLimit"`
-	Schedule                                   []string           `json:"schedule,omitempty"`
-	SemanticCommits                            string             `json:"semanticCommits,omitempty"`
+	Schema                 string             `json:"$schema"`
+	Extends                []string           `json:"extends"`
+	Assignees              []string           `json:"assignees,omitempty"`
+	CommitMessageAction    string             `json:"commitMessageAction,omitempty"`
+	IgnorePaths            []string           `json:"ignorePaths,omitempty"`
+	MinimumReleaseAge      string             `json:"minimumReleaseAge,omitempty"`
+	Constraints            *constraints       `json:"constraints,omitempty"`
+	DependencyDashboard    map[string]any     `json:"dependencyDashboard,omitempty"`
+	OsvVulnerabilityAlerts bool               `json:"osvVulnerabilityAlerts,omitempty"`
+	PostUpdateOptions      []string           `json:"postUpdateOptions,omitempty"`
+	PackageRules           []core.PackageRule `json:"packageRules,omitempty"`
+	CustomManagers         []any              `json:"customManagers,omitempty"`
+	CustomDatasources      map[string]any     `json:"customDatasources,omitempty"`
+	PrHourlyLimit          int                `json:"prHourlyLimit"`
+	Schedule               []string           `json:"schedule,omitempty"`
+	SemanticCommits        string             `json:"semanticCommits,omitempty"`
 }
 
 // RenderConfig writes the renovate configuration files from the provided config and scan results.
@@ -81,13 +81,13 @@ func RenderConfig(cfg core.Configuration, scanResult golang.ScanResult, generate
 		// commit messages (and therefore, PR titles). The default value is "Update".
 		// We choose something more specific because some of us have filter rules
 		// in their mail client to separate Renovate PRs from other PRs.
-		CommitMessageAction:                        "Renovate: Update",
-		DependencyDashboardOSVVulnerabilitySummary: "all",
-		OsvVulnerabilityAlerts:                     true,
-		MinimumReleaseAge:                          "3 days",
-		PrHourlyLimit:                              0,
-		Schedule:                                   []string{schedule},
-		SemanticCommits:                            "disabled",
+		CommitMessageAction:    "Renovate: Update",
+		DependencyDashboard:    map[string]any{"osvVulnerabilitySummary": "all"},
+		OsvVulnerabilityAlerts: true,
+		MinimumReleaseAge:      "3 days",
+		PrHourlyLimit:          0,
+		Schedule:               []string{schedule},
+		SemanticCommits:        "disabled",
 	}
 	if isGoMakefileMakerRepo {
 		// receive e.g. critical Go compiler updates immediately
