@@ -74,7 +74,7 @@ const (
 	DockerBuildPushAction = util.RawString("docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7")
 
 	CreatePullRequestAction = util.RawString("peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1 # v8")
-	DownloadSyftAction      = util.RawString("anchore/sbom-action/download-syft@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0")
+	DownloadSyftAction      = util.RawString("anchore/sbom-action/download-syft@e22c389904149dbc22b58101806040fa8d37a610 # v0")
 	GHCRCleanupAction       = util.RawString("dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1")
 	GoCoverageReportAction  = util.RawString("fgrosse/go-coverage-report@c4bf7e78d1379325814b4dd42d80e526082e788b # v1.5.0")
 	GolangCiLintVersion     = "v2.15.0"
