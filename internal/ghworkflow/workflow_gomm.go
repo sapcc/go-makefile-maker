@@ -33,13 +33,6 @@ func goMakefileMakerWorkflow(cfg core.Configuration) Option[workflow] {
 	}
 
 	runJob := baseJob(workflowName, cfg.GitHubWorkflow)
-	if isGoMakefileMakerRepository {
-		w.Permissions.Contents = tokenScopeWrite
-		runJob.Steps[0].With = map[string]any{
-			"ref":        "${{github.event.pull_request.head.ref}}",
-			"repository": "${{github.event.pull_request.head.repo.full_name}}",
-		}
-	}
 	runJob.addStep(jobStep{
 		Name: "Set up Go",
 		Uses: core.SetupGoAction,
@@ -48,12 +41,42 @@ func goMakefileMakerWorkflow(cfg core.Configuration) Option[workflow] {
 			"go-version":   cfg.GitHubWorkflow.Global.GoVersion.UnwrapOr(core.DefaultGoVersion),
 		},
 	})
+	if isGoMakefileMakerRepository {
+		w.Permissions.Contents = tokenScopeWrite
+		runJob.Steps[0].With = map[string]any{
+			"ref":        "${{github.event.pull_request.head.ref}}",
+			"repository": "${{github.event.pull_request.head.repo.full_name}}",
+		}
+	} else {
+		w.Permissions.PullRequests = tokenScopeWrite
+		if cfg.Golang.EnableVendoring && cfg.Reuse.IsEnabled() {
+			runJob.addStep(jobStep{
+				Name: "Install go-licence-detector",
+				Run:  "go install go.elastic.co/go-licence-detector@latest",
+			})
+		}
+		runJob.addStep(jobStep{
+			Name: "Set default branch for go-makefile-maker",
+			Env: map[string]string{
+				"DEFAULT_BRANCH": "${{ github.event.repository.default_branch }}",
+			},
+			Run: `git symbolic-ref refs/remotes/origin/HEAD "refs/remotes/origin/$DEFAULT_BRANCH"`,
+		})
+	}
+
+	runJob.addStep(jobStep{
+		Name: "Set up Node.js",
+		Uses: core.SetupNodeAction,
+		With: map[string]any{
+			"node-version": "26",
+		},
+	})
+	runJob.addStep(jobStep{
+		Name: "Install Renovate config validator",
+		Run:  "npm install --global renovate",
+	})
 
 	if isGoMakefileMakerRepository {
-		runJob.addStep(jobStep{
-			Name: "Install Renovate config validator",
-			Run:  "npm install --global renovate",
-		})
 		runJob.addStep(jobStep{
 			Name: "Build and run go-makefile-maker",
 			Run: makeMultilineYAMLString([]string{
@@ -75,33 +98,6 @@ func goMakefileMakerWorkflow(cfg core.Configuration) Option[workflow] {
 			}),
 		})
 	} else {
-		w.Permissions.PullRequests = tokenScopeWrite
-		if cfg.Golang.EnableVendoring && cfg.Reuse.IsEnabled() {
-			runJob.addStep(jobStep{
-				Name: "Install go-licence-detector",
-				Run:  "go install go.elastic.co/go-licence-detector@latest",
-			})
-		}
-		runJob.addStep(jobStep{
-			Name: "Set default branch for go-makefile-maker",
-			Env: map[string]string{
-				"DEFAULT_BRANCH": "${{ github.event.repository.default_branch }}",
-			},
-			Run: `git symbolic-ref refs/remotes/origin/HEAD "refs/remotes/origin/$DEFAULT_BRANCH"`,
-		})
-		if cfg.GitHubWorkflow.IsSelfHostedRunner {
-			runJob.addStep(jobStep{
-				Name: "Set up Node.js",
-				Uses: core.SetupNodeAction,
-				With: map[string]any{
-					"node-version": "26",
-				},
-			})
-		}
-		runJob.addStep(jobStep{
-			Name: "Install Renovate config validator",
-			Run:  "npm install --global renovate",
-		})
 		runJob.addStep(jobStep{
 			Name: "Run go-makefile-maker",
 			Run:  "go run github.com/sapcc/go-makefile-maker@latest",
