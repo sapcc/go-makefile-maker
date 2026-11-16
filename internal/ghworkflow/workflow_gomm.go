@@ -49,6 +49,7 @@ func goMakefileMakerWorkflow(cfg core.Configuration) Option[workflow] {
 		}
 	} else {
 		w.Permissions.PullRequests = tokenScopeWrite
+		runJob.Steps[0].With["fetch-depth"] = 2
 		if cfg.Golang.EnableVendoring && cfg.Reuse.IsEnabled() {
 			runJob.addStep(jobStep{
 				Name: "Install go-licence-detector",
@@ -100,25 +101,111 @@ func goMakefileMakerWorkflow(cfg core.Configuration) Option[workflow] {
 	} else {
 		runJob.addStep(jobStep{
 			Name: "Run go-makefile-maker",
-			Run:  "go run github.com/sapcc/go-makefile-maker@latest",
+			Env: map[string]string{
+				"BASE_SHA": "${{ github.event.pull_request.base.sha }}",
+				"PR_SHA":   "${{ github.event.pull_request.head.sha }}",
+			},
+			Run: makeMultilineYAMLString([]string{
+				"if [[ \"$GITHUB_EVENT_NAME\" == \"pull_request\" ]]; then",
+				"  git checkout --force --detach \"$BASE_SHA\"",
+				"  go run github.com/sapcc/go-makefile-maker@latest",
+				"  git add -A",
+				"  git diff --cached --no-ext-diff --no-color --binary > \"$RUNNER_TEMP/gomm-base.diff\"",
+				"  git diff --cached --no-ext-diff --no-color --binary --unified=0 --no-renames > \"$RUNNER_TEMP/gomm-base-normalized.diff\"",
+				"  git checkout --force --detach \"$PR_SHA\"",
+				"  git clean -fd",
+				"  go run github.com/sapcc/go-makefile-maker@latest",
+				"  git add -A",
+				"  git diff --cached --no-ext-diff --no-color --binary > \"$RUNNER_TEMP/gomm-pr.diff\"",
+				"  git diff --cached --no-ext-diff --no-color --binary --unified=0 --no-renames > \"$RUNNER_TEMP/gomm-pr-normalized.diff\"",
+				"else",
+				"  go run github.com/sapcc/go-makefile-maker@latest",
+				"fi",
+			}),
 		})
 		runJob.addStep(jobStep{
 			Name: "Report generated changes",
 			Uses: core.GitHubScriptAction,
 			With: map[string]any{
 				"script": `const { execFileSync } = require('node:child_process')
+const fs = require('node:fs')
+const path = require('node:path')
 
-execFileSync('git', ['add', '-N', '--', '.'])
 const execOptions = { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 }
-const status = execFileSync('git', ['status', '--porcelain'], execOptions)
-const diff = execFileSync('git', ['diff', '--no-ext-diff', '--no-color'], execOptions)
 const marker = '<!-- go-makefile-maker-generated-diff -->'
-const hasChanges = status.length > 0
+let baseDiff = ''
+let diff = ''
+let status = ''
+let hasChanges
+
+if (context.eventName === 'pull_request') {
+  const temp = process.env.RUNNER_TEMP
+  baseDiff = fs.readFileSync(path.join(temp, 'gomm-base.diff'), 'utf8')
+  diff = fs.readFileSync(path.join(temp, 'gomm-pr.diff'), 'utf8')
+  const baseNormalized = fs.readFileSync(path.join(temp, 'gomm-base-normalized.diff'), 'utf8')
+  const prNormalized = fs.readFileSync(path.join(temp, 'gomm-pr-normalized.diff'), 'utf8')
+
+  function normalizeEdits(patch) {
+    const edits = []
+    let inHunk = false
+    let inBinaryPatch = false
+
+    for (const line of patch.split('\n')) {
+      if (line.startsWith('diff --git ')) {
+        edits.push(line)
+        inHunk = false
+        inBinaryPatch = false
+        continue
+      }
+
+      if (line === 'GIT binary patch') {
+        edits.push(line)
+        inBinaryPatch = true
+        continue
+      }
+      if (inBinaryPatch) {
+        edits.push(line)
+        continue
+      }
+
+      if (line.startsWith('@@')) {
+        inHunk = true
+        continue
+      }
+      if (line.startsWith('new file mode ') || line.startsWith('deleted file mode ') ||
+          line.startsWith('old mode ') || line.startsWith('new mode ')) {
+        edits.push(line)
+        continue
+      }
+      if (!inHunk) continue
+
+      if (line.startsWith('+') || line.startsWith('-') || line.startsWith('\\')) {
+        edits.push(line)
+      }
+    }
+
+    return edits.join('\n')
+  }
+
+  hasChanges = normalizeEdits(baseNormalized) !== normalizeEdits(prNormalized)
+  status = execFileSync('git', ['status', '--porcelain'], execOptions)
+} else {
+  execFileSync('git', ['add', '-N', '--', '.'])
+  status = execFileSync('git', ['status', '--porcelain'], execOptions)
+  diff = execFileSync('git', ['diff', '--no-ext-diff', '--no-color'], execOptions)
+  hasChanges = status.length > 0
+}
 
 if (hasChanges) {
-  core.info('go-makefile-maker would change these files:')
-  core.info(status)
-  core.info('Generated diff:')
+  core.info(context.eventName === 'pull_request'
+    ? 'go-makefile-maker produces different generated edits on the base and PR commits.'
+    : 'go-makefile-maker would change these files:')
+  if (status) core.info(status)
+  if (context.eventName === 'pull_request') {
+    core.info('Generated diff on the base commit:')
+    core.info(baseDiff || '(no generated changes)')
+  }
+  core.info(context.eventName === 'pull_request' ? 'Generated diff on the PR commit:' : 'Generated diff:')
   core.info(diff)
 }
 
@@ -137,18 +224,27 @@ if (context.eventName === 'pull_request') {
     )
 
     if (hasChanges) {
-      const maxDiffLength = 60000
-      const isTruncated = diff.length > maxDiffLength
-      const reportedDiff = isTruncated ? diff.slice(0, maxDiffLength) : diff
+      const maxDiffLength = 28000
+      const isPRDiffTruncated = diff.length > maxDiffLength
+      const isBaseDiffTruncated = baseDiff.length > maxDiffLength
+      const reportedDiff = isPRDiffTruncated ? diff.slice(0, maxDiffLength) : diff
+      const reportedBaseDiff = isBaseDiffTruncated ? baseDiff.slice(0, maxDiffLength) : baseDiff
       const fence = String.fromCharCode(96).repeat(4)
       const body = [
         marker,
-        '⚠️ go-makefile-maker would change generated files. Run it locally and commit the resulting changes.',
+        '⚠️ go-makefile-maker produces different generated edits on the base and PR commits.',
         '',
-        '<details><summary>Generated diff</summary>',
+        '<details><summary>Generated diff on the PR commit</summary>',
         '',
         fence + 'diff',
-        reportedDiff + (isTruncated ? '\n... diff truncated to fit in this comment.' : ''),
+        reportedDiff + (isPRDiffTruncated ? '\n... diff truncated to fit in this comment.' : ''),
+        fence,
+        '</details>',
+        '',
+        '<details><summary>Generated diff on the base commit</summary>',
+        '',
+        fence + 'diff',
+        (reportedBaseDiff || '(no generated changes)') + (isBaseDiffTruncated ? '\n... diff truncated to fit in this comment.' : ''),
         fence,
         '</details>',
       ].join('\n')
@@ -177,7 +273,7 @@ if (context.eventName === 'pull_request') {
 
 if (hasChanges) {
   core.setFailed(context.eventName === 'pull_request'
-    ? 'go-makefile-maker produced changes; see the pull request comment for the diff.'
+    ? 'go-makefile-maker produces different generated edits on the base and PR commits; see the pull request comment for the diffs.'
     : 'go-makefile-maker produced changes.')
 }`,
 			},
