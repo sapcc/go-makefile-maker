@@ -94,8 +94,9 @@ func helmWorkflow(cfg core.Configuration) Option[workflow] {
 
 	j := baseJob("Build and publish Helm Chart OCI", cfg.GitHubWorkflow)
 	j.Steps[0].With = map[string]any{
-		"fetch-depth": 0,    // we need the full git history to be able to detect versions from tags
-		"fetch-tags":  true, // we need the tags to be able to detect versions from tags
+		"fetch-depth":      0,    // we need the full git history to be able to detect versions from tags
+		"fetch-tags":       true, // we need the tags to be able to detect versions from tags
+		persistCredentials: false,
 	}
 	j.addStep(jobStep{
 		Name: "Install Helm",

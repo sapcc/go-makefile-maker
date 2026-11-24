@@ -37,7 +37,8 @@ func releasePRWorkflow(cfg core.Configuration) Option[workflow] {
 
 	j := baseJob("draft-release", ghwCfg)
 	j.Steps[0].With = map[string]any{
-		"fetch-depth": 0,
+		"fetch-depth":      0,
+		persistCredentials: false,
 	}
 
 	j.addStep(jobStep{

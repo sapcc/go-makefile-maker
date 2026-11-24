@@ -51,15 +51,18 @@ func (w workflow) deleteUnless(condition bool) bool {
 type githubTokenScope string
 
 const (
-	tokenScopeNone  = "none" //nolint:deadcode,varcheck // this exists for documentation purposes
+	tokenScopeNone  = "none"
 	tokenScopeRead  = "read"
 	tokenScopeWrite = "write"
+
+	persistCredentials = "persist-credentials" //nolint:gosec // this is not an credential...
 )
 
 type permissions struct {
 	Actions        githubTokenScope `yaml:"actions,omitempty"`
 	Checks         githubTokenScope `yaml:"checks,omitempty"`
 	Contents       githubTokenScope `yaml:"contents,omitempty"`
+	IDToken        githubTokenScope `yaml:"id-token,omitempty"`
 	Packages       githubTokenScope `yaml:"packages,omitempty"`
 	PullRequests   githubTokenScope `yaml:"pull-requests,omitempty"`
 	SecurityEvents githubTokenScope `yaml:"security-events,omitempty"`
