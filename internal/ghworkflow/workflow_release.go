@@ -24,11 +24,6 @@ func releaseWorkflow(cfg core.Configuration) Option[workflow] {
 	}
 
 	releasePR := ghwCfg.Release.ReleasePR.UnwrapOr(true)
-	if !releasePR {
-		// When there is only one job, workflow-level permissions have the same effective scope.
-		w.Permissions.Contents = tokenScopeWrite
-		w.Permissions.Packages = tokenScopeWrite
-	}
 
 	w.On.Push.Branches = nil
 	w.On.PullRequest.Branches = nil
@@ -43,11 +38,9 @@ func releaseWorkflow(cfg core.Configuration) Option[workflow] {
 	}
 
 	j := baseJobWithGo("goreleaser", cfg)
-	if releasePR {
-		j.Permissions = permissions{
-			Contents: tokenScopeWrite,
-			Packages: tokenScopeWrite,
-		}
+	j.Permissions = permissions{
+		Contents: tokenScopeWrite,
+		Packages: tokenScopeWrite,
 	}
 	// This is needed because: https://goreleaser.com/ci/actions/#fetch-depthness
 	j.Steps[0].With = map[string]any{
@@ -79,7 +72,7 @@ func releaseWorkflow(cfg core.Configuration) Option[workflow] {
 		Name: "Run GoReleaser",
 		Uses: core.GoreleaserAction,
 		With: map[string]any{
-			"version": "latest",
+			"version": core.DefaultGoreleaserVersion,
 			"args":    "release --clean --release-notes=./build/release-info",
 		},
 		Env: map[string]string{ //nolint:gosec // not a hardcoded secret, we are doing templating here

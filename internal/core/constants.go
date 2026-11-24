@@ -11,6 +11,7 @@ const (
 	DefaultPostgresVersion     = "18"
 	DefaultLinkerdAwaitVersion = "0.3.3"
 	DefaultGitHubComRunsOn     = "ubuntu-latest"
+	DefaultGoreleaserVersion   = "v2.20.3"
 )
 
 // DefaultGitHubEnterpriseRunsOn is a map of group names to runner labels for GitHub Enterprise.

@@ -20,8 +20,7 @@ func releasePRWorkflow(cfg core.Configuration) Option[workflow] {
 		return None[workflow]()
 	}
 
-	w.Permissions.Contents = tokenScopeWrite
-	w.Permissions.PullRequests = tokenScopeWrite
+	w.Permissions.Contents = tokenScopeRead
 
 	w.On.Push.Branches = []string{ghwCfg.Global.DefaultBranch}
 	w.On.PullRequest.Branches = nil
@@ -36,6 +35,10 @@ func releasePRWorkflow(cfg core.Configuration) Option[workflow] {
 	}
 
 	j := baseJob("draft-release", ghwCfg)
+	j.Permissions = permissions{
+		Contents:     tokenScopeWrite,
+		PullRequests: tokenScopeWrite,
+	}
 	j.Steps[0].With = map[string]any{
 		"fetch-depth":      0,
 		persistCredentials: false,
