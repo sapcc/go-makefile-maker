@@ -22,7 +22,6 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) Option[workflow] {
 	}
 
 	w.Permissions.Contents = tokenScopeRead
-	w.Permissions.Packages = tokenScopeWrite
 
 	w.On.Push.Branches = nil
 	w.On.WorkflowDispatch.manualTrigger = true
@@ -38,6 +37,10 @@ func ghcrWorkflow(cfg *core.GithubWorkflowConfiguration) Option[workflow] {
 	registry := "ghcr.io"
 
 	j := baseJob("Push container to ghcr.io", cfg)
+	j.Permissions = permissions{
+		Contents: tokenScopeRead,
+		Packages: tokenScopeWrite,
+	}
 	j.addStep(jobStep{
 		Name: "Log in to the Container registry",
 		Uses: core.DockerLoginAction,
@@ -128,6 +131,10 @@ type=sha,format=long
 		cleanupJob := baseJob("Cleanup untagged GHCR versions", cfg)
 		cleanupJob.RunsOn = "ubuntu-latest"
 		cleanupJob.Needs = []string{"build-and-push-image"}
+		cleanupJob.Permissions = permissions{
+			Contents: tokenScopeRead,
+			Packages: tokenScopeWrite,
+		}
 		cleanupJob.addStep(jobStep{
 			Name: "Cleanup untagged GHCR versions",
 			Uses: core.GHCRCleanupAction,

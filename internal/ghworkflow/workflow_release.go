@@ -24,9 +24,11 @@ func releaseWorkflow(cfg core.Configuration) Option[workflow] {
 	}
 
 	releasePR := ghwCfg.Release.ReleasePR.UnwrapOr(true)
-
-	w.Permissions.Contents = tokenScopeWrite
-	w.Permissions.Packages = tokenScopeWrite
+	if !releasePR {
+		// When there is only one job, workflow-level permissions have the same effective scope.
+		w.Permissions.Contents = tokenScopeWrite
+		w.Permissions.Packages = tokenScopeWrite
+	}
 
 	w.On.Push.Branches = nil
 	w.On.PullRequest.Branches = nil
@@ -41,9 +43,16 @@ func releaseWorkflow(cfg core.Configuration) Option[workflow] {
 	}
 
 	j := baseJobWithGo("goreleaser", cfg)
+	if releasePR {
+		j.Permissions = permissions{
+			Contents: tokenScopeWrite,
+			Packages: tokenScopeWrite,
+		}
+	}
 	// This is needed because: https://goreleaser.com/ci/actions/#fetch-depthness
 	j.Steps[0].With = map[string]any{
-		"fetch-depth": 0,
+		"fetch-depth":      0,
+		persistCredentials: false,
 	}
 	if releasePR {
 		j.Needs = []string{"tag"}
@@ -90,13 +99,15 @@ func releaseWorkflow(cfg core.Configuration) Option[workflow] {
 // (depending on it) runs in the same workflow run.
 func tagJob(ghwCfg *core.GithubWorkflowConfiguration) job {
 	tj := baseJob("tag", ghwCfg)
+	tj.Permissions = permissions{Contents: tokenScopeWrite}
 	tj.If = "github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.head.ref == '" + releasePRBranch + "'"
 	tj.Outputs = map[string]string{
 		"version": "${{ steps.version.outputs.version }}",
 	}
 	// Need full history to push the tag.
 	tj.Steps[0].With = map[string]any{
-		"fetch-depth": 0,
+		"fetch-depth":      0,
+		persistCredentials: true,
 	}
 	tj.addStep(jobStep{
 		Name: "Read version from CHANGELOG",

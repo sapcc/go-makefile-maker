@@ -65,7 +65,7 @@ func baseJob(name string, cfg *core.GithubWorkflowConfiguration) job {
 			Uses: core.CheckoutAction,
 			With: map[string]any{
 				// don't persist credentials, otherwise the token will be available in all subsequent steps, which potentially is a security risk
-				"persist-credentials": false,
+				persistCredentials: false,
 			},
 		}},
 		Strategy: strategy,
