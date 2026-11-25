@@ -44,7 +44,7 @@ func goMakefileMakerWorkflow(cfg core.Configuration) Option[workflow] {
 	if isGoMakefileMakerRepository {
 		w.Permissions.Contents = tokenScopeWrite
 		runJob.Steps[0].With = map[string]any{
-			"ref":        "${{github.event.pull_request.head.ref}}",
+			"ref":        "${{github.event.pull_request.head.sha}}",
 			"repository": "${{github.event.pull_request.head.repo.full_name}}",
 		}
 	} else {

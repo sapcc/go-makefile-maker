@@ -28,7 +28,6 @@ func helmWorkflow(cfg core.Configuration) Option[workflow] {
 	var chartPath = helmConfig.Path.UnwrapOr(".")
 
 	w.Permissions.Contents = tokenScopeRead
-	w.Permissions.Packages = tokenScopeWrite
 
 	w.On.WorkflowDispatch.manualTrigger = true
 
@@ -45,7 +44,7 @@ func helmWorkflow(cfg core.Configuration) Option[workflow] {
 			w.On.Push.Tags = []string{"*"}
 			helmPackageCmds = append(helmPackageCmds,
 				`# try to detect a version from the git tags, set APP_VERSION only if this commit has been tagged`,
-				`CURRENT_TAG=$(git describe --tags --exact-match ${{ github.sha }} 2>/dev/null || echo "")`,
+				`CURRENT_TAG=$(git describe --tags --exact-match "$GITHUB_SHA" 2>/dev/null || echo "")`,
 				`LAST_TAG=$((git describe --tags --abbrev=0 2>/dev/null | sed -E 's/^v//') || echo "")`,
 				`if [ -n "$CURRENT_TAG" ]; then`,
 				`  APP_VERSION="$CURRENT_TAG"`,
@@ -61,7 +60,7 @@ func helmWorkflow(cfg core.Configuration) Option[workflow] {
 			helmPackageCmds = append(helmPackageCmds,
 				`# use the git sha as app-version if no version could be detected from the tags`,
 				`if [ -z "$APP_VERSION" ]; then`,
-				`  APP_VERSION="sha-${{ github.sha }}"`,
+				`  APP_VERSION="sha-$GITHUB_SHA"`,
 				`fi`,
 				`# append truncated sha to version for uniqueness on untagged commits`,
 				`if [[ "$APP_VERSION" == sha-* ]]; then`,
@@ -93,6 +92,8 @@ func helmWorkflow(cfg core.Configuration) Option[workflow] {
 	repoOwner = strings.ToLower(repoOwner)
 
 	j := baseJob("Build and publish Helm Chart OCI", cfg.GitHubWorkflow)
+	j.Permissions.Contents = tokenScopeRead
+	j.Permissions.Packages = tokenScopeWrite
 	j.Steps[0].With = map[string]any{
 		"fetch-depth":      0,    // we need the full git history to be able to detect versions from tags
 		"fetch-tags":       true, // we need the tags to be able to detect versions from tags
