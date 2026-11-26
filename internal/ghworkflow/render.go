@@ -26,11 +26,12 @@ func Render(cfg core.Configuration, sr golang.ScanResult) []string {
 
 	must.Succeed(os.MkdirAll(workflowDir, 0o755))
 
-	// remove renamed files
+	// remove obsolete or renamed files
 	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "codeql.yml")))
 	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "dependency-review.yaml")))
 	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "license.yaml")))
 	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "spell.yaml")))
+	must.Succeed(os.RemoveAll(filepath.Join(workflowDir, "run-go-makefile-maker.yaml")))
 
 	// TODO: checking on GoVersion is only an aid until we can properly detect rust applications
 	var allWorkflows []Option[workflow]
